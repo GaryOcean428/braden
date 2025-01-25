@@ -8,10 +8,13 @@ const Hero = () => {
           className="w-full h-full object-cover brightness-50"
         />
       </div>
-      <div className="relative z-10 text-center text-white px-4">
+      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <h1 className="font-montserrat font-bold text-3xl md:text-5xl lg:text-6xl mb-6 animate-fadeIn">
-          Apprentice & Traineeship Services
+          Welcome to Braden Group
         </h1>
+        <p className="font-opensans text-lg md:text-xl mb-8">
+          We are dedicated to transforming the workforce landscape through innovative apprenticeships and traineeships.
+        </p>
         <button className="bg-white text-black font-montserrat font-bold px-8 py-3 rounded hover:bg-opacity-90 transition-all">
           Contact Us
         </button>
