@@ -11,13 +11,13 @@ const About = () => {
         
         <h3 className="font-montserrat font-bold text-xl md:text-2xl mb-6 text-center">Our Mission</h3>
         <p className="font-opensans text-base md:text-lg mb-8 text-gray-700 leading-relaxed">
-          Our mission is to empower individuals and businesses through innovative workforce solutions that foster growth, compliance, and excellence. We are committed to bridging the gap between education and employment by offering comprehensive support services and tailored financing options.
+          Our mission is to empower individuals and businesses through innovative workforce solutions that foster growth, compliance, and excellence. We are committed to bridging the gap between education and employment by offering comprehensive support services and tailored solutions.
         </p>
         
         <div className="text-center">
-          <h3 className="font-montserrat font-bold text-xl md:text-2xl mb-6">Join Us</h3>
+          <h3 className="font-montserrat font-bold text-xl md:text-2xl mb-6">Target Market</h3>
           <p className="font-opensans text-base md:text-lg mb-8 text-gray-700 leading-relaxed">
-            Whether you're a business looking for skilled workers or an individual seeking career advancement, Braden Group is here to support you every step of the way. Explore our services and discover how we can help you achieve your fullest potential.
+            We serve individuals aged 16-35 seeking career opportunities through apprenticeships and traineeships, as well as businesses looking for skilled workers. Our services span across urban and suburban areas, with plans to expand into rural regions.
           </p>
         </div>
       </div>

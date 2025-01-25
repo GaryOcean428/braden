@@ -13,7 +13,7 @@ const Hero = () => {
           Welcome to Braden Group
         </h1>
         <p className="font-opensans text-base md:text-lg lg:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-          We are dedicated to transforming the workforce landscape through innovative apprenticeships and traineeships.
+          We are a dynamic service-based enterprise dedicated to transforming the workforce landscape through innovative apprenticeships and traineeships.
         </p>
         <button className="bg-white text-black font-montserrat font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:bg-opacity-90 transition-all text-sm md:text-base">
           Contact Us

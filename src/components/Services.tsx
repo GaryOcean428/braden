@@ -12,20 +12,24 @@ const Services = () => {
               description: "We specialize in placing apprentices and trainees into suitable roles while managing their progress to ensure adherence to industry regulations."
             },
             {
+              title: "Regulatory Compliance Management",
+              description: "Ensuring all placements adhere to industry regulations and standards, managing compliance with training requirements and workplace safety."
+            },
+            {
               title: "Mentoring & Career Coaching",
-              description: "Our ongoing support helps apprentices and trainees develop their skills and navigate their career paths effectively."
+              description: "Our ongoing support helps apprentices and trainees develop their skills and navigate their career paths effectively through regular mentoring sessions."
             },
             {
               title: "Recruitment & Labor Hire Solutions",
-              description: "We offer both temporary staffing solutions and assistance in finding long-term skilled workers."
-            },
-            {
-              title: "Financing Solutions",
-              description: "Covering wage expenses and equipment costs to alleviate financial pressures on businesses."
+              description: "We offer both temporary staffing solutions and assistance in finding long-term skilled workers, addressing immediate staffing needs efficiently."
             },
             {
               title: "Technology Solutions",
               description: "Including software licensing and managed IT services to keep your business operations running smoothly."
+            },
+            {
+              title: "Future Services",
+              description: "Customized training programs, digital skills-matching platform, online learning opportunities, and expanded IT services coming soon."
             }
           ].map((service, index) => (
             <div 
