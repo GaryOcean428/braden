@@ -19,9 +19,16 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        opensans: ["Open Sans", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
+        roboto: ["Roboto", "sans-serif"],
+        lato: ["Lato", "sans-serif"],
       },
       colors: {
+        brand: {
+          primary: "#B71C1C", // The deep red color from the screenshot
+          secondary: "#1A1A1A",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

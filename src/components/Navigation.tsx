@@ -5,47 +5,48 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed w-full bg-background/80 backdrop-blur-sm z-50 py-4">
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <a href="#" className="text-xl font-semibold">
+    <nav className="fixed w-full bg-brand-primary z-50">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <a href="/" className="text-white font-montserrat text-xl font-bold">
           braden
         </a>
         
-        {/* Mobile menu button */}
         <button
-          className="md:hidden"
+          className="md:hidden text-white"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Desktop menu */}
         <div className="hidden md:flex space-x-8">
-          <a href="#work" className="hover-underline">
-            Work
+          <a href="/" className="text-white font-opensans hover:text-opacity-80">
+            Home
           </a>
-          <a href="#contact" className="hover-underline">
+          <a href="/about" className="text-white font-opensans hover:text-opacity-80">
+            About
+          </a>
+          <a href="/offering" className="text-white font-opensans hover:text-opacity-80">
+            Our Offering
+          </a>
+          <a href="/contact" className="text-white font-opensans hover:text-opacity-80">
             Contact
           </a>
         </div>
 
-        {/* Mobile menu */}
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-sm md:hidden p-4 animate-fadeIn">
-            <div className="flex flex-col space-y-4">
-              <a
-                href="#work"
-                className="hover-underline"
-                onClick={() => setIsOpen(false)}
-              >
-                Work
+          <div className="absolute top-full left-0 right-0 bg-brand-primary md:hidden py-4 animate-fadeIn">
+            <div className="flex flex-col space-y-4 px-4">
+              <a href="/" className="text-white font-opensans hover:text-opacity-80">
+                Home
               </a>
-              <a
-                href="#contact"
-                className="hover-underline"
-                onClick={() => setIsOpen(false)}
-              >
+              <a href="/about" className="text-white font-opensans hover:text-opacity-80">
+                About
+              </a>
+              <a href="/offering" className="text-white font-opensans hover:text-opacity-80">
+                Our Offering
+              </a>
+              <a href="/contact" className="text-white font-opensans hover:text-opacity-80">
                 Contact
               </a>
             </div>

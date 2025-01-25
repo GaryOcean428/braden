@@ -1,13 +1,20 @@
 const Hero = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center pt-16">
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fadeIn">
-          Hi, I'm Braden
+    <section className="relative min-h-[60vh] flex items-center justify-center">
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/lovable-uploads/855bff02-d08c-4a39-b7c2-81b44f2ad60b.png"
+          alt="City skyline"
+          className="w-full h-full object-cover brightness-50"
+        />
+      </div>
+      <div className="relative z-10 text-center text-white px-4">
+        <h1 className="font-montserrat font-bold text-3xl md:text-5xl lg:text-6xl mb-6 animate-fadeIn">
+          Apprentice & Traineeship Services
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl animate-fadeIn" style={{ animationDelay: "0.2s" }}>
-          I create digital experiences that make an impact
-        </p>
+        <button className="bg-white text-black font-montserrat font-bold px-8 py-3 rounded hover:bg-opacity-90 transition-all">
+          Contact Us
+        </button>
       </div>
     </section>
   );
