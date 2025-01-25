@@ -35,7 +35,7 @@ const Navigation = () => {
         </div>
 
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 bg-brand-primary md:hidden py-4 animate-fadeIn">
+          <div className="absolute top-full left-0 right-0 bg-brand-primary md:hidden py-4 animate-fadeIn shadow-lg">
             <div className="flex flex-col space-y-4 px-4">
               <a href="/" className="text-white font-opensans hover:text-opacity-80">
                 Home
