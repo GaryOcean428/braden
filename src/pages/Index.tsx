@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Navigation from "../components/Navigation";
+import Layout from "../components/Layout";
 import Hero from "../components/Hero";
 import Services from "../components/Services";
 import About from "../components/About";
@@ -22,22 +22,19 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main>
-        <Hero />
-        <div id="services">
-          <Services />
-        </div>
-        <div id="about">
-          <About />
-        </div>
-        <div id="contact">
-          <Contact />
-        </div>
-        {isAdmin && <MediaManager />}
-      </main>
-    </div>
+    <Layout showBreadcrumb={false}>
+      <Hero />
+      <div id="services">
+        <Services />
+      </div>
+      <div id="about">
+        <About />
+      </div>
+      <div id="contact">
+        <Contact />
+      </div>
+      {isAdmin && <MediaManager />}
+    </Layout>
   );
 };
 

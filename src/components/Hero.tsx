@@ -2,24 +2,35 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Hero = () => {
   const [heroImage, setHeroImage] = useState("/hero-image.jpg");
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadHeroImage = async () => {
-      const { data, error } = await supabase
-        .from('media')
-        .select('file_path')
-        .eq('title', 'hero-image')
-        .single();
-
-      if (data && !error) {
-        const { data: { publicUrl } } = supabase.storage
+      try {
+        const { data, error } = await supabase
           .from('media')
-          .getPublicUrl(data.file_path);
-        setHeroImage(publicUrl);
+          .select('file_path')
+          .eq('title', 'hero-image')
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('media')
+            .getPublicUrl(data.file_path);
+          setHeroImage(publicUrl);
+        }
+      } catch (error) {
+        console.error('Error loading hero image:', error);
+        toast.error("Failed to load hero image");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -39,11 +50,15 @@ const Hero = () => {
   return (
     <section id="home" className="relative min-h-[90vh] flex items-center justify-center">
       <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Braden Group Apprentices"
-          className="w-full h-full object-cover"
-        />
+        {isLoading ? (
+          <Skeleton className="w-full h-full" />
+        ) : (
+          <img
+            src={heroImage}
+            alt="Braden Group Apprentices"
+            className="w-full h-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
       <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 py-12 md:py-20">

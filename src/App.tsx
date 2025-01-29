@@ -9,7 +9,14 @@ import RecruitmentPage from "./pages/recruitment";
 import ApprenticeshipsPage from "./pages/apprenticeships";
 import TraineeshipsPage from "./pages/traineeships";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
