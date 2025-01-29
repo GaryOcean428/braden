@@ -19,21 +19,26 @@ const Index = () => {
     };
 
     checkAdminStatus();
+
+    // Ensure we start at the top of the page when navigating to home
+    window.scrollTo(0, 0);
   }, []);
 
   return (
     <Layout showBreadcrumb={false}>
-      <Hero />
-      <div id="services">
-        <Services />
-      </div>
-      <div id="about">
-        <About />
-      </div>
-      <div id="contact">
-        <Contact />
-      </div>
-      {isAdmin && <MediaManager />}
+      <main className="min-h-screen">
+        <Hero />
+        <div id="services" className="scroll-mt-20">
+          <Services />
+        </div>
+        <div id="about" className="scroll-mt-20">
+          <About />
+        </div>
+        <div id="contact" className="scroll-mt-20">
+          <Contact />
+        </div>
+        {isAdmin && <MediaManager />}
+      </main>
     </Layout>
   );
 };

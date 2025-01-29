@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 
@@ -10,6 +10,7 @@ const Navigation = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -39,8 +40,25 @@ const Navigation = () => {
       }
     } else {
       // If not on home page, navigate to home and then scroll
-      window.location.href = `/#${sectionId}`;
+      navigate('/', { replace: true });
+      // Wait for navigation to complete before scrolling
+      setTimeout(() => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
     }
+  };
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/', { replace: true });
+    }
+    setIsOpen(false);
   };
 
   return (
@@ -52,10 +70,7 @@ const Navigation = () => {
           <a 
             href="/" 
             className="text-white font-montserrat text-xl font-bold"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = '/';
-            }}
+            onClick={handleHomeClick}
           >
             braden
           </a>
