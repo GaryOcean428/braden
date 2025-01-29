@@ -1,42 +1,25 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import Index from "./pages/Index";
-import RecruitmentPage from "./pages/recruitment";
-import ApprenticeshipsPage from "./pages/apprenticeships";
-import TraineeshipsPage from "./pages/traineeships";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Index from './pages/Index';
+import Recruitment from './pages/recruitment';
+import Traineeships from './pages/traineeships';
+import Apprenticeships from './pages/apprenticeships';
+import Dashboard from './pages/admin/Dashboard';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ErrorBoundary>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/recruitment" element={<RecruitmentPage />} />
-            <Route path="/apprenticeships" element={<ApprenticeshipsPage />} />
-            <Route path="/traineeships" element={<TraineeshipsPage />} />
-            {/* Catch all unknown routes and redirect to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </ErrorBoundary>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Index />} />
+          <Route path="recruitment" element={<Recruitment />} />
+          <Route path="traineeships" element={<Traineeships />} />
+          <Route path="apprenticeships" element={<Apprenticeships />} />
+          <Route path="admin" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;
