@@ -1,6 +1,14 @@
+import { useNavigate } from "react-router-dom";
+
 const Services = () => {
+  const navigate = useNavigate();
+
+  const handleServiceClick = (path: string) => {
+    navigate(path);
+  };
+
   return (
-    <section className="py-16 md:py-20 lg:py-24 px-4 md:px-8 lg:px-12 bg-white">
+    <section id="services" className="py-16 md:py-20 lg:py-24 px-4 md:px-8 lg:px-12 bg-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="font-montserrat font-bold text-2xl md:text-3xl lg:text-4xl mb-12 text-center">
           Our Services
@@ -9,32 +17,39 @@ const Services = () => {
           {[
             {
               title: "Apprenticeship & Traineeship Placement",
-              description: "We specialize in placing apprentices and trainees into suitable roles while managing their progress to ensure adherence to industry regulations."
+              description: "We specialize in placing apprentices and trainees into suitable roles while managing their progress to ensure adherence to industry regulations.",
+              path: "/apprenticeships"
             },
             {
               title: "Regulatory Compliance Management",
-              description: "Ensuring all placements adhere to industry regulations and standards, managing compliance with training requirements and workplace safety."
+              description: "Ensuring all placements adhere to industry regulations and standards, managing compliance with training requirements and workplace safety.",
+              path: "/compliance"
             },
             {
               title: "Mentoring & Career Coaching",
-              description: "Our ongoing support helps apprentices and trainees develop their skills and navigate their career paths effectively through regular mentoring sessions."
+              description: "Our ongoing support helps apprentices and trainees develop their skills and navigate their career paths effectively through regular mentoring sessions.",
+              path: "/mentoring"
             },
             {
               title: "Recruitment & Labor Hire Solutions",
-              description: "We offer both temporary staffing solutions and assistance in finding long-term skilled workers, addressing immediate staffing needs efficiently."
+              description: "We offer both temporary staffing solutions and assistance in finding long-term skilled workers, addressing immediate staffing needs efficiently.",
+              path: "/recruitment"
             },
             {
               title: "Technology Solutions",
-              description: "Including software licensing and managed IT services to keep your business operations running smoothly."
+              description: "Including software licensing and managed IT services to keep your business operations running smoothly.",
+              path: "/technology"
             },
             {
               title: "Future Services",
-              description: "Customized training programs, digital skills-matching platform, online learning opportunities, and expanded IT services coming soon."
+              description: "Customized training programs, digital skills-matching platform, online learning opportunities, and expanded IT services coming soon.",
+              path: "/future-services"
             }
           ].map((service, index) => (
             <div 
               key={index} 
-              className="p-6 md:p-8 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white"
+              className="p-6 md:p-8 border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 bg-white cursor-pointer transform hover:-translate-y-1"
+              onClick={() => handleServiceClick(service.path)}
             >
               <h3 className="font-roboto font-bold text-lg md:text-xl mb-4">{service.title}</h3>
               <p className="font-opensans text-gray-600 text-sm md:text-base">{service.description}</p>

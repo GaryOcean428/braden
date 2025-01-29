@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Hero = () => {
   const [heroImage, setHeroImage] = useState("/hero-image.jpg");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadHeroImage = async () => {
@@ -23,8 +26,18 @@ const Hero = () => {
     loadHeroImage();
   }, []);
 
+  const handleStartHiring = () => {
+    toast.info("Redirecting to hiring portal...");
+    navigate('/recruitment');
+  };
+
+  const handleFindOpportunities = () => {
+    toast.info("Exploring opportunities...");
+    navigate('/apprenticeships');
+  };
+
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center">
+    <section id="home" className="relative min-h-[90vh] flex items-center justify-center">
       <div className="absolute inset-0">
         <img
           src={heroImage}
@@ -41,10 +54,16 @@ const Hero = () => {
           Professional recruiting solutions for apprenticeships and traineeships
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-brand-primary text-white font-montserrat font-bold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all text-base">
+          <button 
+            onClick={handleStartHiring}
+            className="bg-brand-primary text-white font-montserrat font-bold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all text-base"
+          >
             Start Hiring
           </button>
-          <button className="bg-white text-brand-primary font-montserrat font-bold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all text-base">
+          <button 
+            onClick={handleFindOpportunities}
+            className="bg-white text-brand-primary font-montserrat font-bold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all text-base"
+          >
             Find Opportunities
           </button>
         </div>
