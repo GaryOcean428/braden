@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Briefcase, Users, Award, Search } from "lucide-react";
-import Navigation from "@/components/Navigation";
+import Layout from "@/components/Layout";
 
 const RecruitmentPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-primary to-brand-secondary">
-      <Navigation />
-      
+    <Layout>
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4">
         <div className="container mx-auto text-center text-white">
@@ -121,7 +119,7 @@ const RecruitmentPage = () => {
           </Button>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 };
 
