@@ -343,6 +343,35 @@ export type Database = {
         }
         Relationships: []
       }
+      challenges: {
+        Row: {
+          challenge_text: string
+          created_at: string
+          id: string
+          idea_id: string | null
+        }
+        Insert: {
+          challenge_text: string
+          created_at?: string
+          id?: string
+          idea_id?: string | null
+        }
+        Update: {
+          challenge_text?: string
+          created_at?: string
+          id?: string
+          idea_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           content: string
@@ -832,6 +861,106 @@ export type Database = {
         }
         Relationships: []
       }
+      ideas: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          project_id: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          project_id?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          project_id?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      industry_analytics: {
+        Row: {
+          analysis_date: string | null
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          idea_id: string | null
+          industry_name: string
+          metadata: Json | null
+          metric_name: string
+          metric_value: number | null
+          source: string | null
+          trend_direction: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          analysis_date?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          idea_id?: string | null
+          industry_name: string
+          metadata?: Json | null
+          metric_name: string
+          metric_value?: number | null
+          source?: string | null
+          trend_direction?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          analysis_date?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          idea_id?: string | null
+          industry_name?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_value?: number | null
+          source?: string | null
+          trend_direction?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "industry_analytics_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           created_at: string | null
@@ -1068,6 +1197,7 @@ export type Database = {
           page_id: number
           slug: string | null
           token_count: number | null
+          user_id: string | null
         }
         Insert: {
           content?: string | null
@@ -1077,6 +1207,7 @@ export type Database = {
           page_id: number
           slug?: string | null
           token_count?: number | null
+          user_id?: string | null
         }
         Update: {
           content?: string | null
@@ -1086,6 +1217,7 @@ export type Database = {
           page_id?: number
           slug?: string | null
           token_count?: number | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1538,6 +1670,41 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_holidays: {
         Row: {
           created_at: string | null
@@ -1713,6 +1880,41 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      sections: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          idea_id: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          idea_id?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          idea_id?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sections_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       task_plans: {
         Row: {
@@ -1909,6 +2111,56 @@ export type Database = {
         }
         Relationships: []
       }
+      trend_predictions: {
+        Row: {
+          category: string
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          idea_id: string | null
+          prediction_text: string
+          supporting_data: Json | null
+          timeframe_end: string | null
+          timeframe_start: string | null
+          trend_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          idea_id?: string | null
+          prediction_text: string
+          supporting_data?: Json | null
+          timeframe_end?: string | null
+          timeframe_start?: string | null
+          trend_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          idea_id?: string | null
+          prediction_text?: string
+          supporting_data?: Json | null
+          timeframe_end?: string | null
+          timeframe_start?: string | null
+          trend_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trend_predictions_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -2028,6 +2280,14 @@ export type Database = {
           parent_page_id: number
           path: string
           meta: Json
+        }[]
+      }
+      get_secret: {
+        Args: {
+          name: string
+        }
+        Returns: {
+          secret: string
         }[]
       }
       get_user_role: {
