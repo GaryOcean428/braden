@@ -3,7 +3,7 @@ const Hero = () => {
     <section className="relative min-h-[80vh] flex items-center justify-center px-4 md:px-8 lg:px-12">
       <div className="absolute inset-0">
         <img
-          src="https://braden.com.au/wp-content/uploads/2023/11/Braden-Group-Apprentice-Trainee-Recruitment-Services-scaled.jpg"
+          src="/hero-image.jpg"
           alt="Braden Group Apprentices"
           className="w-full h-full object-cover opacity-80"
         />
