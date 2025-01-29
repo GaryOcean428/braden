@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Loader } from "lucide-react";
 
 const Hero = () => {
-  const [heroImage, setHeroImage] = useState("/hero-image.jpg"); // Default image path
+  const [heroImage, setHeroImage] = useState("/hero-image.jpg");
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -14,22 +14,22 @@ const Hero = () => {
   useEffect(() => {
     const loadHeroImage = async () => {
       try {
+        setIsLoading(true);
+        setImageError(false);
+
         const { data, error } = await supabase
           .from('media')
           .select('file_path')
           .eq('title', 'hero-image')
           .maybeSingle();
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
         if (data?.file_path) {
           const { data: { publicUrl } } = supabase.storage
             .from('media')
             .getPublicUrl(data.file_path);
           
-          // Create a new image object to preload the image
           const img = new Image();
           img.onload = () => {
             setHeroImage(publicUrl);
@@ -42,7 +42,7 @@ const Hero = () => {
           };
           img.src = publicUrl;
         } else {
-          // No custom hero image found, use default
+          // No custom hero image found, use default and stop loading
           setIsLoading(false);
         }
       } catch (error) {
