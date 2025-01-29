@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Share } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const ShareModal = () => {
   const [url, setUrl] = useState("");
@@ -28,11 +29,18 @@ const ShareModal = () => {
         });
       } else {
         await navigator.clipboard.writeText(url);
-        toast.success("Link copied to clipboard!");
+        toast({
+          title: "Success",
+          description: "Link copied to clipboard!",
+        });
       }
     } catch (error) {
       console.error("Error sharing:", error);
-      toast.error("Failed to share");
+      toast({
+        title: "Error",
+        description: "Failed to share",
+        variant: "destructive",
+      });
     }
   };
 
