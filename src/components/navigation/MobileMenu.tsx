@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { navigationItems } from "@/config/navigation";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -12,36 +13,27 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
 
   if (!isOpen) return null;
 
+  const handleItemClick = (action: 'scroll' | 'navigate', target: string) => {
+    if (action === 'scroll') {
+      scrollToSection(target);
+    } else {
+      navigate(target);
+    }
+    setIsOpen(false);
+  };
+
   return (
     <div className="md:hidden py-4 animate-fadeIn">
       <div className="flex flex-col space-y-4">
-        <button 
-          onClick={() => {
-            navigate('/');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          Home
-        </button>
-        <button 
-          onClick={() => {
-            scrollToSection('about');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          About
-        </button>
-        <button 
-          onClick={() => {
-            scrollToSection('services');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          Services
-        </button>
+        {navigationItems.map((item) => (
+          <button
+            key={item.label}
+            onClick={() => handleItemClick(item.action, item.target)}
+            className="text-white font-opensans hover:text-opacity-80"
+          >
+            {item.label}
+          </button>
+        ))}
         <button 
           onClick={() => {
             navigate('/apprenticeships');
@@ -68,15 +60,6 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
           className="text-white font-opensans hover:text-opacity-80"
         >
           Recruitment
-        </button>
-        <button 
-          onClick={() => {
-            scrollToSection('contact');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          Contact
         </button>
         {isAdmin && (
           <a href="/admin" className="text-white font-opensans hover:text-opacity-80">
