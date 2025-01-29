@@ -20,20 +20,36 @@ const Hero = () => {
           .eq('title', 'hero-image')
           .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          throw error;
+        }
 
         if (data?.file_path) {
           const { data: { publicUrl } } = supabase.storage
             .from('media')
             .getPublicUrl(data.file_path);
-          setHeroImage(publicUrl);
+          
+          // Create a new image object to preload the image
+          const img = new Image();
+          img.onload = () => {
+            setHeroImage(publicUrl);
+            setIsLoading(false);
+          };
+          img.onerror = () => {
+            console.error('Error loading image');
+            setImageError(true);
+            setIsLoading(false);
+          };
+          img.src = publicUrl;
+        } else {
+          // No custom hero image found, use default
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error loading hero image:', error);
         setImageError(true);
-        toast.error("Failed to load hero image");
-      } finally {
         setIsLoading(false);
+        toast.error("Failed to load hero image");
       }
     };
 
@@ -69,7 +85,10 @@ const Hero = () => {
             src={heroImage}
             alt="Braden Group Apprentices"
             className="w-full h-full object-cover"
-            onError={() => setImageError(true)}
+            onError={() => {
+              setImageError(true);
+              setIsLoading(false);
+            }}
             aria-hidden="true"
           />
         )}
