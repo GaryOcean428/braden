@@ -5,13 +5,8 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader } from "lucide-react";
 
-/**
- * Hero component displays the main landing section of the website
- * Includes a background image, heading, and call-to-action buttons
- * @returns {JSX.Element} Hero section with responsive design and accessibility features
- */
 const Hero = () => {
-  const [heroImage, setHeroImage] = useState("/hero-image.jpg");
+  const [heroImage, setHeroImage] = useState("/hero-image.jpg"); // Default image path
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -25,7 +20,14 @@ const Hero = () => {
           .eq('title', 'hero-image')
           .single();
 
-        if (error) throw error;
+        if (error) {
+          // If no image found, we'll use the default image
+          if (error.code === 'PGRST116') {
+            setIsLoading(false);
+            return; // Keep using default image
+          }
+          throw error;
+        }
 
         if (data) {
           const { data: { publicUrl } } = supabase.storage
