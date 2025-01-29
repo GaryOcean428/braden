@@ -1109,6 +1109,42 @@ export type Database = {
           },
         ]
       }
+      media: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          file_path: string
+          file_type: string
+          id: string
+          metadata: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_path: string
+          file_type: string
+          id?: string
+          metadata?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_path?: string
+          file_type?: string
+          id?: string
+          metadata?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       navigation_history: {
         Row: {
           agent_id: string | null
