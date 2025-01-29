@@ -5,7 +5,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 import ShareModal from "./ShareModal";
+import { ErrorBoundary } from "./ErrorBoundary";
 
+/**
+ * Navigation component that provides the main navigation for the application
+ * Includes mobile and desktop menus, share functionality, and admin features
+ * @returns {JSX.Element} Navigation component
+ */
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -15,9 +21,13 @@ const Navigation = () => {
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email === "braden.lang77@gmail.com") {
-        setIsAdmin(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email === "braden.lang77@gmail.com") {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
       }
     };
 
@@ -32,7 +42,6 @@ const Navigation = () => {
   }, []);
 
   const scrollToSection = (sectionId: string) => {
-    // Only scroll if we're on the home page
     if (location.pathname === '/') {
       const section = document.getElementById(sectionId);
       if (section) {
@@ -40,9 +49,7 @@ const Navigation = () => {
         setIsOpen(false);
       }
     } else {
-      // If not on home page, navigate to home and then scroll
       navigate('/', { replace: true });
-      // Wait for navigation to complete before scrolling
       setTimeout(() => {
         const section = document.getElementById(sectionId);
         if (section) {
@@ -63,40 +70,48 @@ const Navigation = () => {
   };
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? "bg-brand-primary shadow-lg" : "bg-transparent"
-    }`}>
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <a 
-            href="/" 
-            className="text-white font-montserrat text-xl font-bold"
-            onClick={handleHomeClick}
-          >
-            braden
-          </a>
-          
-          <div className="flex items-center gap-4">
-            <ShareModal />
-            <button
-              className="md:hidden text-white"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle menu"
+    <ErrorBoundary>
+      <nav 
+        className={`fixed w-full z-50 transition-all duration-300 ${
+          isScrolled ? "bg-brand-primary shadow-lg" : "bg-transparent"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <a 
+              href="/" 
+              className="text-white font-montserrat text-xl font-bold relative z-10"
+              onClick={handleHomeClick}
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-            <DesktopMenu isAdmin={isAdmin} scrollToSection={scrollToSection} />
+              braden
+            </a>
+            
+            <div className="flex items-center gap-4">
+              <div className="relative z-20">
+                <ShareModal />
+              </div>
+              <button
+                className="md:hidden text-white relative z-20"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+              <div className="relative z-10">
+                <DesktopMenu isAdmin={isAdmin} scrollToSection={scrollToSection} />
+              </div>
+            </div>
           </div>
-        </div>
 
-        <MobileMenu 
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          isAdmin={isAdmin}
-          scrollToSection={scrollToSection}
-        />
-      </div>
-    </nav>
+          <MobileMenu 
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            isAdmin={isAdmin}
+            scrollToSection={scrollToSection}
+          />
+        </div>
+      </nav>
+    </ErrorBoundary>
   );
 };
 

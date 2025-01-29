@@ -10,8 +10,13 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
+/**
+ * ErrorBoundary component that catches JavaScript errors anywhere in their child
+ * component tree, logs those errors, and displays a fallback UI
+ */
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -24,6 +29,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    this.setState({
+      error,
+      errorInfo
+    });
   }
 
   render() {
@@ -32,16 +41,30 @@ export class ErrorBoundary extends React.Component<Props, State> {
         <Alert variant="destructive" className="m-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Something went wrong</AlertTitle>
-          <AlertDescription>
-            {this.state.error?.message || 'An unexpected error occurred'}
+          <AlertDescription className="mt-2">
+            <div className="text-sm">
+              {this.state.error?.message || 'An unexpected error occurred'}
+            </div>
+            {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
+              <pre className="mt-2 text-xs overflow-auto max-h-40">
+                {this.state.errorInfo.componentStack}
+              </pre>
+            )}
           </AlertDescription>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </Button>
+          <div className="mt-4 flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => window.location.reload()}
+            >
+              Reload Page
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => this.setState({ hasError: false })}
+            >
+              Try Again
+            </Button>
+          </div>
         </Alert>
       );
     }
