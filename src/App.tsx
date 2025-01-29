@@ -5,12 +5,13 @@ import Recruitment from './pages/recruitment';
 import Traineeships from './pages/traineeships';
 import Apprenticeships from './pages/apprenticeships';
 import Dashboard from './pages/admin/Dashboard';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route element={<Layout><Outlet /></Layout>}>
           <Route index element={<Index />} />
           <Route path="recruitment" element={<Recruitment />} />
           <Route path="traineeships" element={<Traineeships />} />
