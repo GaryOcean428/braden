@@ -22,9 +22,16 @@ interface LayoutProps {
 const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
   return (
     <div 
-      className="min-h-screen"
+      className="min-h-screen bg-background"
       role="main"
     >
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground"
+      >
+        Skip to main content
+      </a>
+      
       <ErrorBoundary>
         <Navigation />
         {showBreadcrumb && <Breadcrumb />}
@@ -40,7 +47,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
             </div>
           }
         >
-          <main className="relative z-0">
+          <main id="main-content" className="relative z-0">
             {children}
           </main>
         </Suspense>

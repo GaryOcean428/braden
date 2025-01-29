@@ -18,18 +18,11 @@ const Hero = () => {
           .from('media')
           .select('file_path')
           .eq('title', 'hero-image')
-          .single();
+          .maybeSingle();
 
-        if (error) {
-          // If no image found, we'll use the default image
-          if (error.code === 'PGRST116') {
-            setIsLoading(false);
-            return; // Keep using default image
-          }
-          throw error;
-        }
+        if (error) throw error;
 
-        if (data) {
+        if (data?.file_path) {
           const { data: { publicUrl } } = supabase.storage
             .from('media')
             .getPublicUrl(data.file_path);
@@ -86,10 +79,10 @@ const Hero = () => {
         className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 py-12 md:py-20"
         role="contentinfo"
       >
-        <h1 className="font-montserrat font-bold text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 animate-fadeIn leading-tight">
+        <h1 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 animate-fadeIn leading-tight">
           Shaping Tomorrow's <br />Workforce Today
         </h1>
-        <p className="font-opensans text-lg md:text-xl lg:text-2xl mb-8 max-w-2xl mx-auto leading-relaxed opacity-90">
+        <p className="font-opensans text-base sm:text-lg md:text-xl lg:text-2xl mb-8 max-w-2xl mx-auto leading-relaxed opacity-90">
           Professional recruiting solutions for apprenticeships and traineeships
         </p>
         <div 
@@ -99,14 +92,14 @@ const Hero = () => {
         >
           <button 
             onClick={handleStartHiring}
-            className="bg-brand-primary text-white font-montserrat font-bold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all text-base focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary focus:outline-none"
+            className="bg-brand-primary text-white font-montserrat font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-opacity-90 transition-all text-sm sm:text-base focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary focus:outline-none"
             aria-label="Start hiring apprentices and trainees"
           >
             Start Hiring
           </button>
           <button 
             onClick={handleFindOpportunities}
-            className="bg-white text-brand-primary font-montserrat font-bold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all text-base focus:ring-2 focus:ring-offset-2 focus:ring-white focus:outline-none"
+            className="bg-white text-brand-primary font-montserrat font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-opacity-90 transition-all text-sm sm:text-base focus:ring-2 focus:ring-offset-2 focus:ring-white focus:outline-none"
             aria-label="Find apprenticeship and traineeship opportunities"
           >
             Find Opportunities
