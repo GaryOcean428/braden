@@ -4,6 +4,7 @@ import { Award, BookOpen, GraduationCap } from "lucide-react";
 import Layout from "@/components/Layout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { toast } from "sonner";
+import { ContactForm } from "@/components/ContactForm";
 
 const ApprenticeshipsPage = () => {
   const handleApplyNow = () => {
@@ -128,7 +129,22 @@ const ApprenticeshipsPage = () => {
         </section>
       </ErrorBoundary>
 
-      {/* Contact Section */}
+      {/* Contact Form Section */}
+      <ErrorBoundary>
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 max-w-2xl">
+            <h2 className="text-3xl font-bold text-center mb-8">Get in Touch</h2>
+            <p className="text-center text-gray-600 mb-8">
+              Interested in our apprenticeship programs? Fill out the form below and we'll get back to you shortly.
+            </p>
+            <div className="bg-white rounded-lg shadow-sm p-6 md:p-8">
+              <ContactForm />
+            </div>
+          </div>
+        </section>
+      </ErrorBoundary>
+
+      {/* CTA Section */}
       <ErrorBoundary>
         <section className="py-16 bg-brand-primary text-white">
           <div className="container mx-auto px-4 text-center">
