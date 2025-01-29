@@ -1,60 +1,10 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Loader } from "lucide-react";
+import { HeroImage } from "./hero/HeroImage";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const Hero = () => {
-  const [heroImage, setHeroImage] = useState("/hero-image.jpg");
-  const [isLoading, setIsLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const loadHeroImage = async () => {
-      try {
-        setIsLoading(true);
-        setImageError(false);
-
-        const { data, error } = await supabase
-          .from('media')
-          .select('file_path')
-          .eq('title', 'hero-image')
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data?.file_path) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('media')
-            .getPublicUrl(data.file_path);
-          
-          const img = new Image();
-          img.onload = () => {
-            setHeroImage(publicUrl);
-            setIsLoading(false);
-          };
-          img.onerror = () => {
-            console.error('Error loading image');
-            setImageError(true);
-            setIsLoading(false);
-          };
-          img.src = publicUrl;
-        } else {
-          // No custom hero image found, use default and stop loading
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error loading hero image:', error);
-        setImageError(true);
-        setIsLoading(false);
-        toast.error("Failed to load hero image");
-      }
-    };
-
-    loadHeroImage();
-  }, []);
 
   const handleStartHiring = () => {
     toast.info("Redirecting to hiring portal...");
@@ -66,6 +16,10 @@ const Hero = () => {
     navigate('/apprenticeships');
   };
 
+  const handleImageError = (error: Error) => {
+    toast.error("Failed to load hero image");
+  };
+
   return (
     <section 
       id="home" 
@@ -74,24 +28,9 @@ const Hero = () => {
       aria-label="Welcome to Braden Group"
     >
       <div className="absolute inset-0">
-        {isLoading ? (
-          <Skeleton className="w-full h-full" aria-hidden="true" />
-        ) : imageError ? (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <Loader className="h-12 w-12 text-gray-400 animate-spin" aria-hidden="true" />
-          </div>
-        ) : (
-          <img
-            src={heroImage}
-            alt="Braden Group Apprentices"
-            className="w-full h-full object-cover"
-            onError={() => {
-              setImageError(true);
-              setIsLoading(false);
-            }}
-            aria-hidden="true"
-          />
-        )}
+        <ErrorBoundary>
+          <HeroImage onError={handleImageError} />
+        </ErrorBoundary>
         <div className="absolute inset-0 bg-black opacity-50" aria-hidden="true"></div>
       </div>
       <div 
