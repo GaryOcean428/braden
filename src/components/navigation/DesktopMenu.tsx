@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import ServicesDropdown from "./ServicesDropdown";
 
 interface DesktopMenuProps {
@@ -6,10 +7,12 @@ interface DesktopMenuProps {
 }
 
 const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
+  const navigate = useNavigate();
+
   return (
     <div className="hidden md:flex items-center space-x-8">
       <button 
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onClick={() => navigate('/')}
         className="text-white font-opensans hover:text-opacity-80 hover-underline"
       >
         Home

@@ -17,7 +17,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
       <div className="flex flex-col space-y-4">
         <button 
           onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigate('/');
             setIsOpen(false);
           }}
           className="text-white font-opensans hover:text-opacity-80"
@@ -25,7 +25,10 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
           Home
         </button>
         <button 
-          onClick={() => scrollToSection('about')}
+          onClick={() => {
+            scrollToSection('about');
+            setIsOpen(false);
+          }}
           className="text-white font-opensans hover:text-opacity-80"
         >
           About
@@ -67,7 +70,10 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
           Recruitment
         </button>
         <button 
-          onClick={() => scrollToSection('contact')}
+          onClick={() => {
+            scrollToSection('contact');
+            setIsOpen(false);
+          }}
           className="text-white font-opensans hover:text-opacity-80"
         >
           Contact
