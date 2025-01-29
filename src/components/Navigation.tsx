@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
+import ShareModal from "./ShareModal";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,15 +76,17 @@ const Navigation = () => {
             braden
           </a>
           
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-
-          <DesktopMenu isAdmin={isAdmin} scrollToSection={scrollToSection} />
+          <div className="flex items-center gap-4">
+            <ShareModal />
+            <button
+              className="md:hidden text-white"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <DesktopMenu isAdmin={isAdmin} scrollToSection={scrollToSection} />
+          </div>
         </div>
 
         <MobileMenu 
