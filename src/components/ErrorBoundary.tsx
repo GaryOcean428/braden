@@ -16,6 +16,11 @@ interface State {
 /**
  * ErrorBoundary component that catches JavaScript errors anywhere in their child
  * component tree, logs those errors, and displays a fallback UI
+ * 
+ * @component
+ * @param {Props} props - Component properties
+ * @param {React.ReactNode} props.children - Child components to render
+ * @returns {JSX.Element} Error boundary wrapper component
  */
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -38,8 +43,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <Alert variant="destructive" className="m-4">
-          <AlertTriangle className="h-4 w-4" />
+        <Alert 
+          variant="destructive" 
+          className="m-4"
+          role="alert"
+          aria-live="assertive"
+        >
+          <AlertTriangle className="h-4 w-4" aria-hidden="true" />
           <AlertTitle>Something went wrong</AlertTitle>
           <AlertDescription className="mt-2">
             <div className="text-sm">
@@ -55,12 +65,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
             <Button
               variant="outline"
               onClick={() => window.location.reload()}
+              aria-label="Reload the page"
             >
               Reload Page
             </Button>
             <Button
               variant="outline"
               onClick={() => this.setState({ hasError: false })}
+              aria-label="Try loading the content again"
             >
               Try Again
             </Button>
