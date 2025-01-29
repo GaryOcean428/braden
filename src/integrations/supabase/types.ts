@@ -464,6 +464,7 @@ export type Database = {
           last_enriched_at: string | null
           name: string
           phone: string | null
+          service_type: string | null
           status: string | null
           updated_at: string
           website: string | null
@@ -477,6 +478,7 @@ export type Database = {
           last_enriched_at?: string | null
           name: string
           phone?: string | null
+          service_type?: string | null
           status?: string | null
           updated_at?: string
           website?: string | null
@@ -490,6 +492,7 @@ export type Database = {
           last_enriched_at?: string | null
           name?: string
           phone?: string | null
+          service_type?: string | null
           status?: string | null
           updated_at?: string
           website?: string | null
@@ -1059,6 +1062,7 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           score: number | null
+          service_type: string | null
           status: string | null
           value: number | null
         }
@@ -1074,6 +1078,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           score?: number | null
+          service_type?: string | null
           status?: string | null
           value?: number | null
         }
@@ -1089,6 +1094,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           score?: number | null
+          service_type?: string | null
           status?: string | null
           value?: number | null
         }

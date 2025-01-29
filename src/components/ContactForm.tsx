@@ -12,6 +12,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
@@ -31,6 +38,9 @@ const formSchema = z.object({
   company: z.string().min(2, {
     message: "Company name must be at least 2 characters.",
   }),
+  serviceType: z.enum(['apprenticeship', 'traineeship', 'recruitment', 'technology', 'compliance', 'mentoring', 'future_services'], {
+    required_error: "Please select a service type.",
+  }),
   message: z.string().min(10, {
     message: "Message must be at least 10 characters.",
   }),
@@ -46,6 +56,7 @@ export function ContactForm() {
       email: "",
       phone: "",
       company: "",
+      serviceType: undefined,
       message: "",
     },
   })
@@ -62,6 +73,7 @@ export function ContactForm() {
           email: values.email,
           phone: values.phone,
           company: values.company,
+          service_type: values.serviceType,
         }]);
 
       if (leadError) throw leadError;
@@ -73,6 +85,7 @@ export function ContactForm() {
           name: values.company,
           email: values.email,
           phone: values.phone,
+          service_type: values.serviceType,
         }]);
 
       if (clientError) throw clientError;
@@ -144,13 +157,39 @@ export function ContactForm() {
         />
         <FormField
           control={form.control}
+          name="serviceType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Service Interest</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="bg-gray-50">
+                    <SelectValue placeholder="Select a service you're interested in" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="apprenticeship">Apprenticeship</SelectItem>
+                  <SelectItem value="traineeship">Traineeship</SelectItem>
+                  <SelectItem value="recruitment">Recruitment</SelectItem>
+                  <SelectItem value="technology">Technology</SelectItem>
+                  <SelectItem value="compliance">Compliance</SelectItem>
+                  <SelectItem value="mentoring">Mentoring</SelectItem>
+                  <SelectItem value="future_services">Future Services</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="message"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-gray-700">Message</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Tell us about your interest in our services"
+                  placeholder="Tell us about your specific needs and requirements"
                   className="min-h-[120px] bg-gray-50"
                   {...field}
                 />
