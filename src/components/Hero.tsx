@@ -1,14 +1,14 @@
 const Hero = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center px-4 md:px-8 lg:px-12">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0">
         <img
-          src="/lovable-uploads/855bff02-d08c-4a39-b7c2-81b44f2ad60b.png"
-          alt="City skyline"
-          className="w-full h-full object-cover brightness-50"
+          src="https://braden.com.au/wp-content/uploads/2023/11/Braden-Group-Apprentice-Trainee-Recruitment-Services-scaled.jpg"
+          alt="Braden Group Apprentices"
+          className="w-full h-full object-cover opacity-80"
         />
       </div>
-      <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 py-12 md:py-20">
+      <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 py-12 md:py-20 bg-black/50 rounded-lg backdrop-blur-sm">
         <h1 className="font-montserrat font-bold text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 animate-fadeIn leading-tight">
           Welcome to Braden Group
         </h1>
