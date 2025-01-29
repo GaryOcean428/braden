@@ -15,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import { supabase } from "@/integrations/supabase/client"
+import { useState } from "react"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -26,40 +28,76 @@ const formSchema = z.object({
   phone: z.string().min(10, {
     message: "Please enter a valid phone number.",
   }),
+  company: z.string().min(2, {
+    message: "Company name must be at least 2 characters.",
+  }),
   message: z.string().min(10, {
     message: "Message must be at least 10 characters.",
   }),
 })
 
 export function ContactForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
       phone: "",
+      company: "",
       message: "",
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here we could integrate with a backend service
-    console.log(values)
-    toast.success("Thank you for your message. We'll be in touch soon!")
-    form.reset()
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setIsSubmitting(true);
+      
+      // Create a new lead
+      const { error: leadError } = await supabase
+        .from('leads')
+        .insert([{
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          company: values.company,
+        }]);
+
+      if (leadError) throw leadError;
+
+      // Create a new client
+      const { error: clientError } = await supabase
+        .from('clients')
+        .insert([{
+          name: values.company,
+          email: values.email,
+          phone: values.phone,
+        }]);
+
+      if (clientError) throw clientError;
+
+      toast.success("Thank you for your message. We'll be in touch soon!");
+      form.reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error("There was an error submitting your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-left">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel className="text-gray-700">Name</FormLabel>
               <FormControl>
-                <Input placeholder="Your name" {...field} />
+                <Input placeholder="Your name" {...field} className="bg-gray-50" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -70,9 +108,9 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-gray-700">Email</FormLabel>
               <FormControl>
-                <Input placeholder="your.email@example.com" type="email" {...field} />
+                <Input placeholder="your.email@example.com" type="email" {...field} className="bg-gray-50" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,9 +121,22 @@ export function ContactForm() {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone</FormLabel>
+              <FormLabel className="text-gray-700">Phone</FormLabel>
               <FormControl>
-                <Input placeholder="Your phone number" type="tel" {...field} />
+                <Input placeholder="Your phone number" type="tel" {...field} className="bg-gray-50" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="company"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Company</FormLabel>
+              <FormControl>
+                <Input placeholder="Your company name" {...field} className="bg-gray-50" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,11 +147,11 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Message</FormLabel>
+              <FormLabel className="text-gray-700">Message</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Tell us about your interest in our apprenticeship programs"
-                  className="min-h-[120px]"
+                  placeholder="Tell us about your interest in our services"
+                  className="min-h-[120px] bg-gray-50"
                   {...field}
                 />
               </FormControl>
@@ -108,7 +159,13 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">Submit</Button>
+        <Button 
+          type="submit" 
+          className="w-full bg-brand-primary hover:bg-brand-primary/90"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </Button>
       </form>
     </Form>
   )
