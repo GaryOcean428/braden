@@ -31,12 +31,20 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
       ))}
       <ServicesDropdown scrollToSection={scrollToSection} />
       {isAdmin && (
-        <a 
-          href="/admin" 
-          className="text-white font-opensans hover:text-opacity-80 hover-underline"
-        >
-          Admin
-        </a>
+        <>
+          <a 
+            href="/admin" 
+            className="text-white font-opensans hover:text-opacity-80 hover-underline"
+          >
+            Admin
+          </a>
+          <a 
+            href="/admin/editor" 
+            className="text-white font-opensans hover:text-opacity-80 hover-underline"
+          >
+            Editor
+          </a>
+        </>
       )}
     </div>
   );

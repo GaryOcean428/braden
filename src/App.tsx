@@ -5,6 +5,7 @@ import Recruitment from './pages/recruitment';
 import Traineeships from './pages/traineeships';
 import Apprenticeships from './pages/apprenticeships';
 import Dashboard from './pages/admin/Dashboard';
+import Editor from './pages/admin/Editor';
 import { Outlet } from 'react-router-dom';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="traineeships" element={<Traineeships />} />
           <Route path="apprenticeships" element={<Apprenticeships />} />
           <Route path="admin" element={<Dashboard />} />
+          <Route path="admin/editor" element={<Editor />} />
         </Route>
       </Routes>
     </Router>
