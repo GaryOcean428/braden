@@ -62,9 +62,14 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
           Recruitment
         </button>
         {isAdmin && (
-          <a href="/admin" className="text-white font-opensans hover:text-opacity-80">
-            Admin
-          </a>
+          <>
+            <a href="/admin" className="text-white font-opensans hover:text-opacity-80">
+              Admin
+            </a>
+            <a href="/admin/editor" className="text-white font-opensans hover:text-opacity-80">
+              Visual Editor
+            </a>
+          </>
         )}
       </div>
     </div>
