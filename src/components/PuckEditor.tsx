@@ -144,7 +144,7 @@ export function PuckEditor() {
         renderHeader={({ dispatch, state }) => (
           <div className="flex items-center justify-between p-4 bg-white border-b">
             <Button 
-              onClick={() => dispatch({ type: "publish" })}
+              onClick={() => handleSave(state.data)}
               className="bg-brand-primary hover:bg-brand-primary/90"
             >
               Save Changes
