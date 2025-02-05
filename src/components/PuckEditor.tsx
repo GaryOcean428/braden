@@ -73,8 +73,10 @@ const defaultData = {
   root: {},
 };
 
+type PuckData = typeof defaultData;
+
 export function PuckEditor() {
-  const [data, setData] = useState(defaultData);
+  const [data, setData] = useState<PuckData>(defaultData);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -90,7 +92,7 @@ export function PuckEditor() {
         .single();
 
       if (pageData?.content) {
-        setData(pageData.content);
+        setData(pageData.content as PuckData);
       }
     } catch (error) {
       console.error('Error loading page data:', error);
@@ -102,7 +104,7 @@ export function PuckEditor() {
     }
   };
 
-  const handleSave = async (newData: any) => {
+  const handleSave = async (newData: PuckData) => {
     try {
       const { error } = await supabase
         .from('content_pages')
@@ -139,10 +141,10 @@ export function PuckEditor() {
         config={config} 
         data={data} 
         onPublish={handleSave}
-        renderHeader={({ actions }) => (
+        renderHeader={({ dispatch, state }) => (
           <div className="flex items-center justify-between p-4 bg-white border-b">
             <Button 
-              onClick={actions.publish}
+              onClick={() => dispatch({ type: "publish" })}
               className="bg-brand-primary hover:bg-brand-primary/90"
             >
               Save Changes
