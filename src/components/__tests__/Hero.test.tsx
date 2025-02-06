@@ -11,7 +11,10 @@ vi.mock('@/integrations/supabase/client', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          maybeSingle: vi.fn()
+          maybeSingle: vi.fn(() => ({
+            data: { file_path: 'test-path.jpg' },
+            error: null
+          }))
         }))
       }))
     })),
@@ -27,7 +30,8 @@ vi.mock('@/integrations/supabase/client', () => ({
 
 vi.mock('sonner', () => ({
   toast: {
-    info: vi.fn()
+    info: vi.fn(),
+    error: vi.fn()
   }
 }));
 
@@ -55,13 +59,17 @@ describe('Hero Component', () => {
   });
 
   it('handles successful image load', async () => {
-    const mockData = { file_path: 'test-path.jpg' };
-    vi.spyOn(supabase, 'from').mockImplementation(() => ({
-      select: () => ({
-        eq: () => ({
-          maybeSingle: () => Promise.resolve({ data: mockData, error: null })
+    const mockSelect = vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        maybeSingle: vi.fn().mockResolvedValue({
+          data: { file_path: 'test-path.jpg' },
+          error: null
         })
       })
+    });
+
+    vi.spyOn(supabase, 'from').mockImplementation(() => ({
+      select: mockSelect
     }));
 
     renderHero();
@@ -72,12 +80,14 @@ describe('Hero Component', () => {
   });
 
   it('handles image load error', async () => {
-    vi.spyOn(supabase, 'from').mockImplementation(() => ({
-      select: () => ({
-        eq: () => ({
-          maybeSingle: () => Promise.reject(new Error('Failed to load'))
-        })
+    const mockSelect = vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        maybeSingle: vi.fn().mockRejectedValue(new Error('Failed to load'))
       })
+    });
+
+    vi.spyOn(supabase, 'from').mockImplementation(() => ({
+      select: mockSelect
     }));
 
     renderHero();
