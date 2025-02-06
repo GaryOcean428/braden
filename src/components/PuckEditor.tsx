@@ -8,6 +8,7 @@ import Services from "./Services";
 import Contact from "./Contact";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 // Define the configuration for Puck with more detailed props
 const config: Config = {
@@ -132,26 +133,28 @@ export function PuckEditor() {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-white p-4 border-b">
-        <h1 className="text-2xl font-bold">Page Editor</h1>
-        <p className="text-gray-600">Drag and drop components to build your page</p>
+    <ErrorBoundary>
+      <div className="min-h-screen">
+        <div className="bg-white p-4 border-b">
+          <h1 className="text-2xl font-bold">Page Editor</h1>
+          <p className="text-gray-600">Drag and drop components to build your page</p>
+        </div>
+        <Puck 
+          config={config} 
+          data={data} 
+          onPublish={handleSave}
+          renderHeader={({ dispatch, state }) => (
+            <div className="flex items-center justify-between p-4 bg-white border-b">
+              <Button 
+                onClick={() => handleSave(state.data)}
+                className="bg-brand-primary hover:bg-brand-primary/90"
+              >
+                Save Changes
+              </Button>
+            </div>
+          )}
+        />
       </div>
-      <Puck 
-        config={config} 
-        data={data} 
-        onPublish={handleSave}
-        renderHeader={({ dispatch, state }) => (
-          <div className="flex items-center justify-between p-4 bg-white border-b">
-            <Button 
-              onClick={() => handleSave(state.data)}
-              className="bg-brand-primary hover:bg-brand-primary/90"
-            >
-              Save Changes
-            </Button>
-          </div>
-        )}
-      />
-    </div>
+    </ErrorBoundary>
   );
 }

@@ -170,6 +170,120 @@ export type Database = {
           },
         ]
       }
+      app_leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          org_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          org_id: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_app_leads_org_id"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "app_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      app_opportunities: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          org_id: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          org_id: string
+          status: string
+          updated_at?: string
+          user_id?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          org_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_app_opportunities_org_id"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "app_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      app_organizations: {
+        Row: {
+          created_at: string
+          id: string
+          is_gto: boolean | null
+          name: string
+          parent_org_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_gto?: boolean | null
+          name: string
+          parent_org_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_gto?: boolean | null
+          name?: string
+          parent_org_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_app_organizations_parent_org_id"
+            columns: ["parent_org_id"]
+            isOneToOne: false
+            referencedRelation: "app_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apprentice_allowances: {
         Row: {
           apprentice_id: string | null
@@ -340,6 +454,48 @@ export type Database = {
           ratescalc_code?: string | null
           updated_at?: string | null
           version_number?: number | null
+        }
+        Relationships: []
+      }
+      billing_cycles: {
+        Row: {
+          created_at: string
+          end_date: string
+          host_org_id: string
+          id: string
+          invoice_date: string | null
+          invoice_number: string | null
+          start_date: string
+          status: string
+          total_amount: number
+          total_hours: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          host_org_id: string
+          id?: string
+          invoice_date?: string | null
+          invoice_number?: string | null
+          start_date: string
+          status: string
+          total_amount: number
+          total_hours: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          host_org_id?: string
+          id?: string
+          invoice_date?: string | null
+          invoice_number?: string | null
+          start_date?: string
+          status?: string
+          total_amount?: number
+          total_hours?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1927,6 +2083,262 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_adjustments: {
+        Row: {
+          adjustment_type: string
+          amount: number
+          created_at: string
+          effective_from: string
+          effective_to: string | null
+          host_org_id: string
+          id: string
+          percentage: number | null
+          reason: string
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          adjustment_type: string
+          amount: number
+          created_at?: string
+          effective_from: string
+          effective_to?: string | null
+          host_org_id: string
+          id?: string
+          percentage?: number | null
+          reason: string
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          adjustment_type?: string
+          amount?: number
+          created_at?: string
+          effective_from?: string
+          effective_to?: string | null
+          host_org_id?: string
+          id?: string
+          percentage?: number | null
+          reason?: string
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: []
+      }
+      rate_base_values: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          template_id: string
+          unit: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          template_id: string
+          unit: string
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          template_id?: string
+          unit?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_base_values_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "rate_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_calculations: {
+        Row: {
+          admin_cost: number
+          annual_leave_cost: number
+          annual_leave_days: number
+          annual_leave_loading_cost: number
+          annual_leave_loading_percent: number
+          base_rate: number
+          billing_model: string
+          charge_rate: number
+          created_at: string
+          effective_date: string
+          financing_cost: number
+          fixed_costs: number
+          gross_profit: number
+          host_org_id: string
+          hours_per_year: number
+          id: string
+          margin_percent: number
+          markup_percent: number
+          other_costs: number
+          payroll_tax_cost: number
+          payroll_tax_percent: number
+          protective_equipment_annual: number
+          protective_equipment_hourly: number
+          public_holidays_cost: number
+          public_holidays_days: number
+          sick_leave_cost: number
+          sick_leave_days: number
+          study_costs_annual: number
+          study_costs_hourly: number
+          superannuation_cost: number
+          superannuation_percent: number
+          template_id: string
+          total_cost: number
+          training_cost: number
+          training_weeks: number
+          updated_at: string
+          worker_id: string
+          workers_comp_cost: number
+          workers_comp_percent: number
+        }
+        Insert: {
+          admin_cost?: number
+          annual_leave_cost: number
+          annual_leave_days?: number
+          annual_leave_loading_cost: number
+          annual_leave_loading_percent?: number
+          base_rate: number
+          billing_model?: string
+          charge_rate: number
+          created_at?: string
+          effective_date: string
+          financing_cost?: number
+          fixed_costs?: number
+          gross_profit: number
+          host_org_id: string
+          hours_per_year?: number
+          id?: string
+          margin_percent: number
+          markup_percent: number
+          other_costs?: number
+          payroll_tax_cost: number
+          payroll_tax_percent?: number
+          protective_equipment_annual?: number
+          protective_equipment_hourly: number
+          public_holidays_cost: number
+          public_holidays_days?: number
+          sick_leave_cost: number
+          sick_leave_days?: number
+          study_costs_annual?: number
+          study_costs_hourly: number
+          superannuation_cost: number
+          superannuation_percent?: number
+          template_id: string
+          total_cost: number
+          training_cost: number
+          training_weeks?: number
+          updated_at?: string
+          worker_id: string
+          workers_comp_cost: number
+          workers_comp_percent?: number
+        }
+        Update: {
+          admin_cost?: number
+          annual_leave_cost?: number
+          annual_leave_days?: number
+          annual_leave_loading_cost?: number
+          annual_leave_loading_percent?: number
+          base_rate?: number
+          billing_model?: string
+          charge_rate?: number
+          created_at?: string
+          effective_date?: string
+          financing_cost?: number
+          fixed_costs?: number
+          gross_profit?: number
+          host_org_id?: string
+          hours_per_year?: number
+          id?: string
+          margin_percent?: number
+          markup_percent?: number
+          other_costs?: number
+          payroll_tax_cost?: number
+          payroll_tax_percent?: number
+          protective_equipment_annual?: number
+          protective_equipment_hourly?: number
+          public_holidays_cost?: number
+          public_holidays_days?: number
+          sick_leave_cost?: number
+          sick_leave_days?: number
+          study_costs_annual?: number
+          study_costs_hourly?: number
+          superannuation_cost?: number
+          superannuation_percent?: number
+          template_id?: string
+          total_cost?: number
+          training_cost?: number
+          training_weeks?: number
+          updated_at?: string
+          worker_id?: string
+          workers_comp_cost?: number
+          workers_comp_percent?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_calculations_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "rate_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_templates: {
+        Row: {
+          award_code: string
+          classification: string
+          created_at: string
+          description: string | null
+          effective_from: string
+          effective_to: string | null
+          id: string
+          is_active: boolean
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          award_code: string
+          classification: string
+          created_at?: string
+          description?: string | null
+          effective_from: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          award_code?: string
+          classification?: string
+          created_at?: string
+          description?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       response_metrics: {
         Row: {
           created_at: string | null
@@ -2209,6 +2621,54 @@ export type Database = {
           },
         ]
       }
+      timesheet_entries: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          date: string
+          host_org_id: string
+          hours_worked: number
+          id: string
+          rate_amount: number
+          rate_type: string
+          status: string
+          total_amount: number
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          date: string
+          host_org_id: string
+          hours_worked: number
+          id?: string
+          rate_amount: number
+          rate_type: string
+          status: string
+          total_amount: number
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          date?: string
+          host_org_id?: string
+          hours_worked?: number
+          id?: string
+          rate_amount?: number
+          rate_type?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: []
+      }
       training_contracts: {
         Row: {
           aqf_level: string | null
@@ -2473,7 +2933,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      mv_app_opportunity_analytics: {
+        Row: {
+          avg_value: number | null
+          opportunity_count: number | null
+          org_id: string | null
+          status: string | null
+          total_value: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_app_opportunities_org_id"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "app_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mv_rate_analytics: {
+        Row: {
+          annual_revenue_potential: number | null
+          avg_base_rate: number | null
+          avg_charge_rate: number | null
+          avg_leave_cost: number | null
+          avg_margin_percent: number | null
+          avg_markup_percent: number | null
+          avg_statutory_cost: number | null
+          avg_total_cost: number | null
+          avg_training_cost: number | null
+          award_code: string | null
+          classification: string | null
+          host_org_id: string | null
+          worker_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       binary_quantize:
@@ -2489,6 +2984,13 @@ export type Database = {
             }
             Returns: unknown
           }
+      calculate_hourly_rate: {
+        Args: {
+          annual_amount: number
+          hours_per_year: number
+        }
+        Returns: number
+      }
       example_function: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2517,6 +3019,36 @@ export type Database = {
           org_id: string
         }
         Returns: Database["public"]["Enums"]["user_role"]
+      }
+      gtrgm_compress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: {
+          "": unknown
+        }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
       }
       halfvec_avg: {
         Args: {
@@ -2679,12 +3211,28 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_limit: {
+        Args: {
+          "": number
+        }
+        Returns: number
+      }
       set_secret: {
         Args: {
           secret_name: string
           secret_value: string
         }
         Returns: undefined
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: {
+          "": string
+        }
+        Returns: string[]
       }
       sparsevec_out: {
         Args: {
