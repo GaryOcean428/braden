@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { Menu, X, Share2, Share } from "lucide-react";
+import { Menu, X, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
@@ -89,10 +90,7 @@ const Navigation = () => {
             </a>
             
             <div className="flex items-center gap-4">
-              <div className="flex gap-2">
-                <ShareModal icon={<Share className="h-4 w-4" />} />
-                <ShareModal icon={<Share2 className="h-4 w-4" />} />
-              </div>
+              <ShareModal icon={<Share2 className="h-4 w-4" />} />
               <button
                 className="md:hidden text-white relative z-20"
                 onClick={() => setIsOpen(!isOpen)}

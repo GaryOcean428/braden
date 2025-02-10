@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { navigationItems } from "@/config/navigation";
 
@@ -67,7 +68,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
               Admin
             </a>
             <a href="/admin/editor" className="text-white font-opensans hover:text-opacity-80">
-              Visual Editor
+              Editor
             </a>
           </>
         )}

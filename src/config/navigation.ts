@@ -1,3 +1,4 @@
+
 type NavigationItem = {
   label: string;
   action: 'scroll' | 'navigate';
