@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 import Hero from '../Hero';
 import { toast } from 'sonner';
-import { PostgrestQueryBuilder } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
@@ -82,7 +82,7 @@ describe('Hero Component', () => {
       upsert: vi.fn(),
       delete: vi.fn(),
       update: vi.fn()
-    } as unknown as PostgrestQueryBuilder<any>;
+    } as any;
 
     vi.spyOn(supabase, 'from').mockImplementation(() => mockQueryBuilder);
 
@@ -106,7 +106,7 @@ describe('Hero Component', () => {
       upsert: vi.fn(),
       delete: vi.fn(),
       update: vi.fn()
-    } as unknown as PostgrestQueryBuilder<any>;
+    } as any;
 
     vi.spyOn(supabase, 'from').mockImplementation(() => mockQueryBuilder);
 
