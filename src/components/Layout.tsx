@@ -1,10 +1,11 @@
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Navigation from "./Navigation";
 import { Breadcrumb } from "./Breadcrumb";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,8 +13,11 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
-  const handleDevLogin = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const handleDevLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setIsLoggingIn(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email: 'braden.lang77@gmail.com',
@@ -22,13 +26,15 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
       
       if (error) {
         console.error('Dev login error:', error);
-        toast.error('Development login failed');
+        toast.error('Development login failed: ' + error.message);
       } else {
         toast.success('Development login successful');
       }
     } catch (error) {
       console.error('Dev login error:', error);
       toast.error('Development login failed');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -53,16 +59,19 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
           </main>
         </Suspense>
         
-        {/* Dev login link - very discrete in footer */}
-        <footer className="py-6 px-6 text-center">
-          <a 
-            href="#"
-            onClick={handleDevLogin}
-            className="text-gray-400 text-sm opacity-20 hover:opacity-60 transition-opacity"
-            aria-label="Development access"
-          >
-            Dev
-          </a>
+        {/* Dev login button - more prominent in footer */}
+        <footer className="py-6 px-6 border-t">
+          <div className="container mx-auto flex justify-end">
+            <Button 
+              variant="outline"
+              size="sm"
+              onClick={handleDevLogin}
+              disabled={isLoggingIn}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {isLoggingIn ? 'Logging in...' : 'Dev Login'}
+            </Button>
+          </div>
         </footer>
       </ErrorBoundary>
     </div>
