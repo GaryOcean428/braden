@@ -1,9 +1,11 @@
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { supabase } from '@/integrations/supabase/client';
 import Hero from '../Hero';
 import { toast } from 'sonner';
+import { PostgrestQueryBuilder } from '@supabase/supabase-js';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
@@ -16,7 +18,13 @@ vi.mock('@/integrations/supabase/client', () => ({
             error: null
           }))
         }))
-      }))
+      })),
+      url: '',
+      headers: {},
+      insert: vi.fn(),
+      upsert: vi.fn(),
+      delete: vi.fn(),
+      update: vi.fn()
     })),
     storage: {
       from: vi.fn(() => ({
@@ -59,18 +67,24 @@ describe('Hero Component', () => {
   });
 
   it('handles successful image load', async () => {
-    const mockSelect = vi.fn().mockReturnValue({
-      eq: vi.fn().mockReturnValue({
-        maybeSingle: vi.fn().mockResolvedValue({
-          data: { file_path: 'test-path.jpg' },
-          error: null
+    const mockQueryBuilder = {
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: { file_path: 'test-path.jpg' },
+            error: null
+          })
         })
-      })
-    });
+      }),
+      url: '',
+      headers: {},
+      insert: vi.fn(),
+      upsert: vi.fn(),
+      delete: vi.fn(),
+      update: vi.fn()
+    } as unknown as PostgrestQueryBuilder<any>;
 
-    vi.spyOn(supabase, 'from').mockImplementation(() => ({
-      select: mockSelect
-    }));
+    vi.spyOn(supabase, 'from').mockImplementation(() => mockQueryBuilder);
 
     renderHero();
 
@@ -80,15 +94,21 @@ describe('Hero Component', () => {
   });
 
   it('handles image load error', async () => {
-    const mockSelect = vi.fn().mockReturnValue({
-      eq: vi.fn().mockReturnValue({
-        maybeSingle: vi.fn().mockRejectedValue(new Error('Failed to load'))
-      })
-    });
+    const mockQueryBuilder = {
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          maybeSingle: vi.fn().mockRejectedValue(new Error('Failed to load'))
+        })
+      }),
+      url: '',
+      headers: {},
+      insert: vi.fn(),
+      upsert: vi.fn(),
+      delete: vi.fn(),
+      update: vi.fn()
+    } as unknown as PostgrestQueryBuilder<any>;
 
-    vi.spyOn(supabase, 'from').mockImplementation(() => ({
-      select: mockSelect
-    }));
+    vi.spyOn(supabase, 'from').mockImplementation(() => mockQueryBuilder);
 
     renderHero();
 
