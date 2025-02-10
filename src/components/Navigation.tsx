@@ -29,11 +29,17 @@ const Navigation = () => {
     checkAdminStatus();
 
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const scrollToSection = (sectionId: string) => {
@@ -70,6 +76,7 @@ const Navigation = () => {
         className={`fixed w-full z-50 transition-all duration-300 ${
           isScrolled ? "bg-brand-primary/95 backdrop-blur-sm shadow-lg" : "bg-transparent"
         }`}
+        style={{ position: 'fixed', top: 0 }}
       >
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
