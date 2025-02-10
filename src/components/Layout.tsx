@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import Navigation from "./Navigation";
 import { Breadcrumb } from "./Breadcrumb";
@@ -9,20 +10,10 @@ interface LayoutProps {
   showBreadcrumb?: boolean;
 }
 
-/**
- * Layout component that wraps the main content of the application
- * Provides consistent structure with navigation, breadcrumbs, and error handling
- * 
- * @component
- * @param {LayoutProps} props - Component properties
- * @param {React.ReactNode} props.children - Child components to render
- * @param {boolean} [props.showBreadcrumb=true] - Whether to show the breadcrumb navigation
- * @returns {JSX.Element} Layout component with navigation and content structure
- */
 const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
   return (
     <div 
-      className="min-h-screen bg-background"
+      className="min-h-screen bg-background relative"
       role="main"
     >
       <a 
@@ -42,8 +33,10 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
               role="alert"
               aria-label="Loading content"
             >
-              <Loader className="h-8 w-8 animate-spin" aria-hidden="true" />
-              <span className="sr-only">Loading content...</span>
+              <div className="flex flex-col items-center gap-4">
+                <Loader className="h-8 w-8 animate-spin" aria-hidden="true" />
+                <span className="text-sm text-muted-foreground">Loading content...</span>
+              </div>
             </div>
           }
         >

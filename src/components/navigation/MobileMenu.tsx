@@ -12,8 +12,6 @@ interface MobileMenuProps {
 const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuProps) => {
   const navigate = useNavigate();
 
-  if (!isOpen) return null;
-
   const handleItemClick = (action: 'scroll' | 'navigate', target: string) => {
     if (action === 'scroll') {
       scrollToSection(target);
@@ -24,27 +22,39 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
   };
 
   return (
-    <div className="md:hidden py-4 animate-fadeIn">
-      <div className="flex flex-col space-y-4">
-        {navigationItems.map((item) => (
-          <button
-            key={item.label}
-            onClick={() => handleItemClick(item.action, item.target)}
-            className="text-white font-opensans hover:text-opacity-80"
-          >
-            {item.label}
-          </button>
-        ))}
-        {isAdmin && (
-          <>
-            <a href="/admin" className="text-white font-opensans hover:text-opacity-80">
-              Admin
-            </a>
-            <a href="/admin/editor" className="text-white font-opensans hover:text-opacity-80">
-              Editor
-            </a>
-          </>
-        )}
+    <div 
+      className={`md:hidden fixed inset-x-0 top-[60px] bg-brand-primary/95 backdrop-blur-sm transition-all duration-300 ease-in-out ${
+        isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+      }`}
+    >
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex flex-col space-y-4">
+          {navigationItems.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => handleItemClick(item.action, item.target)}
+              className="text-white font-opensans hover:text-opacity-80 transition-opacity text-left py-2"
+            >
+              {item.label}
+            </button>
+          ))}
+          {isAdmin && (
+            <>
+              <a 
+                href="/admin" 
+                className="text-white font-opensans hover:text-opacity-80 transition-opacity py-2"
+              >
+                Admin
+              </a>
+              <a 
+                href="/admin/editor" 
+                className="text-white font-opensans hover:text-opacity-80 transition-opacity py-2"
+              >
+                Editor
+              </a>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

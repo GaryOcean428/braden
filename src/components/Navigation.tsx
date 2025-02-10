@@ -1,18 +1,16 @@
 
 import { useState, useEffect } from "react";
-import { Menu, X, Share2 } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
-import ShareModal from "./ShareModal";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -25,8 +23,6 @@ const Navigation = () => {
         }
       } catch (error) {
         console.error("Error checking admin status:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -72,27 +68,22 @@ const Navigation = () => {
     <ErrorBoundary>
       <nav 
         className={`fixed w-full z-50 transition-all duration-300 ${
-          isScrolled ? "bg-brand-primary shadow-lg" : "bg-transparent"
+          isScrolled ? "bg-brand-primary/95 backdrop-blur-sm shadow-lg" : "bg-transparent"
         }`}
       >
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
-            {isLoading ? (
-              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-            ) : (
-              <a 
-                href="/" 
-                className="text-white font-montserrat text-xl font-bold relative z-10"
-                onClick={handleHomeClick}
-              >
-                braden
-              </a>
-            )}
+            <a 
+              href="/" 
+              className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity"
+              onClick={handleHomeClick}
+            >
+              braden
+            </a>
             
             <div className="flex items-center gap-4">
-              <ShareModal icon={<Share2 className="h-4 w-4" />} />
               <button
-                className="md:hidden text-white relative z-20"
+                className="md:hidden text-white relative z-20 hover:opacity-80 transition-opacity"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Toggle menu"
               >

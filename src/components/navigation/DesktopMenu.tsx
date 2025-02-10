@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import ServicesDropdown from "./ServicesDropdown";
 import { navigationItems } from "@/config/navigation";
@@ -24,9 +25,12 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
         <button
           key={item.label}
           onClick={() => handleItemClick(item.action, item.target)}
-          className="text-white font-opensans hover:text-opacity-80 hover-underline"
+          className="text-white font-opensans relative overflow-hidden group"
         >
-          {item.label}
+          <span className="relative z-10 hover:opacity-80 transition-opacity">
+            {item.label}
+          </span>
+          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
         </button>
       ))}
       <ServicesDropdown scrollToSection={scrollToSection} />
@@ -34,15 +38,21 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
         <>
           <a 
             href="/admin" 
-            className="text-white font-opensans hover:text-opacity-80 hover-underline"
+            className="text-white font-opensans relative overflow-hidden group"
           >
-            Admin
+            <span className="relative z-10 hover:opacity-80 transition-opacity">
+              Admin
+            </span>
+            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
           </a>
           <a 
             href="/admin/editor" 
-            className="text-white font-opensans hover:text-opacity-80 hover-underline"
+            className="text-white font-opensans relative overflow-hidden group"
           >
-            Editor
+            <span className="relative z-10 hover:opacity-80 transition-opacity">
+              Editor
+            </span>
+            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
           </a>
         </>
       )}

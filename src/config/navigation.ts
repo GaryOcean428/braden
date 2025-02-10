@@ -12,14 +12,14 @@ export const navigationItems: NavigationItem[] = [
     target: '/'
   },
   {
-    label: 'About',
-    action: 'scroll',
-    target: 'about'
-  },
-  {
-    label: 'Services',
+    label: 'Our Services',
     action: 'scroll',
     target: 'services'
+  },
+  {
+    label: 'About Us',
+    action: 'scroll',
+    target: 'about'
   },
   {
     label: 'Contact',
