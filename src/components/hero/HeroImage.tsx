@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,27 +25,32 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
           .eq('title', 'hero-image')
           .maybeSingle();
 
-        if (error) throw error;
-
-        if (data?.file_path) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('media')
-            .getPublicUrl(data.file_path);
-          
-          const img = new Image();
-          img.onload = () => {
-            setHeroImage(publicUrl);
-            setIsLoading(false);
-          };
-          img.onerror = () => {
-            console.error('Error loading image');
-            setImageError(true);
-            setIsLoading(false);
-          };
-          img.src = publicUrl;
-        } else {
-          setIsLoading(false);
+        if (error) {
+          throw error;
         }
+
+        // If no data found, use default image and stop loading
+        if (!data?.file_path) {
+          setIsLoading(false);
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('media')
+          .getPublicUrl(data.file_path);
+        
+        const img = new Image();
+        img.onload = () => {
+          setHeroImage(publicUrl);
+          setIsLoading(false);
+        };
+        img.onerror = () => {
+          console.error('Error loading image');
+          setImageError(true);
+          setIsLoading(false);
+        };
+        img.src = publicUrl;
+
       } catch (error) {
         console.error('Error loading hero image:', error);
         setImageError(true);
