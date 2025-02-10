@@ -54,14 +54,14 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
         </Suspense>
         
         {/* Dev login link - very discrete in footer */}
-        <footer className="py-4 px-6 text-center text-xs text-gray-400">
+        <footer className="py-6 px-6 text-center">
           <a 
             href="#"
             onClick={handleDevLogin}
-            className="opacity-30 hover:opacity-50 transition-opacity"
+            className="text-gray-400 text-sm opacity-20 hover:opacity-60 transition-opacity"
             aria-label="Development access"
           >
-            ·
+            Dev
           </a>
         </footer>
       </ErrorBoundary>
