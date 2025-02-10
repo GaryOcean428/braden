@@ -77,17 +77,17 @@ const Navigation = () => {
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <a 
-              href="/" 
-              className="text-white font-montserrat text-xl font-bold relative z-10"
-              onClick={handleHomeClick}
-            >
-              {isLoading ? (
-                <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-              ) : (
-                "braden"
-              )}
-            </a>
+            {isLoading ? (
+              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+            ) : (
+              <a 
+                href="/" 
+                className="text-white font-montserrat text-xl font-bold relative z-10"
+                onClick={handleHomeClick}
+              >
+                braden
+              </a>
+            )}
             
             <div className="flex items-center gap-4">
               <ShareModal icon={<Share2 className="h-4 w-4" />} />

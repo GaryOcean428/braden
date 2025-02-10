@@ -35,33 +35,6 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
             {item.label}
           </button>
         ))}
-        <button 
-          onClick={() => {
-            navigate('/apprenticeships');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          Apprenticeships
-        </button>
-        <button 
-          onClick={() => {
-            navigate('/traineeships');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          Traineeships
-        </button>
-        <button 
-          onClick={() => {
-            navigate('/recruitment');
-            setIsOpen(false);
-          }}
-          className="text-white font-opensans hover:text-opacity-80"
-        >
-          Recruitment
-        </button>
         {isAdmin && (
           <>
             <a href="/admin" className="text-white font-opensans hover:text-opacity-80">
