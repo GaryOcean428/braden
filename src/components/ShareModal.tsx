@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -8,16 +9,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ErrorBoundary } from "./ErrorBoundary";
 
-/**
- * ShareModal component that provides sharing functionality
- * Includes copy to clipboard and native share API support
- * @returns {JSX.Element} ShareModal component
- */
-const ShareModal = () => {
+interface ShareModalProps {
+  icon: React.ReactNode;
+}
+
+const ShareModal = ({ icon }: ShareModalProps) => {
   const [url, setUrl] = useState("");
 
   useEffect(() => {
@@ -54,7 +53,7 @@ const ShareModal = () => {
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="icon" className="relative z-20">
-            <Share className="h-4 w-4" />
+            {icon}
           </Button>
         </DialogTrigger>
         <DialogContent className="z-50">

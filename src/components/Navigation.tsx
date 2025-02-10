@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Share2, Share } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
@@ -7,15 +7,11 @@ import DesktopMenu from "./navigation/DesktopMenu";
 import ShareModal from "./ShareModal";
 import { ErrorBoundary } from "./ErrorBoundary";
 
-/**
- * Navigation component that provides the main navigation for the application
- * Includes mobile and desktop menus, share functionality, and admin features
- * @returns {JSX.Element} Navigation component
- */
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,6 +24,8 @@ const Navigation = () => {
         }
       } catch (error) {
         console.error("Error checking admin status:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -83,12 +81,17 @@ const Navigation = () => {
               className="text-white font-montserrat text-xl font-bold relative z-10"
               onClick={handleHomeClick}
             >
-              braden
+              {isLoading ? (
+                <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+              ) : (
+                "braden"
+              )}
             </a>
             
             <div className="flex items-center gap-4">
-              <div className="relative z-20">
-                <ShareModal />
+              <div className="flex gap-2">
+                <ShareModal icon={<Share className="h-4 w-4" />} />
+                <ShareModal icon={<Share2 className="h-4 w-4" />} />
               </div>
               <button
                 className="md:hidden text-white relative z-20"
