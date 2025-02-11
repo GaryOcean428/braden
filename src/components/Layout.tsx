@@ -17,22 +17,29 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
 
   const handleDevLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    
+    if (isLoggingIn) return; // Prevent multiple clicks
+    
     setIsLoggingIn(true);
+    toast.loading('Logging in as dev user...');
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: 'braden.lang77@gmail.com',
-        password: 'password123' // This should be changed to a secure password in production
+        password: 'password123'
       });
       
       if (error) {
         console.error('Dev login error:', error);
         toast.error('Development login failed: ' + error.message);
-      } else {
+      } else if (data.user) {
         toast.success('Development login successful');
+        // Force reload to update UI state
+        window.location.reload();
       }
     } catch (error) {
       console.error('Dev login error:', error);
-      toast.error('Development login failed');
+      toast.error('Development login failed - check console for details');
     } finally {
       setIsLoggingIn(false);
     }
