@@ -1,10 +1,9 @@
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
+import { useNavigate } from "react-router-dom";
 import Navigation from "./Navigation";
 import { Breadcrumb } from "./Breadcrumb";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 interface LayoutProps {
@@ -13,37 +12,11 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const navigate = useNavigate();
 
-  const handleDevLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDevLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    
-    if (isLoggingIn) return; // Prevent multiple clicks
-    
-    setIsLoggingIn(true);
-    const loadingToast = toast.loading('Logging in as dev user...');
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'braden.lang77@gmail.com',
-        password: 'I.Am.Dev.1'
-      });
-      
-      if (error) {
-        console.error('Dev login error:', error);
-        toast.error('Development login failed: ' + error.message);
-      } else if (data.user) {
-        toast.success('Development login successful');
-        // Force reload to update UI state
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error('Dev login error:', error);
-      toast.error('Development login failed - check console for details');
-    } finally {
-      setIsLoggingIn(false);
-      toast.dismiss(loadingToast);
-    }
+    navigate('/admin/auth');
   };
 
   return (
@@ -67,17 +40,15 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
           </main>
         </Suspense>
         
-        {/* Single Dev login button in footer */}
         <footer className="py-6 px-6 border-t">
           <div className="container mx-auto flex justify-end">
             <Button 
               variant="outline"
               size="sm"
               onClick={handleDevLogin}
-              disabled={isLoggingIn}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              {isLoggingIn ? 'Logging in...' : 'Dev Login'}
+              Admin Login
             </Button>
           </div>
         </footer>
