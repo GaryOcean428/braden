@@ -29,7 +29,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
           throw error;
         }
 
-        // If no data found, use default image and stop loading
+        // If no custom hero image is set, use default and finish loading
         if (!data?.file_path) {
           setIsLoading(false);
           return;
@@ -38,7 +38,8 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         const { data: { publicUrl } } = supabase.storage
           .from('media')
           .getPublicUrl(data.file_path);
-        
+
+        // Preload the image
         const img = new Image();
         img.onload = () => {
           setHeroImage(publicUrl);
@@ -48,6 +49,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
           console.error('Error loading image');
           setImageError(true);
           setIsLoading(false);
+          onError(new Error('Failed to load hero image'));
         };
         img.src = publicUrl;
 
@@ -64,16 +66,16 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-        <Skeleton className="w-full h-full" aria-hidden="true" />
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="true">
+        <Skeleton className="w-full h-full" />
       </div>
     );
   }
 
   if (imageError) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-        <Loader className="h-12 w-12 text-gray-400 animate-spin" aria-hidden="true" />
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="false">
+        <Loader className="h-12 w-12 text-gray-400" />
       </div>
     );
   }
@@ -85,9 +87,8 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
       className="w-full h-full object-cover"
       onError={() => {
         setImageError(true);
-        setIsLoading(false);
+        onError(new Error('Failed to load hero image'));
       }}
-      aria-hidden="true"
     />
   );
 };
