@@ -1,3 +1,4 @@
+
 import { Puck, type Config } from "@measured/puck";
 import "@measured/puck/dist/index.css";
 import { Button } from "./ui/button";
@@ -9,6 +10,7 @@ import Contact from "./Contact";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { useNavigate } from "react-router-dom";
 
 // Define the configuration for Puck with more detailed props
 const config: Config = {
@@ -78,11 +80,41 @@ type PuckData = typeof defaultData;
 
 export function PuckEditor() {
   const [data, setData] = useState<PuckData>(defaultData);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    checkAdminStatus();
     loadData();
   }, []);
+
+  const checkAdminStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      navigate('/admin/auth');
+      return;
+    }
+
+    const { data: adminData } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (!adminData) {
+      toast({
+        title: "Access Denied",
+        description: "You must be an admin to access the editor",
+        variant: "destructive",
+      });
+      navigate('/');
+      return;
+    }
+
+    setIsAdmin(true);
+  };
 
   const loadData = async () => {
     try {
@@ -131,6 +163,10 @@ export function PuckEditor() {
       });
     }
   };
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <ErrorBoundary>
