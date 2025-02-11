@@ -26,7 +26,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: 'braden.lang77@gmail.com',
-        password: 'password123'
+        password: 'I.Am.Dev.1'
       });
       
       if (error) {
