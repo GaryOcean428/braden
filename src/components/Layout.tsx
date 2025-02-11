@@ -21,7 +21,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
     if (isLoggingIn) return; // Prevent multiple clicks
     
     setIsLoggingIn(true);
-    toast.loading('Logging in as dev user...');
+    const loadingToast = toast.loading('Logging in as dev user...');
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -42,6 +42,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
       toast.error('Development login failed - check console for details');
     } finally {
       setIsLoggingIn(false);
+      toast.dismiss(loadingToast);
     }
   };
 
@@ -66,7 +67,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
           </main>
         </Suspense>
         
-        {/* Dev login button - more prominent in footer */}
+        {/* Single Dev login button in footer */}
         <footer className="py-6 px-6 border-t">
           <div className="container mx-auto flex justify-end">
             <Button 
