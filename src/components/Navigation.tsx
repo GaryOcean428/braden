@@ -85,7 +85,13 @@ const Navigation = () => {
               className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity"
               onClick={handleHomeClick}
             >
-              <img src={GoldLogo} alt="Gold Logo" className="h-8" />
+              <img 
+                src={GoldLogo} 
+                alt="Gold Logo" 
+                className="h-8" 
+                srcSet="/500x160 Gold Logo.png 1x, /500x160 Gold Logo@2x.png 2x"
+                loading="lazy"
+              />
             </a>
             
             <div className="flex items-center gap-4">
