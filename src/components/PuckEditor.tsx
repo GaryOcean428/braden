@@ -1,4 +1,3 @@
-
 import { Puck, type Config } from "@measured/puck";
 import "@measured/puck/dist/index.css";
 import { Button } from "./ui/button";
@@ -49,6 +48,46 @@ const config: Config = {
         email: { type: "text" },
         phone: { type: "text" },
       },
+    },
+  },
+  layout: {
+    columns: 12,
+    breakpoints: {
+      xs: 0,
+      sm: 576,
+      md: 768,
+      lg: 992,
+      xl: 1200,
+    },
+  },
+  dynamicProps: {
+    fetchData: async (url: string) => {
+      const response = await fetch(url);
+      return response.json();
+    },
+  },
+  dynamicFields: {
+    fetchData: async (url: string) => {
+      const response = await fetch(url);
+      return response.json();
+    },
+  },
+  externalDataSources: {
+    fetchData: async (url: string) => {
+      const response = await fetch(url);
+      return response.json();
+    },
+  },
+  serverComponents: {
+    fetchData: async (url: string) => {
+      const response = await fetch(url);
+      return response.json();
+    },
+  },
+  dataMigration: {
+    migrate: async (oldData: any) => {
+      // Implement your data migration logic here
+      return oldData;
     },
   },
 };

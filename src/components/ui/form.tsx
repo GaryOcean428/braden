@@ -164,6 +164,35 @@ const FormMessage = React.forwardRef<
 })
 FormMessage.displayName = "FormMessage"
 
+// Custom Fields and Interfaces
+const CustomTextField = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement>
+>(({ className, ...props }, ref) => {
+  return (
+    <input
+      ref={ref}
+      className={cn("border p-2 rounded", className)}
+      {...props}
+    />
+  )
+})
+CustomTextField.displayName = "CustomTextField"
+
+const CustomTextareaField = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>(({ className, ...props }, ref) => {
+  return (
+    <textarea
+      ref={ref}
+      className={cn("border p-2 rounded", className)}
+      {...props}
+    />
+  )
+})
+CustomTextareaField.displayName = "CustomTextareaField"
+
 export {
   useFormField,
   Form,
@@ -173,4 +202,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  CustomTextField,
+  CustomTextareaField,
 }
