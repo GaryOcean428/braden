@@ -25,10 +25,15 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
       },
+      featureToggle: {
+        enabled: "bg-green-500 text-white",
+        disabled: "bg-red-500 text-white",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      featureToggle: "enabled",
     },
   }
 )
@@ -40,11 +45,11 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, featureToggle, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, featureToggle, className }))}
         ref={ref}
         {...props}
       />
