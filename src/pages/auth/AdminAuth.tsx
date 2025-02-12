@@ -15,27 +15,34 @@ const AdminAuth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error('Please enter both email and password');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      const { data: { user }, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim()
       });
 
       if (error) throw error;
 
-      if (user) {
+      if (data.user) {
         // Check if user is an admin
         const { data: adminData, error: adminError } = await supabase
           .from('admin_users')
           .select('id')
-          .eq('user_id', user.id)
+          .eq('user_id', data.user.id)
           .single();
 
         if (adminError || !adminData) {
           await supabase.auth.signOut();
           toast.error('Unauthorized access');
+          setIsLoading(false);
           return;
         }
 
@@ -44,7 +51,7 @@ const AdminAuth = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('Login failed. Please check your credentials.');
+      toast.error(error instanceof Error ? error.message : 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -68,6 +75,7 @@ const AdminAuth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -79,6 +87,7 @@ const AdminAuth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
+                disabled={isLoading}
               />
             </div>
             <Button 
