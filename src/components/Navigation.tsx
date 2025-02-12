@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 import { ErrorBoundary } from "./ErrorBoundary";
-import GoldLogo from "../../500x160 Gold Logo.png";
+import GoldLogo from "/500x160 Gold Logo.png";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
