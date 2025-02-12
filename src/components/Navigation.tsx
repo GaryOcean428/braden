@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 import { ErrorBoundary } from "./ErrorBoundary";
+import GoldLogo from "../../500x160 Gold Logo.png";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +85,7 @@ const Navigation = () => {
               className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity"
               onClick={handleHomeClick}
             >
-              braden
+              <img src={GoldLogo} alt="Gold Logo" className="h-8" />
             </a>
             
             <div className="flex items-center gap-4">
