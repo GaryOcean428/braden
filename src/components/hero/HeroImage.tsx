@@ -66,29 +66,31 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="true">
-        <Skeleton className="w-full h-full" />
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center z-10" aria-busy="true">
+        <Skeleton className="w-full h-full absolute inset-0" />
       </div>
     );
   }
 
   if (imageError) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="false">
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center z-10" aria-busy="false">
         <Loader className="h-12 w-12 text-gray-400" />
       </div>
     );
   }
 
   return (
-    <img
-      src={heroImage}
-      alt="Braden Group Apprentices"
-      className="w-full h-full object-cover"
-      onError={() => {
-        setImageError(true);
-        onError(new Error('Failed to load hero image'));
-      }}
-    />
+    <div className="w-full h-full">
+      <img
+        src={heroImage}
+        alt="Braden Group Apprentices"
+        className="w-full h-full object-cover"
+        onError={() => {
+          setImageError(true);
+          onError(new Error('Failed to load hero image'));
+        }}
+      />
+    </div>
   );
 };

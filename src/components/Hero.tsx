@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { HeroImage } from "./hero/HeroImage";
@@ -23,18 +24,18 @@ const Hero = () => {
   return (
     <section 
       id="home" 
-      className="relative min-h-[90vh] flex items-center justify-center"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
       role="banner"
       aria-label="Welcome to Braden Group"
     >
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         <ErrorBoundary>
           <HeroImage onError={handleImageError} />
         </ErrorBoundary>
         <div className="absolute inset-0 bg-black opacity-50" aria-hidden="true"></div>
       </div>
       <div 
-        className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 py-12 md:py-20"
+        className="relative z-20 text-center text-white max-w-4xl mx-auto px-4 py-12 md:py-20"
         role="contentinfo"
       >
         <h1 className="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 animate-fadeIn leading-tight">
