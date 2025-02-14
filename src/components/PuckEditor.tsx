@@ -1,3 +1,4 @@
+
 import { Puck, type Config } from "@measured/puck";
 import "@measured/puck/dist/index.css";
 import { Button } from "./ui/button";
@@ -11,7 +12,10 @@ import { useEffect, useState } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useNavigate } from "react-router-dom";
 
-// Define the configuration for Puck with more detailed props
+// Export components so they can be imported elsewhere
+export { Hero, About, Services, Contact };
+
+// Define the configuration for Puck
 const config: Config = {
   components: {
     Hero: {
@@ -50,46 +54,6 @@ const config: Config = {
       },
     },
   },
-  layout: {
-    columns: 12,
-    breakpoints: {
-      xs: 0,
-      sm: 576,
-      md: 768,
-      lg: 992,
-      xl: 1200,
-    },
-  },
-  dynamicProps: {
-    fetchData: async (url: string) => {
-      const response = await fetch(url);
-      return response.json();
-    },
-  },
-  dynamicFields: {
-    fetchData: async (url: string) => {
-      const response = await fetch(url);
-      return response.json();
-    },
-  },
-  externalDataSources: {
-    fetchData: async (url: string) => {
-      const response = await fetch(url);
-      return response.json();
-    },
-  },
-  serverComponents: {
-    fetchData: async (url: string) => {
-      const response = await fetch(url);
-      return response.json();
-    },
-  },
-  dataMigration: {
-    migrate: async (oldData: any) => {
-      // Implement your data migration logic here
-      return oldData;
-    },
-  },
 };
 
 // Initial data structure
@@ -117,7 +81,7 @@ const defaultData = {
 
 type PuckData = typeof defaultData;
 
-export function PuckEditor() {
+export function PuckEditor({ config: customConfig }: { config?: Partial<Config> }) {
   const [data, setData] = useState<PuckData>(defaultData);
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
@@ -207,6 +171,8 @@ export function PuckEditor() {
     return null;
   }
 
+  const finalConfig = { ...config, ...(customConfig || {}) };
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen">
@@ -215,8 +181,8 @@ export function PuckEditor() {
           <p className="text-gray-600">Drag and drop components to build your page</p>
         </div>
         <Puck 
-          config={config} 
-          data={data} 
+          config={finalConfig}
+          data={data}
           onPublish={handleSave}
           renderHeader={({ dispatch, state }) => (
             <div className="flex items-center justify-between p-4 bg-white border-b">
