@@ -703,6 +703,42 @@ export type Database = {
           },
         ]
       }
+      client_charge_rates: {
+        Row: {
+          charge_rate: number
+          client_id: string
+          created_at: string | null
+          employee_type: Database["public"]["Enums"]["employee_type"]
+          id: string
+          markup_percentage: number
+          oncost_percentage: number
+          rate_type: Database["public"]["Enums"]["rate_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          charge_rate: number
+          client_id: string
+          created_at?: string | null
+          employee_type: Database["public"]["Enums"]["employee_type"]
+          id?: string
+          markup_percentage: number
+          oncost_percentage: number
+          rate_type?: Database["public"]["Enums"]["rate_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          charge_rate?: number
+          client_id?: string
+          created_at?: string | null
+          employee_type?: Database["public"]["Enums"]["employee_type"]
+          id?: string
+          markup_percentage?: number
+          oncost_percentage?: number
+          rate_type?: Database["public"]["Enums"]["rate_type"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           created_at: string
@@ -1003,6 +1039,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      employee_rates: {
+        Row: {
+          base_rate: number
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          type: Database["public"]["Enums"]["employee_type"]
+          updated_at: string | null
+          year_level: number | null
+        }
+        Insert: {
+          base_rate: number
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          type: Database["public"]["Enums"]["employee_type"]
+          updated_at?: string | null
+          year_level?: number | null
+        }
+        Update: {
+          base_rate?: number
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          type?: Database["public"]["Enums"]["employee_type"]
+          updated_at?: string | null
+          year_level?: number | null
+        }
+        Relationships: []
       }
       employees: {
         Row: {
@@ -3381,6 +3447,8 @@ export type Database = {
         | "code_execution"
         | "browser_extension"
         | "visual_analysis"
+      employee_type: "apprentice" | "tradesperson" | "supervisor" | "admin"
+      rate_type: "base" | "overtime" | "weekend" | "holiday"
       task_status: "pending" | "in_progress" | "completed" | "failed"
       user_role: "dev" | "org_admin" | "team_admin" | "team_member" | "user"
     }
