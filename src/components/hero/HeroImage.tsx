@@ -12,6 +12,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
   const [heroImage, setHeroImage] = useState("/hero-image.jpg");
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const loadHeroImage = async () => {
@@ -64,9 +65,14 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
     loadHeroImage();
   }, [onError]);
 
-  if (isLoading) {
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setIsLoading(false);
+  };
+
+  if (isLoading && !imageLoaded) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center z-10" aria-busy="true">
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="true">
         <Skeleton className="w-full h-full absolute inset-0" />
       </div>
     );
@@ -74,7 +80,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
 
   if (imageError) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center z-10" aria-busy="false">
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="false">
         <Loader className="h-12 w-12 text-gray-400" />
       </div>
     );
@@ -86,6 +92,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         src={heroImage}
         alt="Braden Group Apprentices"
         className="w-full h-full object-cover"
+        onLoad={handleImageLoad}
         onError={() => {
           setImageError(true);
           onError(new Error('Failed to load hero image'));
