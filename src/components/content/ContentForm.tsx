@@ -31,6 +31,7 @@ interface ContentFormProps {
 export function ContentForm({ contentId, onSuccess }: ContentFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(contentId ? true : false);
 
   const form = useForm<ContentFormValues>({
     resolver: zodResolver(contentFormSchema),
@@ -45,10 +46,13 @@ export function ContentForm({ contentId, onSuccess }: ContentFormProps) {
 
   useEffect(() => {
     const loadContentPage = async () => {
-      if (!contentId) return;
+      if (!contentId) {
+        setInitialLoading(false);
+        return;
+      }
 
       try {
-        setLoading(true);
+        setInitialLoading(true);
         const { data, error } = await supabase
           .from("content_pages")
           .select("*")
@@ -62,7 +66,7 @@ export function ContentForm({ contentId, onSuccess }: ContentFormProps) {
             title: data.title,
             slug: data.slug,
             meta_description: data.meta_description || "",
-            content: JSON.stringify(data.content),
+            content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
             is_published: data.is_published,
           });
         }
@@ -74,7 +78,7 @@ export function ContentForm({ contentId, onSuccess }: ContentFormProps) {
           variant: "destructive",
         });
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
 
@@ -135,6 +139,14 @@ export function ContentForm({ contentId, onSuccess }: ContentFormProps) {
       setLoading(false);
     }
   };
+
+  if (initialLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

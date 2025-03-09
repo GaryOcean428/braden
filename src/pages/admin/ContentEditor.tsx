@@ -11,6 +11,7 @@ export default function ContentEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -18,14 +19,15 @@ export default function ContentEditor() {
   }, []);
 
   const checkAdminStatus = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      navigate('/admin/auth');
-      return;
-    }
-
     try {
+      setIsLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/admin/auth');
+        return;
+      }
+
       const { data: adminData, error } = await supabase
         .from('admin_users')
         .select('*')
@@ -51,8 +53,18 @@ export default function ContentEditor() {
         variant: "destructive",
       });
       navigate('/');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return null;
