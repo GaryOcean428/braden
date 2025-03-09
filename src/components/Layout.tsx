@@ -34,12 +34,12 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
           </main>
         </Suspense>
         
-        <footer className="py-6 px-6 border-t">
+        <footer className="py-6 px-6 border-t bg-brand-navy">
           <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+            <div className="text-sm text-white mb-4 md:mb-0">
               © {new Date().getFullYear()} Braden Group. All rights reserved.
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-white">
               People. Employment. Progress.
             </div>
           </div>
