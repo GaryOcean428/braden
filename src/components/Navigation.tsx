@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,12 +6,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 import { ErrorBoundary } from "./ErrorBoundary";
+
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
@@ -26,7 +29,9 @@ const Navigation = () => {
         console.error("Error checking admin status:", error);
       }
     };
+    
     checkAdminStatus();
+    
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       setIsScrolled(scrollPosition > 20);
@@ -42,6 +47,7 @@ const Navigation = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
   const scrollToSection = (sectionId: string) => {
     if (location.pathname === '/') {
       const section = document.getElementById(sectionId);
@@ -65,6 +71,7 @@ const Navigation = () => {
       }, 100);
     }
   };
+
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (location.pathname === '/') {
@@ -79,6 +86,7 @@ const Navigation = () => {
     }
     setIsOpen(false);
   };
+
   return <ErrorBoundary>
       <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-brand-primary/95 backdrop-blur-sm shadow-lg" : "bg-transparent"}`} style={{
       position: 'fixed',
@@ -105,4 +113,5 @@ const Navigation = () => {
       </nav>
     </ErrorBoundary>;
 };
+
 export default Navigation;

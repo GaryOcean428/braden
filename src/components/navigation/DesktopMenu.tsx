@@ -35,26 +35,15 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
       ))}
       <ServicesDropdown scrollToSection={scrollToSection} />
       {isAdmin && (
-        <>
-          <a 
-            href="/admin" 
-            className="text-white font-opensans relative overflow-hidden group"
-          >
-            <span className="relative z-10 hover:opacity-80 transition-opacity">
-              Admin
-            </span>
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
-          </a>
-          <a 
-            href="/admin/editor" 
-            className="text-white font-opensans relative overflow-hidden group"
-          >
-            <span className="relative z-10 hover:opacity-80 transition-opacity">
-              Editor
-            </span>
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
-          </a>
-        </>
+        <button
+          onClick={() => navigate('/admin')}
+          className="text-white font-opensans relative overflow-hidden group"
+        >
+          <span className="relative z-10 hover:opacity-80 transition-opacity">
+            Admin Dashboard
+          </span>
+          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
+        </button>
       )}
     </div>
   );

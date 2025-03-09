@@ -39,20 +39,15 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
             </button>
           ))}
           {isAdmin && (
-            <>
-              <a 
-                href="/admin" 
-                className="text-white font-opensans hover:text-opacity-80 transition-opacity py-2"
-              >
-                Admin
-              </a>
-              <a 
-                href="/admin/editor" 
-                className="text-white font-opensans hover:text-opacity-80 transition-opacity py-2"
-              >
-                Editor
-              </a>
-            </>
+            <button 
+              onClick={() => {
+                navigate('/admin');
+                setIsOpen(false);
+              }}
+              className="text-white font-opensans hover:text-opacity-80 transition-opacity text-left py-2"
+            >
+              Admin Dashboard
+            </button>
           )}
         </div>
       </div>

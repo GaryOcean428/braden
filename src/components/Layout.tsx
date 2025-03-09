@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Navigation from "./Navigation";
 import { Breadcrumb } from "./Breadcrumb";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { Button } from "./ui/button";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,11 +12,6 @@ interface LayoutProps {
 
 const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
   const navigate = useNavigate();
-
-  const handleDevLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    navigate('/admin/auth');
-  };
 
   return (
     <div 
@@ -41,15 +35,13 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
         </Suspense>
         
         <footer className="py-6 px-6 border-t">
-          <div className="container mx-auto flex justify-end">
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={handleDevLogin}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Admin Login
-            </Button>
+          <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div className="text-sm text-muted-foreground mb-4 md:mb-0">
+              © {new Date().getFullYear()} Braden Group. All rights reserved.
+            </div>
+            <div className="text-sm text-muted-foreground">
+              People. Employment. Progress.
+            </div>
           </div>
         </footer>
       </ErrorBoundary>
