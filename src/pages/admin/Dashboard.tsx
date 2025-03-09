@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import "@measured/puck/dist/index.css";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const [pages, setPages] = useState<any[]>([]);
@@ -94,74 +95,59 @@ const Dashboard = () => {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Content Management</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 mb-4">
+              Create and manage website content pages
+            </p>
+            <Button asChild className="w-full">
+              <Link to="/admin/content">Manage Content</Link>
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>User Management</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 mb-4">
+              Manage admins and user accounts
+            </p>
+            <Button variant="outline" className="w-full">
+              Manage Users
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Site Settings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500 mb-4">
+              Configure website settings and preferences
+            </p>
+            <Button variant="outline" className="w-full">
+              Settings
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
       <Tabs defaultValue="pages" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="pages">Pages</TabsTrigger>
+          <TabsTrigger value="pages">Recent Pages</TabsTrigger>
           <TabsTrigger value="blocks">Content Blocks</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pages">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Page</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={newPage.title}
-                  onChange={(e) => setNewPage({ ...newPage, title: e.target.value })}
-                  placeholder="Page Title"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  id="slug"
-                  value={newPage.slug}
-                  onChange={(e) => setNewPage({ ...newPage, slug: e.target.value })}
-                  placeholder="page-slug"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  value={newPage.content}
-                  onChange={(e) => setNewPage({ ...newPage, content: e.target.value })}
-                  placeholder="Page content..."
-                  rows={5}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="meta">Meta Description</Label>
-                <Input
-                  id="meta"
-                  value={newPage.meta_description}
-                  onChange={(e) => setNewPage({ ...newPage, meta_description: e.target.value })}
-                  placeholder="Meta description"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="published"
-                  checked={newPage.is_published}
-                  onCheckedChange={(checked) => setNewPage({ ...newPage, is_published: checked })}
-                />
-                <Label htmlFor="published">Published</Label>
-              </div>
-
-              <Button onClick={handleCreatePage}>Create Page</Button>
-            </CardContent>
-          </Card>
-
-          <div className="mt-6 grid gap-4">
-            {pages.map((page) => (
+          <div className="grid gap-4">
+            {pages.slice(0, 5).map((page) => (
               <Card key={page.id}>
                 <CardHeader>
                   <CardTitle>{page.title}</CardTitle>
@@ -171,9 +157,21 @@ const Dashboard = () => {
                   <p className="text-sm text-gray-500">
                     Status: {page.is_published ? 'Published' : 'Draft'}
                   </p>
+                  <div className="mt-4">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/admin/content/edit/${page.id}`}>Edit</Link>
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
+            {pages.length === 0 && (
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-center text-gray-500">No pages found</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
@@ -189,6 +187,13 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             ))}
+            {blocks.length === 0 && (
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-center text-gray-500">No content blocks found</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
       </Tabs>

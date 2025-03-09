@@ -6,7 +6,8 @@ import Recruitment from './pages/recruitment';
 import Traineeships from './pages/traineeships';
 import Apprenticeships from './pages/apprenticeships';
 import Dashboard from './pages/admin/Dashboard';
-import Editor from './pages/admin/Editor';
+import ContentManager from './pages/admin/ContentManager';
+import ContentEditor from './pages/admin/ContentEditor';
 import AdminAuth from './pages/auth/AdminAuth';
 import { Outlet } from 'react-router-dom';
 
@@ -21,7 +22,9 @@ function App() {
           <Route path="apprenticeships" element={<Apprenticeships />} />
           <Route path="admin/auth" element={<AdminAuth />} />
           <Route path="admin" element={<Dashboard />} />
-          <Route path="admin/editor" element={<Editor />} />
+          <Route path="admin/content" element={<ContentManager />} />
+          <Route path="admin/content/edit" element={<ContentEditor />} />
+          <Route path="admin/content/edit/:id" element={<ContentEditor />} />
         </Route>
       </Routes>
     </Router>
