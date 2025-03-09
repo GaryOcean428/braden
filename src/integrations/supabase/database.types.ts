@@ -27,3 +27,33 @@ export type MediaItem = {
   updated_at: string;
   user_id: string;
 };
+
+export type Lead = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  service_type?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Client = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  service_type?: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ContentBlock = {
+  id: string;
+  name: string;
+  type: string;
+  content: any;
+  created_at: string;
+  updated_at: string;
+};
