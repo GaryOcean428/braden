@@ -84,7 +84,7 @@ const Navigation = () => {
       position: 'fixed',
       top: 0
     }}>
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-3 rounded-sm bg-[#811a2c]">
           <div className="flex justify-between items-center mx-px my-px py-px px-px">
             <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity" onClick={handleHomeClick}>
               braden
