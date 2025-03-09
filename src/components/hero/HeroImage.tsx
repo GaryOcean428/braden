@@ -12,7 +12,6 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
   const [heroImage, setHeroImage] = useState("/hero-image.jpg");
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const loadHeroImage = async () => {
@@ -20,42 +19,50 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         setIsLoading(true);
         setImageError(false);
 
-        const { data, error } = await supabase
-          .from('media')
-          .select('file_path')
-          .eq('title', 'hero-image')
-          .maybeSingle();
+        // Try to fetch from Supabase
+        try {
+          const { data, error } = await supabase
+            .from('media')
+            .select('file_path')
+            .eq('title', 'hero-image')
+            .maybeSingle();
 
-        if (error) {
-          throw error;
+          if (error) {
+            // If there's a Supabase error, log it but continue with default image
+            console.log('Supabase error, using default image:', error);
+            setIsLoading(false);
+            return;
+          }
+
+          // If no custom hero image is set, use default and finish loading
+          if (!data?.file_path) {
+            setIsLoading(false);
+            return;
+          }
+
+          // If we have a file path, try to get the public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('media')
+            .getPublicUrl(data.file_path);
+
+          // Preload the image
+          const img = new Image();
+          img.onload = () => {
+            setHeroImage(publicUrl);
+            setIsLoading(false);
+          };
+          img.onerror = () => {
+            console.error('Error loading image from storage');
+            setIsLoading(false);
+          };
+          img.src = publicUrl;
+        } catch (supabaseError) {
+          // If there's any error in the Supabase process, use default image
+          console.error('Error with Supabase operations:', supabaseError);
+          setIsLoading(false);
         }
-
-        // If no custom hero image is set, use default and finish loading
-        if (!data?.file_path) {
-          setIsLoading(false);
-          return;
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('media')
-          .getPublicUrl(data.file_path);
-
-        // Preload the image
-        const img = new Image();
-        img.onload = () => {
-          setHeroImage(publicUrl);
-          setIsLoading(false);
-        };
-        img.onerror = () => {
-          console.error('Error loading image');
-          setImageError(true);
-          setIsLoading(false);
-          onError(new Error('Failed to load hero image'));
-        };
-        img.src = publicUrl;
-
       } catch (error) {
-        console.error('Error loading hero image:', error);
+        console.error('Error in loadHeroImage function:', error);
         setImageError(true);
         setIsLoading(false);
         onError(error instanceof Error ? error : new Error('Failed to load hero image'));
@@ -63,14 +70,29 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
     };
 
     loadHeroImage();
+
+    // Set a safety timeout to ensure loading state doesn't persist indefinitely
+    const safetyTimeout = setTimeout(() => {
+      if (isLoading) {
+        setIsLoading(false);
+        console.log('Safety timeout triggered to prevent infinite loading');
+      }
+    }, 3000);
+
+    return () => clearTimeout(safetyTimeout);
   }, [onError]);
 
   const handleImageLoad = () => {
-    setImageLoaded(true);
     setIsLoading(false);
   };
 
-  if (isLoading && !imageLoaded) {
+  const handleImageError = () => {
+    setImageError(true);
+    setIsLoading(false);
+    onError(new Error('Failed to load hero image'));
+  };
+
+  if (isLoading) {
     return (
       <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="true">
         <Skeleton className="w-full h-full absolute inset-0" />
@@ -93,10 +115,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         alt="Braden Group Apprentices"
         className="w-full h-full object-cover"
         onLoad={handleImageLoad}
-        onError={() => {
-          setImageError(true);
-          onError(new Error('Failed to load hero image'));
-        }}
+        onError={handleImageError}
       />
     </div>
   );
