@@ -3,7 +3,7 @@ export type ContentPage = {
   id: string;
   title: string;
   slug: string;
-  content: string;
+  content: any; // Changed from string to any to accommodate Json type from Supabase
   meta_description?: string;
   is_published: boolean;
   created_at: string;
