@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface ShareModalProps {
@@ -19,19 +19,10 @@ interface ShareModalProps {
 const ShareModal = ({ icon }: ShareModalProps) => {
   const [url, setUrl] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
-  const mounted = useRef(false);
 
+  // Only update URL when the dialog is open
   useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    // Only update URL when the dialog is open and component is mounted
-    if (isOpen && mounted.current) {
+    if (isOpen) {
       setUrl(window.location.href);
     }
   }, [isOpen]);
