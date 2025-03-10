@@ -24,6 +24,7 @@ const AdminAuth = () => {
     setIsLoading(true);
     
     try {
+      // First authenticate the user
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim()
@@ -32,31 +33,19 @@ const AdminAuth = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Check if user is an admin
-        console.log("Authenticated user:", data.user.id);
+        toast.success('Authentication successful');
         
-        const { data: adminData, error: adminError } = await supabase
-          .from('admin_users')
-          .select('id')
-          .eq('user_id', data.user.id);
-
-        console.log("Admin data:", adminData, "Admin error:", adminError);
-
-        if (adminError || !adminData || adminData.length === 0) {
-          console.log("Not an admin user");
-          await supabase.auth.signOut();
-          toast.error('Unauthorized access. Admin rights required.');
-          setIsLoading(false);
-          return;
-        }
-
-        console.log("Login successful as admin");
-        toast.success('Login successful');
-        navigate('/admin');
+        // Give a slight delay to allow the auth state to propagate
+        setTimeout(() => {
+          navigate('/admin');
+        }, 500);
       }
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error instanceof Error ? error.message : 'Login failed. Please check your credentials.');
+      
+      // Sign out on error to clean up state
+      await supabase.auth.signOut();
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +55,7 @@ const AdminAuth = () => {
     <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-200px)]">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
+          <CardTitle className="text-[#ab233a]">Admin Login</CardTitle>
           <CardDescription>Please login with your admin credentials</CardDescription>
         </CardHeader>
         <CardContent>
@@ -97,7 +86,7 @@ const AdminAuth = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full"
+              className="w-full bg-[#ab233a] hover:bg-[#811a2c]"
               disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Login'}
