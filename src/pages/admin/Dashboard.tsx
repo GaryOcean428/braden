@@ -118,8 +118,8 @@ const Dashboard = () => {
             <p className="text-sm text-gray-500 mb-4">
               Manage admins and user accounts
             </p>
-            <Button variant="outline" className="w-full">
-              Manage Users
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/admin/users">Manage Users</Link>
             </Button>
           </CardContent>
         </Card>
@@ -132,8 +132,8 @@ const Dashboard = () => {
             <p className="text-sm text-gray-500 mb-4">
               Configure website settings and preferences
             </p>
-            <Button variant="outline" className="w-full">
-              Settings
+            <Button asChild variant="outline" className="w-full">
+              <Link to="/admin/settings">Settings</Link>
             </Button>
           </CardContent>
         </Card>
