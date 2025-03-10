@@ -23,7 +23,7 @@ export function useAdminAuth() {
       if (data.session) {
         console.log("User is logged in, checking admin status...");
         
-        // Skip table operations and use RPC directly
+        // Use the is_admin RPC function to check admin status
         const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
         
         if (adminError) {
@@ -69,7 +69,7 @@ export function useAdminAuth() {
       }
       
       if (data.user) {
-        // Skip table operations and check if the user is already an admin via RPC
+        // Check if the user is already an admin via RPC
         const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
         
         if (adminCheckError) {

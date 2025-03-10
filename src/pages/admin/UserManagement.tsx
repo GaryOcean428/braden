@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserPlus, AlertCircle, CheckCircle2, ShieldAlert } from "lucide-react";
+import { UserPlus, AlertCircle, CheckCircle2, ShieldAlert, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type AdminUser = {
@@ -30,11 +30,11 @@ export default function UserManagement() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     checkAuth();
-    loadAdminUsers();
   }, []);
 
   const checkAuth = async () => {
@@ -46,12 +46,37 @@ export default function UserManagement() {
           description: "Please log in to access the admin dashboard"
         });
         navigate('/admin/auth');
+        return;
       }
+
+      // Check if user is admin using RPC function
+      const { data: isAdminCheck, error: adminError } = await supabase.rpc('is_admin');
+      
+      if (adminError) {
+        console.error("Admin check error:", adminError);
+        toast.error("Authentication Error", {
+          description: "Failed to verify admin status"
+        });
+        navigate('/admin/auth');
+        return;
+      }
+      
+      if (!isAdminCheck) {
+        toast.error("Access Denied", {
+          description: "You do not have administrator privileges"
+        });
+        navigate('/admin/auth');
+        return;
+      }
+      
+      setIsAdmin(true);
+      loadAdminUsers();
     } catch (error) {
       console.error("Auth check error:", error);
       toast.error("Authentication Error", {
         description: "Failed to verify authentication"
       });
+      navigate('/admin/auth');
     }
   };
 
@@ -60,40 +85,50 @@ export default function UserManagement() {
       setIsLoading(true);
       setError(null);
       
-      const { data: adminData, error } = await supabase
-        .from('admin_users')
-        .select(`
-          id,
-          user_id,
-          created_at,
-          updated_at
-        `);
-
-      if (error) throw error;
+      // First try to get users via the admin RPC
+      const { data: adminData, error: rpcError } = await supabase.rpc('list_admin_users');
       
-      // Get the user profiles for each admin
-      if (adminData && adminData.length > 0) {
-        const { data: userData, error: profilesError } = await supabase.auth.admin.listUsers();
-        
-        if (profilesError) {
-          console.warn("Could not fetch user profiles:", profilesError);
-          setAdminUsers(adminData);
-        } else if (userData && userData.users) {
-          // Merge the admin data with user profiles
-          const enrichedAdmins = adminData.map(admin => {
-            const matchingUser = userData.users?.find((user: UserData) => user.id === admin.user_id);
-            return {
-              ...admin,
-              email: matchingUser?.email || 'Unknown',
-              created_at_user: matchingUser?.created_at || null
-            };
-          });
-          setAdminUsers(enrichedAdmins);
-        } else {
-          setAdminUsers(adminData);
-        }
+      if (!rpcError && adminData) {
+        setAdminUsers(adminData);
       } else {
-        setAdminUsers([]);
+        console.warn("Could not fetch admin users via RPC:", rpcError);
+        
+        // Fallback: try to get the admin_users table directly
+        try {
+          const { data: tableData, error: tableError } = await supabase
+            .from('admin_users')
+            .select();
+          
+          if (tableError) {
+            console.error("Error fetching admin users from table:", tableError);
+            
+            // If we can't access the table directly, display an informative message
+            setError("The admin users list cannot be displayed due to permission restrictions, but your admin access is confirmed.");
+            setAdminUsers([]);
+          } else if (tableData) {
+            // Attempt to enrich with user data
+            const { data: userData, error: profilesError } = await supabase.auth.admin.listUsers();
+            
+            if (!profilesError && userData && userData.users) {
+              const enrichedAdmins = tableData.map(admin => {
+                const matchingUser = userData.users?.find((user: UserData) => user.id === admin.user_id);
+                return {
+                  ...admin,
+                  email: matchingUser?.email || 'Unknown',
+                  created_at_user: matchingUser?.created_at || null
+                };
+              });
+              
+              setAdminUsers(enrichedAdmins);
+            } else {
+              setAdminUsers(tableData);
+            }
+          }
+        } catch (error) {
+          console.error("Error in fallback admin users fetch:", error);
+          setError("Cannot display admin users list due to database permission restrictions.");
+          setAdminUsers([]);
+        }
       }
     } catch (error: any) {
       console.error('Error loading admin users:', error);
@@ -107,7 +142,6 @@ export default function UserManagement() {
   };
 
   const handleAddAdmin = () => {
-    // For future implementation
     toast.info("Feature Coming Soon", {
       description: "Admin user creation will be available in a future update"
     });
@@ -135,9 +169,9 @@ export default function UserManagement() {
       </div>
 
       {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+        <Alert className="mb-6 border-[#cbb26a]">
+          <Info className="h-4 w-4 text-[#ab233a]" />
+          <AlertTitle>Information</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -154,6 +188,18 @@ export default function UserManagement() {
             Add New Admin
           </Button>
         </div>
+        {isAdmin && !error && (
+          <div className="mb-4">
+            <Alert className="bg-[#d8c690]/20 border-[#cbb26a]">
+              <Info className="h-4 w-4 text-[#811a2c]" />
+              <AlertDescription className="text-[#2c3e50]">
+                You are confirmed as an admin. {adminUsers.length === 0 ? 
+                "The admin users list may not be visible due to database permissions, but your access is verified." : 
+                "You have access to manage admin users."}
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
@@ -171,17 +217,27 @@ export default function UserManagement() {
                   <div className="flex flex-col items-center gap-3">
                     <ShieldAlert className="h-8 w-8 text-[#95a5a6]" />
                     <p className="text-[#95a5a6] font-medium">No admin users found</p>
-                    <p className="text-sm text-gray-500 max-w-md">Admin users will appear here once they have been added to the system.</p>
+                    <p className="text-sm text-gray-500 max-w-md">
+                      {error ? 
+                      "The admin users list cannot be displayed due to database permissions, but your admin access is confirmed." : 
+                      "Admin users will appear here once they have been added to the system."}
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
             )}
             {adminUsers.map((admin) => (
               <TableRow key={admin.id} className="hover:bg-gray-50">
-                <TableCell className="font-medium text-[#2c3e50]">{admin.id.substring(0, 8)}...</TableCell>
-                <TableCell className="text-[#3498db]">{admin.user_id.substring(0, 8)}...</TableCell>
+                <TableCell className="font-medium text-[#2c3e50]">
+                  {typeof admin.id === 'string' && admin.id.length > 8 ? admin.id.substring(0, 8) + '...' : admin.id}
+                </TableCell>
+                <TableCell className="text-[#3498db]">
+                  {typeof admin.user_id === 'string' && admin.user_id.length > 8 ? admin.user_id.substring(0, 8) + '...' : admin.user_id}
+                </TableCell>
                 <TableCell>{admin.email || 'N/A'}</TableCell>
-                <TableCell>{new Date(admin.created_at).toLocaleString()}</TableCell>
+                <TableCell>
+                  {admin.created_at ? new Date(admin.created_at).toLocaleString() : 'N/A'}
+                </TableCell>
                 <TableCell>
                   <Button 
                     variant="outline" 
