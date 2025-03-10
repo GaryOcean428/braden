@@ -85,50 +85,40 @@ export default function UserManagement() {
       setIsLoading(true);
       setError(null);
       
-      // First try to get users via the admin RPC
-      const { data: adminData, error: rpcError } = await supabase.rpc('list_admin_users');
+      // Instead of using a non-existent RPC function, we'll fetch directly from the admin_users table
+      const { data: adminData, error: fetchError } = await supabase
+        .from('admin_users')
+        .select('*');
       
-      if (!rpcError && adminData) {
-        setAdminUsers(adminData);
-      } else {
-        console.warn("Could not fetch admin users via RPC:", rpcError);
-        
-        // Fallback: try to get the admin_users table directly
+      if (!fetchError && adminData) {
+        // Attempt to enrich with user data
         try {
-          const { data: tableData, error: tableError } = await supabase
-            .from('admin_users')
-            .select();
+          const { data: userData, error: profilesError } = await supabase
+            .from('user_profiles')
+            .select('*');
           
-          if (tableError) {
-            console.error("Error fetching admin users from table:", tableError);
+          if (!profilesError && userData) {
+            const enrichedAdmins = adminData.map(admin => {
+              const matchingUser = userData.find(user => user.id === admin.user_id);
+              return {
+                ...admin,
+                email: matchingUser?.email || 'Unknown',
+                created_at_user: matchingUser?.created_at || null
+              };
+            });
             
-            // If we can't access the table directly, display an informative message
-            setError("The admin users list cannot be displayed due to permission restrictions, but your admin access is confirmed.");
-            setAdminUsers([]);
-          } else if (tableData) {
-            // Attempt to enrich with user data
-            const { data: userData, error: profilesError } = await supabase.auth.admin.listUsers();
-            
-            if (!profilesError && userData && userData.users) {
-              const enrichedAdmins = tableData.map(admin => {
-                const matchingUser = userData.users?.find((user: UserData) => user.id === admin.user_id);
-                return {
-                  ...admin,
-                  email: matchingUser?.email || 'Unknown',
-                  created_at_user: matchingUser?.created_at || null
-                };
-              });
-              
-              setAdminUsers(enrichedAdmins);
-            } else {
-              setAdminUsers(tableData);
-            }
+            setAdminUsers(enrichedAdmins);
+          } else {
+            setAdminUsers(adminData);
           }
         } catch (error) {
-          console.error("Error in fallback admin users fetch:", error);
-          setError("Cannot display admin users list due to database permission restrictions.");
-          setAdminUsers([]);
+          console.error("Error fetching user profiles:", error);
+          setAdminUsers(adminData);
         }
+      } else {
+        console.warn("Could not fetch admin users:", fetchError);
+        setError("The admin users list cannot be displayed due to permission restrictions, but your admin access is confirmed.");
+        setAdminUsers([]);
       }
     } catch (error: any) {
       console.error('Error loading admin users:', error);

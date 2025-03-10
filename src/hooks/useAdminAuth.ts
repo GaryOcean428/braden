@@ -65,7 +65,11 @@ export function useAdminAuth() {
       
       if (error) {
         setError(error.message);
-        throw error;
+        toast.error('Login Failed', {
+          description: error.message
+        });
+        setIsLoading(false);
+        return;
       }
       
       if (data.user) {
@@ -75,6 +79,10 @@ export function useAdminAuth() {
         if (adminCheckError) {
           console.error('Admin check error:', adminCheckError);
           setError('Failed to verify admin status');
+          toast.error('Verification Error', {
+            description: 'Failed to verify admin status'
+          });
+          setIsLoading(false);
           return;
         }
         
@@ -92,6 +100,9 @@ export function useAdminAuth() {
       }
     } catch (error) {
       console.error('Login error:', error);
+      toast.error('Login Error', {
+        description: 'An unexpected error occurred'
+      });
     } finally {
       setIsLoading(false);
     }
