@@ -58,8 +58,8 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
                   <li><a href="/" className="text-gray-300 hover:text-white transition-colors">Home</a></li>
                   <li><a href="/recruitment" className="text-gray-300 hover:text-white transition-colors">Recruitment</a></li>
                   <li><a href="/apprenticeships" className="text-gray-300 hover:text-white transition-colors">Apprenticeships</a></li>
-                  <li><a href="/admin/auth" className="text-gray-300 hover:text-white transition-colors">Admin Login</a></li>
-                  <li><a href="/login" className="text-[#cbb26a] hover:text-[#d8c690] transition-colors font-medium">Login</a></li>
+                  <li><a href="/admin/auth" className="text-gray-300 hover:text-white transition-colors">Developer Login</a></li>
+                  <li><a href="/login" className="text-[#cbb26a] hover:text-[#d8c690] transition-colors font-medium">Client Login</a></li>
                 </ul>
               </div>
             </div>
@@ -71,7 +71,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
               <div className="text-sm text-gray-400">
                 <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a> | 
                 <a href="/terms" className="ml-2 hover:text-white transition-colors">Terms of Service</a> |
-                <a href="/admin/auth" className="ml-2 hover:text-white transition-colors">Login</a>
+                <a href="/admin/auth" className="ml-2 hover:text-white transition-colors">Developer Login</a>
               </div>
             </div>
           </div>
