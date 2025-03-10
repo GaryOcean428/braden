@@ -37,7 +37,11 @@ export function useAdminAuth() {
           toast.success('Already authenticated as admin');
           navigate('/admin');
           return;
+        } else {
+          console.log("User is logged in but not an admin");
         }
+      } else {
+        console.log("No active session found");
       }
     } catch (error) {
       console.error('Session check error:', error);
@@ -73,7 +77,7 @@ export function useAdminAuth() {
       }
       
       if (data.user) {
-        // Check if the user is already an admin via RPC
+        // Check if the user is an admin via RPC
         const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
         
         if (adminCheckError) {
@@ -96,10 +100,13 @@ export function useAdminAuth() {
           toast.error('Access Denied', {
             description: 'You do not have admin privileges'
           });
+          // Sign out the user since they don't have admin access
+          await supabase.auth.signOut();
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
+      setError(error.message || 'An unexpected error occurred');
       toast.error('Login Error', {
         description: 'An unexpected error occurred'
       });
