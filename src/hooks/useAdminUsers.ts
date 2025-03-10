@@ -38,7 +38,7 @@ export function useAdminUsers() {
       
       if (userEmail !== 'braden.lang77@gmail.com') {
         toast.error("Access Denied", {
-          description: "You do not have administrator privileges"
+          description: "Only the developer can access admin functions"
         });
         setIsLoading(false);
         return;

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PagesTabContent } from "./PagesTabContent";
@@ -39,22 +40,17 @@ export const ContentTabs = () => {
         return;
       }
       
-      try {
-        // Use RPC directly to verify admin status
-        const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
-        
-        if (adminError) {
-          console.error('Admin check error:', adminError);
-          setAuthError("Could not verify admin status");
-        } else if (isAdmin) {
-          // User is admin
-          setAuthError(null);
-        } else {
-          setAuthError("You don't have admin access");
-        }
-      } catch (err) {
-        console.error("Admin verification error:", err);
-        setAuthError("Failed to verify admin status");
+      // Verify developer status by email instead of using the RPC function
+      const userEmail = data.session.user.email;
+      
+      if (userEmail !== 'braden.lang77@gmail.com') {
+        setAuthError("You don't have admin access");
+        toast.error("Access Denied", {
+          description: "Only the developer can access these features"
+        });
+      } else {
+        // User is the developer
+        setAuthError(null);
       }
     } catch (error) {
       console.error("Auth check error:", error);

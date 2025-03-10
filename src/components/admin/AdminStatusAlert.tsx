@@ -26,7 +26,7 @@ export function AdminStatusAlert({ isAdmin, error, adminUsersCount }: AdminStatu
         }
         <AlertDescription className="text-[#2c3e50]">
           {isPermissionError ? 
-            "You are confirmed as a developer with admin privileges. Direct database access to the admin_users table is restricted for security reasons, but your admin status is verified through email authentication." : 
+            "You are confirmed as a developer with admin privileges. Database access may be restricted for security reasons, but your developer status is verified through email authentication." : 
             `You are confirmed as a developer. ${adminUsersCount === 0 ? 
               "The admin users list may not be visible due to database permissions, but your access is verified." : 
               "You have access to manage admin users."}`

@@ -32,39 +32,21 @@ export function usePagesData() {
         return;
       }
       
-      try {
-        // Check if user is admin directly via RPC
-        const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
-        
-        if (adminCheckError) {
-          console.error("Admin check error:", adminCheckError);
-          setIsPermissionError(true);
-          setError("Could not verify admin permissions");
-          toast.error("Permission Error", {
-            description: "Could not verify admin permissions"
-          });
-          setPages([]);
-          return;
-        }
-        
-        if (!isAdmin) {
-          setIsPermissionError(true);
-          setError("You don't have permission to access content pages");
-          toast.error("Permission Denied", {
-            description: "You don't have admin permissions to view content pages"
-          });
-          setPages([]);
-          return;
-        }
-        
-        // User is confirmed as admin, load the pages
-        loadPageContent();
-      } catch (err) {
-        console.error("Error in admin verification:", err);
+      // Verify developer status by email instead of using the RPC function
+      const userEmail = session.session.user.email;
+      
+      if (userEmail !== 'braden.lang77@gmail.com') {
         setIsPermissionError(true);
-        setError("Failed to verify admin status");
+        setError("You don't have permission to access content pages");
+        toast.error("Permission Denied", {
+          description: "Only the developer can access this section"
+        });
         setPages([]);
+        return;
       }
+      
+      // User is confirmed as the developer, load the pages
+      loadPageContent();
     } catch (error: any) {
       console.error('Error in auth check:', error);
       setError(error.message || "Failed to authenticate");
@@ -90,7 +72,7 @@ export function usePagesData() {
             pagesError.message.toLowerCase().includes('denied') ||
             pagesError.code === 'PGRST301') {
           setIsPermissionError(true);
-          setError("You don't have permission to access content pages");
+          setError("Database access restricted. Please check your permissions.");
         } else {
           setError(pagesError.message || "Failed to load pages");
         }
