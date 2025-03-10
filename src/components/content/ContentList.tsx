@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { ContentPage } from "@/integrations/supabase/database.types";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { FileText, Plus, Edit, Trash2, Eye, ExternalLink } from "lucide-react";
 
 export function ContentList() {
   const [pages, setPages] = useState<ContentPage[]>([]);
@@ -27,7 +28,6 @@ export function ContentList() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     fetchPages();
@@ -45,13 +45,11 @@ export function ContentList() {
 
       if (error) throw error;
       setPages(data as ContentPage[]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching pages:", error);
-      setError("Failed to load content pages");
-      toast({
-        title: "Error",
-        description: "Failed to load content pages",
-        variant: "destructive",
+      setError(error.message || "Failed to load content pages");
+      toast.error("Error", {
+        description: "Failed to load content pages"
       });
     } finally {
       setLoading(false);
@@ -72,16 +70,13 @@ export function ContentList() {
         page.id === id ? { ...page, is_published: !currentStatus } : page
       ));
 
-      toast({
-        title: "Success",
-        description: `Page ${!currentStatus ? "published" : "unpublished"} successfully`,
+      toast.success(!currentStatus ? "Page published" : "Page unpublished", {
+        description: `Page has been ${!currentStatus ? "published" : "unpublished"} successfully`
       });
     } catch (error) {
       console.error("Error updating page status:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update page status",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "Failed to update page status"
       });
     }
   };
@@ -103,16 +98,13 @@ export function ContentList() {
       setPages(pages.filter(page => page.id !== deleteId));
       setDeleteId(null);
 
-      toast({
-        title: "Success",
-        description: "Page deleted successfully",
+      toast.success("Page deleted", {
+        description: "Page has been deleted successfully"
       });
     } catch (error) {
       console.error("Error deleting page:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete page",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "Failed to delete page"
       });
     } finally {
       setDeleting(false);
@@ -156,9 +148,14 @@ export function ContentList() {
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <div className="text-red-500 mb-4">{error}</div>
-        <Button onClick={fetchPages}>Try Again</Button>
+      <div className="text-center py-8 border border-red-200 bg-red-50 rounded-lg">
+        <div className="text-[#ab233a] mb-4">{error}</div>
+        <Button 
+          onClick={fetchPages}
+          className="bg-[#2c3e50] hover:bg-[#34495e]"
+        >
+          Try Again
+        </Button>
       </div>
     );
   }
@@ -167,64 +164,81 @@ export function ContentList() {
     <ErrorBoundary>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Content Pages</h1>
-          <Button onClick={() => navigate("/admin/content/edit")}>
-            Create New Page
+          <h2 className="text-xl font-semibold text-[#811a2c]">Pages</h2>
+          <Button 
+            onClick={() => navigate("/admin/content/edit")}
+            className="bg-[#2c3e50] hover:bg-[#34495e]"
+          >
+            <Plus className="h-4 w-4 mr-2" /> Create New Page
           </Button>
         </div>
 
         {pages.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">No pages found</h3>
-            <p className="text-gray-500 mb-4">Get started by creating your first page</p>
-            <Button onClick={() => navigate("/admin/content/edit")}>
-              Create New Page
+          <div className="text-center py-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg">
+            <FileText className="h-12 w-12 text-[#95a5a6] mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-[#2c3e50] mb-2">No pages found</h3>
+            <p className="text-[#95a5a6] mb-4">Get started by creating your first page</p>
+            <Button 
+              onClick={() => navigate("/admin/content/edit")}
+              className="bg-[#ab233a] hover:bg-[#811a2c]"
+            >
+              <Plus className="h-4 w-4 mr-2" /> Create New Page
             </Button>
           </div>
         ) : (
-          <div className="border rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-gray-50">
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Last Updated</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-[#2c3e50] font-semibold">Title</TableHead>
+                  <TableHead className="text-[#2c3e50] font-semibold">Slug</TableHead>
+                  <TableHead className="text-[#2c3e50] font-semibold">Status</TableHead>
+                  <TableHead className="text-[#2c3e50] font-semibold">Last Updated</TableHead>
+                  <TableHead className="text-right text-[#2c3e50] font-semibold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {pages.map((page) => (
-                  <TableRow key={page.id}>
-                    <TableCell className="font-medium">{page.title}</TableCell>
-                    <TableCell>/{page.slug}</TableCell>
+                  <TableRow key={page.id} className="hover:bg-gray-50">
+                    <TableCell className="font-medium text-[#2c3e50]">{page.title}</TableCell>
+                    <TableCell className="text-[#3498db]">/{page.slug}</TableCell>
                     <TableCell>
-                      <Badge variant={page.is_published ? "default" : "outline"}>
+                      <Badge variant={page.is_published ? "default" : "outline"} className={
+                        page.is_published ? "bg-[#27ae60] hover:bg-[#27ae60]" : "text-[#95a5a6] border-[#95a5a6]"
+                      }>
                         {page.is_published ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
-                    <TableCell>{formatDate(page.updated_at)}</TableCell>
+                    <TableCell className="text-[#2c3e50]">{formatDate(page.updated_at)}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => navigate(`/admin/content/edit/${page.id}`)}
+                        className="border-[#cbb26a] text-[#2c3e50] hover:bg-[#d8c690] hover:text-[#2c3e50]"
                       >
-                        Edit
+                        <Edit className="h-4 w-4 mr-1" /> Edit
                       </Button>
                       <Button 
                         variant={page.is_published ? "outline" : "default"}
                         size="sm"
                         onClick={() => handleTogglePublish(page.id, page.is_published)}
+                        className={
+                          page.is_published 
+                            ? "border-[#95a5a6] text-[#2c3e50] hover:bg-[#95a5a6] hover:text-white" 
+                            : "bg-[#3498db] hover:bg-[#2980b9] text-white"
+                        }
                       >
+                        {page.is_published ? <Eye className="h-4 w-4 mr-1" /> : <ExternalLink className="h-4 w-4 mr-1" />}
                         {page.is_published ? "Unpublish" : "Publish"}
                       </Button>
                       <Button 
                         variant="destructive" 
                         size="sm"
                         onClick={() => setDeleteId(page.id)}
+                        className="bg-[#ab233a] hover:bg-[#811a2c]"
                       >
-                        Delete
+                        <Trash2 className="h-4 w-4 mr-1" /> Delete
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -237,17 +251,17 @@ export function ContentList() {
         <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle className="text-[#ab233a]">Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete the page and all of its content.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={deleting} className="border-[#95a5a6] text-[#2c3e50]">Cancel</AlertDialogCancel>
               <AlertDialogAction 
                 onClick={handleDelete} 
                 disabled={deleting}
-                className={deleting ? "opacity-50 cursor-not-allowed" : ""}
+                className={`bg-[#ab233a] hover:bg-[#811a2c] ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {deleting ? "Deleting..." : "Delete"}
               </AlertDialogAction>
