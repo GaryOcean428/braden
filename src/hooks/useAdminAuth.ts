@@ -29,7 +29,7 @@ export function useAdminAuth() {
       
       if (data.session) {
         // Session exists, check admin status using RPC
-        const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
+        const { data: isAdmin, error: adminError } = await supabase.rpc('is_braden_admin');
         
         if (adminError) {
           console.error('Admin check error:', adminError);
@@ -39,7 +39,7 @@ export function useAdminAuth() {
         
         if (isAdmin === true) {
           // User is confirmed as admin
-          console.log("User confirmed as admin via RPC");
+          console.log("User confirmed as admin via is_braden_admin RPC");
           toast.success('Developer access confirmed');
           navigate('/admin');
         } else {
@@ -92,7 +92,7 @@ export function useAdminAuth() {
       }
       
       // Step 2: Check admin status using RPC function
-      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
+      const { data: isAdmin, error: adminError } = await supabase.rpc('is_braden_admin');
       
       if (adminError) {
         console.error('Admin check error:', adminError);
