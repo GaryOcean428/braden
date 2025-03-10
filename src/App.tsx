@@ -9,6 +9,7 @@ import Dashboard from './pages/admin/Dashboard';
 import ContentManager from './pages/admin/ContentManager';
 import ContentEditor from './pages/admin/ContentEditor';
 import SiteSettings from './pages/admin/SiteSettings';
+import UserManagement from './pages/admin/UserManagement';
 import AdminAuth from './pages/auth/AdminAuth';
 import { Outlet } from 'react-router-dom';
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="admin/content/edit" element={<ContentEditor />} />
           <Route path="admin/content/edit/:id" element={<ContentEditor />} />
           <Route path="admin/settings" element={<SiteSettings />} />
+          <Route path="admin/users" element={<UserManagement />} />
         </Route>
       </Routes>
     </Router>
