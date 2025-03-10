@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Settings } from "lucide-react";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { AdminUsersTable } from "@/components/admin/AdminUsersTable";
 import { AdminStatusAlert } from "@/components/admin/AdminStatusAlert";
@@ -22,6 +22,12 @@ export default function UserManagement() {
   const handleAddAdmin = () => {
     toast.info("Feature Coming Soon", {
       description: "Admin user creation will be available in a future update"
+    });
+  };
+
+  const handleDBSettings = () => {
+    toast.info("Database Configuration Required", {
+      description: "Contact your database administrator to grant the necessary permissions"
     });
   };
 
@@ -56,14 +62,26 @@ export default function UserManagement() {
       <Card className="p-6 border-t-4 border-t-[#cbb26a]">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-[#811a2c]">Admin Users</h2>
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2 border-[#cbb26a] text-[#2c3e50] hover:bg-[#d8c690] hover:text-[#2c3e50]"
-            onClick={handleAddAdmin}
-          >
-            <UserPlus className="h-4 w-4" />
-            Add New Admin
-          </Button>
+          <div className="flex gap-2">
+            {error && (
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2 border-[#95a5a6] text-[#2c3e50] hover:bg-gray-100"
+                onClick={handleDBSettings}
+              >
+                <Settings className="h-4 w-4" />
+                Permissions
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 border-[#cbb26a] text-[#2c3e50] hover:bg-[#d8c690] hover:text-[#2c3e50]"
+              onClick={handleAddAdmin}
+            >
+              <UserPlus className="h-4 w-4" />
+              Add New Admin
+            </Button>
+          </div>
         </div>
         
         <AdminStatusAlert 
