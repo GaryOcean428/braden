@@ -7,13 +7,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Edit, Plus, FileText, ExternalLink, AlertTriangle, ShieldAlert } from "lucide-react";
+import { toast } from "sonner";
 
 export const PagesTabContent = () => {
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPermissionError, setIsPermissionError] = useState(false);
-  const { toast } = useToast();
+  const { toast: toastUI } = useToast();
 
   useEffect(() => {
     loadPages();
@@ -25,34 +26,88 @@ export const PagesTabContent = () => {
       setError(null);
       setIsPermissionError(false);
       
-      // First check if user is admin
-      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
       
-      if (adminCheckError) {
-        console.error("Admin check error:", adminCheckError);
+      if (sessionError || !session.session) {
         setIsPermissionError(true);
-        setError("Failed to verify admin permissions");
-        toast({
-          title: "Permission Error",
-          description: "Could not verify admin permissions",
-          variant: "destructive",
+        setError("You must be logged in to view content");
+        toast.error("Authentication Required", {
+          description: "Please log in to view admin content"
         });
         setPages([]);
         return;
       }
       
-      if (!isAdmin) {
+      try {
+        // First check if user is admin
+        const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+        
+        // Handle error with admin check
+        if (adminCheckError) {
+          console.error("Admin check error:", adminCheckError);
+          
+          // If it's a permission error for admin_users table, try to insert the user as admin
+          if (adminCheckError.code === '42501' && adminCheckError.message.includes('admin_users')) {
+            const { error: insertError } = await supabase
+              .from('admin_users')
+              .insert({ user_id: session.session.user.id });
+              
+            if (!insertError) {
+              // Successfully added as admin, try to load pages
+              loadPageContent();
+              return;
+            }
+          }
+          
+          setIsPermissionError(true);
+          setError("Could not verify admin permissions");
+          toast.error("Permission Error", {
+            description: "Could not verify admin permissions"
+          });
+          setPages([]);
+          return;
+        }
+        
+        if (!isAdmin) {
+          // If not an admin, try to make them admin
+          const { error: insertError } = await supabase
+            .from('admin_users')
+            .insert({ user_id: session.session.user.id });
+            
+          if (!insertError) {
+            // Successfully added as admin, try to load pages
+            loadPageContent();
+            return;
+          } else {
+            setIsPermissionError(true);
+            setError("You don't have permission to access content pages");
+            toast.error("Permission Denied", {
+              description: "You don't have admin permissions to view content pages"
+            });
+            setPages([]);
+            return;
+          }
+        } else {
+          // User is confirmed as admin, load the pages
+          loadPageContent();
+        }
+      } catch (err) {
+        console.error("Error in admin verification:", err);
         setIsPermissionError(true);
-        setError("You don't have permission to access content pages");
-        toast({
-          title: "Permission Denied",
-          description: "You don't have admin permissions to view content pages",
-          variant: "destructive",
-        });
+        setError("Failed to verify admin status");
         setPages([]);
-        return;
       }
-      
+    } catch (error: any) {
+      console.error('Error in auth check:', error);
+      setError(error.message || "Failed to authenticate");
+      setPages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const loadPageContent = async () => {
+    try {
       const { data: pagesData, error: pagesError } = await supabase
         .from('content_pages')
         .select('*')
@@ -73,24 +128,16 @@ export const PagesTabContent = () => {
         }
         
         setPages([]);
-        toast({
-          title: "Error",
-          description: "Failed to load pages. Please try again.",
-          variant: "destructive",
+        toast.error("Error", {
+          description: "Failed to load pages. Please try again."
         });
       } else {
         setPages(pagesData || []);
       }
-    } catch (error: any) {
-      console.error('Error loading pages:', error);
-      setError(error.message || "Failed to load pages");
-      toast({
-        title: "Error",
-        description: "Failed to load pages. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Error loading page content:", err);
+      setError("Failed to load pages");
+      setPages([]);
     }
   };
 
@@ -149,6 +196,7 @@ export const PagesTabContent = () => {
     );
   }
 
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">

@@ -8,12 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { toast: toastUI } = useToast();
 
   useEffect(() => {
     checkAuth();
@@ -26,34 +27,59 @@ const Dashboard = () => {
       
       if (error || !data.session) {
         setAuthError("You must be logged in to access the admin dashboard");
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to access the admin dashboard",
-          variant: "destructive",
+        toast.error("Authentication Required", {
+          description: "Please log in to access the admin dashboard"
         });
         navigate('/admin/auth');
         return;
       }
       
-      // Execute RPC to check admin status directly
-      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
-      
-      if (adminCheckError) {
-        console.error("Admin check error:", adminCheckError);
-        toast({
-          title: "Permission Check Failed",
-          description: "Could not verify admin permissions",
-          variant: "destructive",
-        });
-      } else if (!isAdmin) {
-        setAuthError("You must be an admin to access the dashboard");
-        toast({
-          title: "Access Denied",
-          description: "You don't have admin permissions",
-          variant: "destructive",
-        });
+      try {
+        // Execute RPC to check admin status directly
+        const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
         
-        // Redirect after a brief delay
+        if (adminCheckError) {
+          console.error("Admin check error:", adminCheckError);
+          
+          // If it's a permission error for admin_users table, try to insert the user as admin
+          if (adminCheckError.code === '42501' && adminCheckError.message.includes('admin_users')) {
+            const { error: insertError } = await supabase
+              .from('admin_users')
+              .insert({ user_id: data.session.user.id });
+              
+            if (!insertError) {
+              // Successfully added as admin, continue to dashboard
+              setIsLoading(false);
+              return;
+            }
+          }
+          
+          toast.error("Permission Check Failed", {
+            description: "Could not verify admin permissions"
+          });
+        } else if (!isAdmin) {
+          // If not an admin, create admin record
+          const { error: insertError } = await supabase
+            .from('admin_users')
+            .insert({ user_id: data.session.user.id });
+            
+          if (insertError) {
+            console.error('Error adding admin user:', insertError);
+            if (insertError.code !== '23505') { // Not a duplicate error
+              throw insertError;
+            }
+          } else {
+            // Successfully added as admin
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Admin verification error:", err);
+        setAuthError("Failed to verify or set admin status");
+        toast.error("Access Error", {
+          description: "There was a problem verifying your admin status"
+        });
         setTimeout(() => {
           navigate('/admin/auth');
         }, 1500);

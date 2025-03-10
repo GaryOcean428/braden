@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ContentPage } from "@/integrations/supabase/database.types";
@@ -22,30 +21,90 @@ export function useContentPages() {
       setError(null);
       setIsPermissionError(false);
       
-      // First check if user is admin using RPC
-      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
       
-      if (adminCheckError) {
-        console.error("Admin check error:", adminCheckError);
+      if (sessionError || !session.session) {
         setIsPermissionError(true);
-        setError("Failed to verify admin permissions");
-        toast.error("Permission Error", {
-          description: "Could not verify admin permissions"
+        setError("You must be logged in to view content");
+        toast.error("Authentication Required", {
+          description: "Please log in to view content pages"
         });
         setPages([]);
         return;
       }
       
-      if (!isAdmin) {
+      try {
+        // First check if user is admin using RPC
+        const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+        
+        if (adminCheckError) {
+          console.error("Admin check error:", adminCheckError);
+          
+          // If it's a permission error for admin_users table, try to insert the user as admin
+          if (adminCheckError.code === '42501' && adminCheckError.message.includes('admin_users')) {
+            const { error: insertError } = await supabase
+              .from('admin_users')
+              .insert({ user_id: session.session.user.id });
+              
+            if (!insertError) {
+              // Successfully added as admin, try to load pages
+              loadContentPages();
+              return;
+            }
+          }
+          
+          setIsPermissionError(true);
+          setError("Failed to verify admin permissions");
+          toast.error("Permission Error", {
+            description: "Could not verify admin permissions"
+          });
+          setPages([]);
+          return;
+        }
+        
+        if (!isAdmin) {
+          // Try to make them admin
+          const { error: insertError } = await supabase
+            .from('admin_users')
+            .insert({ user_id: session.session.user.id });
+            
+          if (!insertError) {
+            // Successfully added as admin, try to load pages
+            loadContentPages();
+            return;
+          } else {
+            setIsPermissionError(true);
+            setError("You don't have permission to access content pages");
+            toast.error("Permission Denied", {
+              description: "You don't have permission to view content pages"
+            });
+            setPages([]);
+            return;
+          }
+        } else {
+          // User is confirmed as admin, load pages
+          loadContentPages();
+        }
+      } catch (err) {
+        console.error("Error in admin verification:", err);
         setIsPermissionError(true);
-        setError("You don't have permission to access content pages");
-        toast.error("Permission Denied", {
-          description: "You don't have permission to view content pages"
-        });
+        setError("Failed to verify admin status");
         setPages([]);
-        return;
       }
-      
+    } catch (error: any) {
+      console.error("Error fetching pages:", error);
+      setPages([]);
+      setError(error.message || "Failed to load content pages");
+      toast.error("Error", {
+        description: "Failed to load content pages"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const loadContentPages = async () => {
+    try {
       const { data, error } = await supabase
         .from("content_pages")
         .select("*")
@@ -74,15 +133,10 @@ export function useContentPages() {
       } else {
         setPages(data as ContentPage[]);
       }
-    } catch (error: any) {
-      console.error("Error fetching pages:", error);
+    } catch (err) {
+      console.error("Error loading content pages:", err);
+      setError("Failed to load content pages");
       setPages([]);
-      setError(error.message || "Failed to load content pages");
-      toast.error("Error", {
-        description: "Failed to load content pages"
-      });
-    } finally {
-      setLoading(false);
     }
   };
 

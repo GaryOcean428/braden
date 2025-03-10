@@ -20,13 +20,51 @@ export function useAdminAuth() {
       const { data, error } = await supabase.auth.getSession();
       
       if (data.session) {
-        // Check if the user is an admin
-        const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
-        
-        if (!adminError && isAdmin) {
-          toast.success('Already authenticated as admin');
-          navigate('/admin');
-          return;
+        try {
+          // Check if the user is an admin
+          const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
+          
+          if (adminError) {
+            console.error('Admin check error:', adminError);
+            
+            // If it's a permission error for admin_users table, try to insert the user as admin
+            if (adminError.code === '42501' && adminError.message.includes('admin_users')) {
+              const { error: insertError } = await supabase
+                .from('admin_users')
+                .insert({ user_id: data.session.user.id });
+                
+              if (!insertError) {
+                // Successfully added as admin
+                toast.success('Authenticated as admin');
+                navigate('/admin');
+                return;
+              }
+            }
+            
+            // Reset checking state but don't redirect - let user log in again
+            setIsCheckingAuth(false);
+            return;
+          }
+          
+          if (isAdmin) {
+            toast.success('Already authenticated as admin');
+            navigate('/admin');
+            return;
+          } else {
+            // Not an admin, try to make them admin
+            const { error: insertError } = await supabase
+              .from('admin_users')
+              .insert({ user_id: data.session.user.id });
+              
+            if (!insertError) {
+              toast.success('Admin access granted');
+              navigate('/admin');
+              return;
+            }
+          }
+        } catch (err) {
+          console.error('Admin verification error:', err);
+          // Continue to login form
         }
       }
     } catch (error) {
@@ -54,34 +92,59 @@ export function useAdminAuth() {
       if (error) throw error;
       
       if (data.user) {
-        // Check if the user is an admin
-        const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
-        
-        if (adminError) {
-          console.error('Admin check error:', adminError);
-          throw new Error('Could not verify admin status');
-        }
-        
-        if (!isAdmin) {
-          // If not an admin, create admin record
-          const { error: insertError } = await supabase
-            .from('admin_users')
-            .insert({ user_id: data.user.id });
+        try {
+          // Check if the user is an admin
+          const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
+          
+          if (adminError) {
+            console.error('Admin check error:', adminError);
             
-          if (insertError) {
-            console.error('Error adding admin user:', insertError);
-            if (insertError.code !== '23505') { // Not a duplicate error
-              throw insertError;
+            // If it's a permission error, directly try to insert admin record
+            if (adminError.code === '42501') {
+              // Create admin record
+              const { error: insertError } = await supabase
+                .from('admin_users')
+                .insert({ user_id: data.user.id });
+                
+              if (insertError) {
+                console.error('Error adding admin user:', insertError);
+                if (insertError.code !== '23505') { // Not a duplicate error
+                  throw insertError;
+                }
+              } else {
+                toast.success('Admin access granted');
+                setTimeout(() => {
+                  navigate('/admin');
+                }, 500);
+                return;
+              }
+            } else {
+              throw new Error('Could not verify admin status');
+            }
+          } else if (!isAdmin) {
+            // If not an admin, create admin record
+            const { error: insertError } = await supabase
+              .from('admin_users')
+              .insert({ user_id: data.user.id });
+              
+            if (insertError) {
+              console.error('Error adding admin user:', insertError);
+              if (insertError.code !== '23505') { // Not a duplicate error
+                throw insertError;
+              }
             }
           }
+          
+          toast.success('Authentication successful');
+          
+          // Give a slight delay to allow the auth state to propagate
+          setTimeout(() => {
+            navigate('/admin');
+          }, 500);
+        } catch (err) {
+          console.error('Admin verification error:', err);
+          toast.error('Failed to verify admin status. Please try again.');
         }
-        
-        toast.success('Authentication successful');
-        
-        // Give a slight delay to allow the auth state to propagate
-        setTimeout(() => {
-          navigate('/admin');
-        }, 500);
       }
     } catch (error) {
       console.error('Login error:', error);
