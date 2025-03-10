@@ -31,6 +31,7 @@ const AdminAuth = () => {
         toast.error('Error logging out');
       } else {
         console.log("Logout successful");
+        toast.success('Logged out successfully');
       }
     };
     
@@ -38,7 +39,7 @@ const AdminAuth = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('logout') === 'true') {
       logout();
-      toast.success('Logged out successfully');
+      // Clear the logout parameter from URL
       navigate('/admin/auth', { replace: true });
     }
   }, [navigate]);

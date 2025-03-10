@@ -69,7 +69,8 @@ export function AdminLoginForm({
             <div className="p-3 bg-blue-50 rounded border border-blue-100 text-sm text-blue-800 flex items-start">
               <InfoIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500 mt-0.5" />
               <span>
-                Upon successful login, your account will automatically be granted admin permissions.
+                Your administrator status is determined by the <code>is_admin</code> function in the database. 
+                If you continue to have issues, contact the database administrator.
               </span>
             </div>
             <Button 

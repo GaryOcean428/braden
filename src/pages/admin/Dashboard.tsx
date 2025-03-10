@@ -36,29 +36,8 @@ const Dashboard = () => {
       }
       
       console.log("User is logged in, checking admin status...");
-      // Store user ID for reference
-      const userId = data.session.user.id;
       
-      // Try to create an admin user record directly
-      const { error: insertError } = await supabase
-        .from('admin_users')
-        .insert({ user_id: userId })
-        .select();
-        
-      if (insertError && insertError.code !== '23505') { // Not a duplicate error
-        console.error("Error creating admin user:", insertError);
-        setAuthError("Failed to verify or set admin status");
-        toast.error("Permission Error", {
-          description: "Could not verify admin permissions"
-        });
-        // Redirect after a brief delay
-        setTimeout(() => {
-          navigate('/admin/auth');
-        }, 1500);
-        return;
-      }
-      
-      // Double check with is_admin RPC
+      // Skip table operations and use RPC directly since it's working
       const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
       
       if (adminCheckError) {
@@ -75,7 +54,7 @@ const Dashboard = () => {
       }
       
       if (!isAdmin) {
-        console.log("User is not an admin despite insertion attempt");
+        console.log("User is not an admin");
         setAuthError("You don't have admin permissions");
         toast.error("Permission Denied", {
           description: "You don't have admin permissions"

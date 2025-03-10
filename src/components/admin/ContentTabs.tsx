@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PagesTabContent } from "./PagesTabContent";
@@ -41,44 +40,17 @@ export const ContentTabs = () => {
       }
       
       try {
-        // Try to verify admin status
+        // Use RPC directly to verify admin status
         const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
         
         if (adminError) {
           console.error('Admin check error:', adminError);
-          
-          // If it's a permission error for admin_users table, try to insert the user as admin
-          if (adminError.code === '42501' && adminError.message.includes('admin_users')) {
-            const { error: insertError } = await supabase
-              .from('admin_users')
-              .insert({ user_id: data.session.user.id });
-              
-            if (!insertError) {
-              // Successfully added as admin
-              setAuthError(null);
-              toast.success("Admin access granted");
-              return;
-            }
-          }
-          
           setAuthError("Could not verify admin status");
-        } else if (!isAdmin) {
-          // If not admin, try to make them admin
-          const { error: insertError } = await supabase
-            .from('admin_users')
-            .insert({ user_id: data.session.user.id });
-            
-          if (!insertError) {
-            // Successfully added as admin
-            setAuthError(null);
-            toast.success("Admin access granted");
-            return;
-          } else {
-            setAuthError("Failed to grant admin access");
-          }
-        } else {
+        } else if (isAdmin) {
           // User is admin
           setAuthError(null);
+        } else {
+          setAuthError("You don't have admin access");
         }
       } catch (err) {
         console.error("Admin verification error:", err);

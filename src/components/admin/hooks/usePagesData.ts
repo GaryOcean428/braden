@@ -33,26 +33,11 @@ export function usePagesData() {
       }
       
       try {
-        // First check if user is admin
+        // Check if user is admin directly via RPC
         const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
         
-        // Handle error with admin check
         if (adminCheckError) {
           console.error("Admin check error:", adminCheckError);
-          
-          // If it's a permission error for admin_users table, try to insert the user as admin
-          if (adminCheckError.code === '42501' && adminCheckError.message.includes('admin_users')) {
-            const { error: insertError } = await supabase
-              .from('admin_users')
-              .insert({ user_id: session.session.user.id });
-              
-            if (!insertError) {
-              // Successfully added as admin, try to load pages
-              loadPageContent();
-              return;
-            }
-          }
-          
           setIsPermissionError(true);
           setError("Could not verify admin permissions");
           toast.error("Permission Error", {
@@ -63,28 +48,17 @@ export function usePagesData() {
         }
         
         if (!isAdmin) {
-          // If not an admin, try to make them admin
-          const { error: insertError } = await supabase
-            .from('admin_users')
-            .insert({ user_id: session.session.user.id });
-            
-          if (!insertError) {
-            // Successfully added as admin, try to load pages
-            loadPageContent();
-            return;
-          } else {
-            setIsPermissionError(true);
-            setError("You don't have permission to access content pages");
-            toast.error("Permission Denied", {
-              description: "You don't have admin permissions to view content pages"
-            });
-            setPages([]);
-            return;
-          }
-        } else {
-          // User is confirmed as admin, load the pages
-          loadPageContent();
+          setIsPermissionError(true);
+          setError("You don't have permission to access content pages");
+          toast.error("Permission Denied", {
+            description: "You don't have admin permissions to view content pages"
+          });
+          setPages([]);
+          return;
         }
+        
+        // User is confirmed as admin, load the pages
+        loadPageContent();
       } catch (err) {
         console.error("Error in admin verification:", err);
         setIsPermissionError(true);
