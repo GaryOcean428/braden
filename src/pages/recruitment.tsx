@@ -1,9 +1,18 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Briefcase, Users, Award, Search } from "lucide-react";
 import Layout from "@/components/Layout";
+import { useNavigate } from "react-router-dom";
 
 const RecruitmentPage = () => {
+  const navigate = useNavigate();
+
+  const navigateToContact = () => {
+    // Navigate to homepage and scroll to contact section
+    navigate('/#contact');
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -113,7 +122,7 @@ const RecruitmentPage = () => {
           <Button 
             variant="secondary" 
             size="lg"
-            onClick={() => window.location.href = 'mailto:contact@braden.com.au'}
+            onClick={navigateToContact}
           >
             Contact Us Today
           </Button>
