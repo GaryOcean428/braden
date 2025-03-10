@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContentList } from "@/components/content/ContentList";
@@ -35,7 +34,10 @@ export default function ContentManager() {
       // Check if the user is the developer by email
       const userEmail = data.session.user.email;
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      if (userEmail === 'braden.lang77@gmail.com') {
+        console.log("Admin status confirmed via email check");
+        setIsAdmin(true);
+      } else {
         setAuthError("You must be an admin to access content management");
         toast.error("Access Denied", {
           description: "You don't have admin permissions"
@@ -48,7 +50,6 @@ export default function ContentManager() {
         return;
       }
       
-      console.log("Admin status confirmed via email check");
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");

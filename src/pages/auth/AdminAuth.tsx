@@ -1,4 +1,3 @@
-
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { AuthLoadingState } from '@/components/auth/AuthLoadingState';
 import { AdminLoginForm } from '@/components/auth/AdminLoginForm';
