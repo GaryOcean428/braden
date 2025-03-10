@@ -22,7 +22,14 @@ export const PagesTabContent = () => {
 
   return (
     <div className="space-y-4">
-      <PageList pages={pages} />
+      {pages.length > 0 ? (
+        <PageList pages={pages} />
+      ) : (
+        <div className="p-4 text-center bg-gray-50 border rounded-md">
+          <p className="text-[#2c3e50]">No content pages found.</p>
+          <p className="text-sm text-gray-500 mt-1">Pages you create will appear here.</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, ShieldCheck } from "lucide-react";
+import { Info, ShieldCheck, Database } from "lucide-react";
 
 interface AdminStatusAlertProps {
   isAdmin: boolean;
@@ -15,20 +15,21 @@ export function AdminStatusAlert({ isAdmin, error, adminUsersCount }: AdminStatu
   const isPermissionError = error?.includes("permission") || 
                             error?.includes("restrictions") || 
                             error?.includes("role") || 
-                            error?.includes("admin");
+                            error?.includes("admin") ||
+                            error?.includes("403");
 
   return (
     <div className="mb-4">
       <Alert className="bg-[#d8c690]/20 border-[#cbb26a]">
         {isPermissionError ? 
-          <ShieldCheck className="h-4 w-4 text-[#27ae60]" /> : 
-          <Info className="h-4 w-4 text-[#811a2c]" />
+          <Database className="h-4 w-4 text-[#811a2c]" /> : 
+          <ShieldCheck className="h-4 w-4 text-[#27ae60]" />
         }
         <AlertDescription className="text-[#2c3e50]">
           {isPermissionError ? 
-            "You are confirmed as a developer with admin privileges. Database access may be restricted for security reasons, but your developer status is verified through email authentication." : 
+            "You are confirmed as a developer with admin privileges by email verification. Database access is currently restricted due to Row Level Security policies. Admin functions that require database access may not work correctly." : 
             `You are confirmed as a developer. ${adminUsersCount === 0 ? 
-              "The admin users list may not be visible due to database permissions, but your access is verified." : 
+              "The admin users list may not be visible due to database permissions, but your access is verified through email." : 
               "You have access to manage admin users."}`
           }
         </AlertDescription>
