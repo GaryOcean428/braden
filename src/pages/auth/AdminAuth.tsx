@@ -24,10 +24,13 @@ const AdminAuth = () => {
   // Handle logout if user comes to this page while already logged in
   useEffect(() => {
     const logout = async () => {
+      console.log("Logging out user...");
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Error logging out:', error);
         toast.error('Error logging out');
+      } else {
+        console.log("Logout successful");
       }
     };
     

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardCards } from "@/components/admin/DashboardCards";
@@ -23,9 +22,11 @@ const Dashboard = () => {
       setIsLoading(true);
       setAuthError(null);
       
+      console.log("Checking auth status...");
       const { data, error } = await supabase.auth.getSession();
       
       if (error || !data.session) {
+        console.log("No session found, redirecting to login");
         setAuthError("You must be logged in to access the admin dashboard");
         toast.error("Authentication Required", {
           description: "Please log in to access the admin dashboard"
@@ -34,63 +35,59 @@ const Dashboard = () => {
         return;
       }
       
+      console.log("User is logged in, checking admin status...");
       // Store user ID for reference
       const userId = data.session.user.id;
       
-      // Execute RPC to check admin status directly
+      // Try to create an admin user record directly
+      const { error: insertError } = await supabase
+        .from('admin_users')
+        .insert({ user_id: userId })
+        .select();
+        
+      if (insertError && insertError.code !== '23505') { // Not a duplicate error
+        console.error("Error creating admin user:", insertError);
+        setAuthError("Failed to verify or set admin status");
+        toast.error("Permission Error", {
+          description: "Could not verify admin permissions"
+        });
+        // Redirect after a brief delay
+        setTimeout(() => {
+          navigate('/admin/auth');
+        }, 1500);
+        return;
+      }
+      
+      // Double check with is_admin RPC
       const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
       
       if (adminCheckError) {
         console.error("Admin check error:", adminCheckError);
-        
-        // Try to create an admin user record
-        const { error: insertError } = await supabase
-          .from('admin_users')
-          .insert({ user_id: userId });
-          
-        if (insertError) {
-          console.error("Error creating admin user:", insertError);
-          
-          // If not a duplicate error
-          if (insertError.code !== '23505') {
-            setAuthError("Failed to verify or set admin status");
-            toast.error("Permission Error", {
-              description: "Could not verify admin permissions"
-            });
-            // Redirect after a brief delay
-            setTimeout(() => {
-              navigate('/admin/auth');
-            }, 1500);
-            return;
-          }
-        } else {
-          toast.success("Admin access granted");
-        }
-      } else if (!isAdmin) {
-        // Try to create an admin user record
-        const { error: insertError } = await supabase
-          .from('admin_users')
-          .insert({ user_id: userId });
-          
-        if (insertError) {
-          console.error("Error creating admin user:", insertError);
-          
-          // If not a duplicate error
-          if (insertError.code !== '23505') {
-            setAuthError("Failed to verify or set admin status");
-            toast.error("Permission Error", {
-              description: "Could not grant admin permissions"
-            });
-            // Redirect after a brief delay
-            setTimeout(() => {
-              navigate('/admin/auth');
-            }, 1500);
-            return;
-          }
-        } else {
-          toast.success("Admin access granted");
-        }
+        setAuthError("Failed to verify admin status");
+        toast.error("Permission Error", {
+          description: "Could not verify admin permissions"
+        });
+        // Redirect after a brief delay
+        setTimeout(() => {
+          navigate('/admin/auth');
+        }, 1500);
+        return;
       }
+      
+      if (!isAdmin) {
+        console.log("User is not an admin despite insertion attempt");
+        setAuthError("You don't have admin permissions");
+        toast.error("Permission Denied", {
+          description: "You don't have admin permissions"
+        });
+        // Redirect after a brief delay
+        setTimeout(() => {
+          navigate('/admin/auth');
+        }, 1500);
+        return;
+      }
+      
+      console.log("Admin status confirmed");
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");
@@ -117,13 +114,9 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <Skeleton className="h-10 w-52 mb-6" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32 w-full" />
-          ))}
-        </div>
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-10 w-1/3 mb-6" />
+        <Skeleton className="h-6 w-2/3 mb-8" />
+        <Skeleton className="h-64 w-full rounded-lg" />
       </div>
     );
   }

@@ -13,13 +13,16 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
 
   const handleLogout = async () => {
     try {
+      console.log("Logging out...");
       const { error } = await supabase.auth.signOut();
       if (error) {
+        console.error("Logout error:", error);
         toast.error("Logout failed", {
           description: error.message
         });
       } else {
         toast.success("Logged out successfully");
+        // Navigate to auth page with logout parameter
         navigate('/admin/auth?logout=true', { replace: true });
       }
     } catch (error) {
