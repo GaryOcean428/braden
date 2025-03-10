@@ -42,6 +42,40 @@ const AdminAuth = () => {
       navigate('/admin/auth', { replace: true });
     }
   }, [navigate]);
+
+  // Check if the server is properly serving the route
+  useEffect(() => {
+    const checkServerRoute = async () => {
+      try {
+        const response = await fetch('/admin/auth');
+        if (!response.ok) {
+          throw new Error('Server is not properly serving the route');
+        }
+      } catch (error) {
+        console.error('Server route check error:', error);
+        toast.error('Server route check failed');
+      }
+    };
+
+    checkServerRoute();
+  }, []);
+
+  // Check for misconfiguration in the server settings
+  useEffect(() => {
+    const checkServerConfig = async () => {
+      try {
+        const response = await fetch('/api/check-config');
+        if (!response.ok) {
+          throw new Error('Server configuration error');
+        }
+      } catch (error) {
+        console.error('Server configuration check error:', error);
+        toast.error('Server configuration check failed');
+      }
+    };
+
+    checkServerConfig();
+  }, []);
   
   if (isCheckingAuth) {
     return <AuthLoadingState />;
