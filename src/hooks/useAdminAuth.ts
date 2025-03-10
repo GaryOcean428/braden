@@ -28,23 +28,17 @@ export function useAdminAuth() {
       }
       
       if (data.session) {
-        // Session exists, check admin status using RPC
-        const { data: isAdmin, error: adminError } = await supabase.rpc('is_braden_admin');
+        // Session exists, verify if the user is Braden (the developer)
+        const userEmail = data.session.user.email;
         
-        if (adminError) {
-          console.error('Admin check error:', adminError);
-          setIsCheckingAuth(false);
-          return;
-        }
-        
-        if (isAdmin === true) {
-          // User is confirmed as admin
-          console.log("User confirmed as admin via is_braden_admin RPC");
+        if (userEmail === 'braden.lang77@gmail.com') {
+          // User is confirmed as admin by email
+          console.log("User confirmed as developer by email");
           toast.success('Developer access confirmed');
           navigate('/admin');
         } else {
           console.log("User is logged in but not a developer");
-          // Sign out if user is not an admin
+          // Sign out if user is not the developer
           await supabase.auth.signOut();
         }
       } else {
@@ -91,26 +85,13 @@ export function useAdminAuth() {
         return;
       }
       
-      // Step 2: Check admin status using RPC function
-      const { data: isAdmin, error: adminError } = await supabase.rpc('is_braden_admin');
-      
-      if (adminError) {
-        console.error('Admin check error:', adminError);
-        setError('Failed to verify developer status');
-        toast.error('Verification Error', {
-          description: 'Failed to verify developer status'
-        });
-        // Sign out if we can't verify admin status
-        await supabase.auth.signOut();
-        return;
-      }
-      
-      if (isAdmin === true) {
-        // Success path - user is authenticated and is an admin
+      // Step 2: Check if the email matches developer's email
+      if (data.user.email === 'braden.lang77@gmail.com') {
+        // Success path - user is authenticated and is the developer
         toast.success('Developer access confirmed');
         navigate('/admin');
       } else {
-        // User is authenticated but not an admin
+        // User is authenticated but not the developer
         setError('You do not have developer access');
         toast.error('Access Denied', {
           description: 'You do not have developer privileges'
