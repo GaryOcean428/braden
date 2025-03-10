@@ -158,7 +158,7 @@ export type Database = {
             foreignKeyName: "CompetencyAssessment_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "User"
+            referencedRelation: "Employee"
             referencedColumns: ["id"]
           },
         ]
@@ -420,6 +420,72 @@ export type Database = {
         }
         Relationships: []
       }
+      Employee: {
+        Row: {
+          created_at: string
+          disability_details: string | null
+          email: string
+          employee_type: string | null
+          employment_history: Json | null
+          english_proficiency: string | null
+          funding_eligibility: Json | null
+          id: string
+          name: string | null
+          numeracy_level: string | null
+          preferred_industry: string[] | null
+          prior_qualifications: string[] | null
+          relocation_willing: boolean
+          support_requirements: string | null
+          updated_at: string
+          visa_expiry: string | null
+          visa_status: string | null
+          white_card_expiry: string | null
+          white_card_number: string | null
+        }
+        Insert: {
+          created_at?: string
+          disability_details?: string | null
+          email: string
+          employee_type?: string | null
+          employment_history?: Json | null
+          english_proficiency?: string | null
+          funding_eligibility?: Json | null
+          id: string
+          name?: string | null
+          numeracy_level?: string | null
+          preferred_industry?: string[] | null
+          prior_qualifications?: string[] | null
+          relocation_willing?: boolean
+          support_requirements?: string | null
+          updated_at: string
+          visa_expiry?: string | null
+          visa_status?: string | null
+          white_card_expiry?: string | null
+          white_card_number?: string | null
+        }
+        Update: {
+          created_at?: string
+          disability_details?: string | null
+          email?: string
+          employee_type?: string | null
+          employment_history?: Json | null
+          english_proficiency?: string | null
+          funding_eligibility?: Json | null
+          id?: string
+          name?: string | null
+          numeracy_level?: string | null
+          preferred_industry?: string[] | null
+          prior_qualifications?: string[] | null
+          relocation_willing?: boolean
+          support_requirements?: string | null
+          updated_at?: string
+          visa_expiry?: string | null
+          visa_status?: string | null
+          white_card_expiry?: string | null
+          white_card_number?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           company: string | null
@@ -639,7 +705,7 @@ export type Database = {
             foreignKeyName: "SupportContact_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "User"
+            referencedRelation: "Employee"
             referencedColumns: ["id"]
           },
         ]
@@ -809,69 +875,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      User: {
-        Row: {
-          blue_card_expiry: string | null
-          blue_card_number: string | null
-          created_at: string
-          disability_details: string | null
-          email: string
-          employment_history: Json | null
-          english_proficiency: string | null
-          funding_eligibility: Json | null
-          id: string
-          name: string | null
-          numeracy_level: string | null
-          preferred_industry: string[] | null
-          prior_qualifications: string[] | null
-          relocation_willing: boolean
-          support_requirements: string | null
-          updated_at: string
-          visa_expiry: string | null
-          visa_status: string | null
-        }
-        Insert: {
-          blue_card_expiry?: string | null
-          blue_card_number?: string | null
-          created_at?: string
-          disability_details?: string | null
-          email: string
-          employment_history?: Json | null
-          english_proficiency?: string | null
-          funding_eligibility?: Json | null
-          id: string
-          name?: string | null
-          numeracy_level?: string | null
-          preferred_industry?: string[] | null
-          prior_qualifications?: string[] | null
-          relocation_willing?: boolean
-          support_requirements?: string | null
-          updated_at: string
-          visa_expiry?: string | null
-          visa_status?: string | null
-        }
-        Update: {
-          blue_card_expiry?: string | null
-          blue_card_number?: string | null
-          created_at?: string
-          disability_details?: string | null
-          email?: string
-          employment_history?: Json | null
-          english_proficiency?: string | null
-          funding_eligibility?: Json | null
-          id?: string
-          name?: string | null
-          numeracy_level?: string | null
-          preferred_industry?: string[] | null
-          prior_qualifications?: string[] | null
-          relocation_willing?: boolean
-          support_requirements?: string | null
-          updated_at?: string
-          visa_expiry?: string | null
-          visa_status?: string | null
-        }
-        Relationships: []
       }
       user_organizations: {
         Row: {

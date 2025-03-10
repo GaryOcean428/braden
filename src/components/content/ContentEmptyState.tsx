@@ -1,13 +1,14 @@
 
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, Plus, AlertTriangle, ShieldAlert } from "lucide-react";
+import { FileText, Plus, RefreshCcw, ShieldAlert } from "lucide-react";
 
 interface ContentEmptyStateProps {
   isPermissionError?: boolean;
+  onRetry?: () => void;
 }
 
-export function ContentEmptyState({ isPermissionError }: ContentEmptyStateProps = {}) {
+export function ContentEmptyState({ isPermissionError, onRetry }: ContentEmptyStateProps) {
   const navigate = useNavigate();
   
   if (isPermissionError) {
@@ -18,12 +19,23 @@ export function ContentEmptyState({ isPermissionError }: ContentEmptyStateProps 
         <p className="text-[#2c3e50] mb-4">You don't have permission to access content pages</p>
         <div className="space-y-2">
           <p className="text-[#95a5a6] text-sm mb-4">Try logging in with an admin account</p>
-          <Button 
-            onClick={() => navigate("/admin/auth")}
-            className="bg-[#2c3e50] hover:bg-[#34495e]"
-          >
-            Go to Login
-          </Button>
+          <div className="flex justify-center gap-2">
+            <Button 
+              onClick={() => navigate("/admin/auth")}
+              className="bg-[#2c3e50] hover:bg-[#34495e]"
+            >
+              Go to Login
+            </Button>
+            {onRetry && (
+              <Button 
+                variant="outline"
+                onClick={onRetry}
+                className="border-[#95a5a6]"
+              >
+                <RefreshCcw className="h-4 w-4 mr-2" /> Retry
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     );

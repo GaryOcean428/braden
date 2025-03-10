@@ -25,6 +25,34 @@ export const PagesTabContent = () => {
       setError(null);
       setIsPermissionError(false);
       
+      // First check if user is admin
+      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      
+      if (adminCheckError) {
+        console.error("Admin check error:", adminCheckError);
+        setIsPermissionError(true);
+        setError("Failed to verify admin permissions");
+        toast({
+          title: "Permission Error",
+          description: "Could not verify admin permissions",
+          variant: "destructive",
+        });
+        setPages([]);
+        return;
+      }
+      
+      if (!isAdmin) {
+        setIsPermissionError(true);
+        setError("You don't have permission to access content pages");
+        toast({
+          title: "Permission Denied",
+          description: "You don't have admin permissions to view content pages",
+          variant: "destructive",
+        });
+        setPages([]);
+        return;
+      }
+      
       const { data: pagesData, error: pagesError } = await supabase
         .from('content_pages')
         .select('*')

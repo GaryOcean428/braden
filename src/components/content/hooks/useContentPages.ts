@@ -22,6 +22,30 @@ export function useContentPages() {
       setError(null);
       setIsPermissionError(false);
       
+      // First check if user is admin using RPC
+      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      
+      if (adminCheckError) {
+        console.error("Admin check error:", adminCheckError);
+        setIsPermissionError(true);
+        setError("Failed to verify admin permissions");
+        toast.error("Permission Error", {
+          description: "Could not verify admin permissions"
+        });
+        setPages([]);
+        return;
+      }
+      
+      if (!isAdmin) {
+        setIsPermissionError(true);
+        setError("You don't have permission to access content pages");
+        toast.error("Permission Denied", {
+          description: "You don't have permission to view content pages"
+        });
+        setPages([]);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from("content_pages")
         .select("*")
@@ -64,6 +88,16 @@ export function useContentPages() {
 
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
     try {
+      // First check if user is admin
+      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      
+      if (adminCheckError || !isAdmin) {
+        toast.error("Permission Denied", {
+          description: "You don't have permission to update page status"
+        });
+        return;
+      }
+      
       const { error } = await supabase
         .from("content_pages")
         .update({ is_published: !currentStatus })
@@ -101,6 +135,17 @@ export function useContentPages() {
 
     try {
       setDeleting(true);
+      
+      // First check if user is admin
+      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      
+      if (adminCheckError || !isAdmin) {
+        toast.error("Permission Denied", {
+          description: "You don't have permission to delete this page"
+        });
+        setDeleting(false);
+        return;
+      }
       
       const { error } = await supabase
         .from("content_pages")

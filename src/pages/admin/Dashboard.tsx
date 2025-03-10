@@ -35,20 +35,29 @@ const Dashboard = () => {
         return;
       }
       
-      // Check if user is an admin (optional additional security)
-      // This might fail if permissions aren't set properly, so we'll just log it
-      try {
-        const { error: adminError } = await supabase
-          .from('admin_users')
-          .select('*')
-          .eq('user_id', data.session.user.id)
-          .single();
-          
-        if (adminError) {
-          console.warn("Admin check failed:", adminError);
-        }
-      } catch (err) {
-        console.warn("Admin validation error:", err);
+      // Execute RPC to check admin status directly
+      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      
+      if (adminCheckError) {
+        console.error("Admin check error:", adminCheckError);
+        toast({
+          title: "Permission Check Failed",
+          description: "Could not verify admin permissions",
+          variant: "destructive",
+        });
+      } else if (!isAdmin) {
+        setAuthError("You must be an admin to access the dashboard");
+        toast({
+          title: "Access Denied",
+          description: "You don't have admin permissions",
+          variant: "destructive",
+        });
+        
+        // Redirect after a brief delay
+        setTimeout(() => {
+          navigate('/admin/auth');
+        }, 1500);
+        return;
       }
     } catch (error) {
       console.error("Auth check error:", error);

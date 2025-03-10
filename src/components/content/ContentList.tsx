@@ -70,7 +70,7 @@ export function ContentList() {
 
         {error ? (
           isPermissionError ? (
-            <ContentEmptyState isPermissionError={true} />
+            <ContentEmptyState isPermissionError={true} onRetry={fetchPages} />
           ) : (
             <ContentErrorState error={error} onRetry={fetchPages} />
           )
