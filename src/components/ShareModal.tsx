@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface ShareModalProps {
@@ -18,10 +18,15 @@ interface ShareModalProps {
 
 const ShareModal = ({ icon }: ShareModalProps) => {
   const [url, setUrl] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    setUrl(window.location.href);
-  }, []);
+    // Only update URL when the dialog is open
+    if (isOpen) {
+      setUrl(window.location.href);
+    }
+  }, [isOpen]);
 
   const handleShare = async () => {
     try {
@@ -50,7 +55,7 @@ const ShareModal = ({ icon }: ShareModalProps) => {
 
   return (
     <ErrorBoundary>
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="icon" className="relative z-20">
             {icon}
