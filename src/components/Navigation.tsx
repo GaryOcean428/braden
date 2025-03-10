@@ -5,12 +5,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 import { ErrorBoundary } from "./ErrorBoundary";
+
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
@@ -38,6 +40,7 @@ const Navigation = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
   const scrollToSection = (sectionId: string) => {
     if (location.pathname === '/') {
       const section = document.getElementById(sectionId);
@@ -61,6 +64,7 @@ const Navigation = () => {
       }, 100);
     }
   };
+
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (location.pathname === '/') {
@@ -75,8 +79,9 @@ const Navigation = () => {
     }
     setIsOpen(false);
   };
+
   return <ErrorBoundary>
-      <nav className="bg-[811a2c]">
+      <nav className="bg-[#811a2c]">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity" onClick={handleHomeClick}>
@@ -98,4 +103,5 @@ const Navigation = () => {
       </nav>
     </ErrorBoundary>;
 };
+
 export default Navigation;
