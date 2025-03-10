@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface ShareModalProps {
@@ -38,16 +38,14 @@ const ShareModal = ({ icon }: ShareModalProps) => {
       } else {
         await navigator.clipboard.writeText(url);
         toast({
-          title: "Success",
           description: "Link copied to clipboard!",
         });
       }
     } catch (error) {
       console.error("Error sharing:", error);
       toast({
-        title: "Error",
-        description: "Failed to share",
         variant: "destructive",
+        description: "Failed to share",
       });
     }
   };
