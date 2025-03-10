@@ -1004,6 +1004,10 @@ export type Database = {
             }
             Returns: undefined
           }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_admin_user: {
         Args: {
           user_uuid: string

@@ -10,6 +10,7 @@ export function useContentPages() {
   const [error, setError] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [isPermissionError, setIsPermissionError] = useState(false);
 
   useEffect(() => {
     fetchPages();
@@ -19,8 +20,8 @@ export function useContentPages() {
     try {
       setLoading(true);
       setError(null);
+      setIsPermissionError(false);
       
-      // Try to fetch content pages with public mode to bypass RLS
       const { data, error } = await supabase
         .from("content_pages")
         .select("*")
@@ -28,18 +29,29 @@ export function useContentPages() {
 
       if (error) {
         console.error("Error fetching pages:", error);
-        // If there's an error, show empty pages instead of failing
+        
+        // Check if it's a permission issue
+        if (error.message.toLowerCase().includes('permission') || 
+            error.message.toLowerCase().includes('access denied') ||
+            error.code === 'PGRST301') {
+          setIsPermissionError(true);
+          setError("You don't have permission to access content pages");
+          toast.error("Permission Denied", {
+            description: "You don't have permission to view content pages"
+          });
+        } else {
+          setError(error.message || "Failed to load content pages");
+          toast.error("Error", {
+            description: "Failed to load content pages"
+          });
+        }
+        
         setPages([]);
-        setError("Unable to load content pages. You may not have sufficient permissions.");
-        toast.error("Access Denied", {
-          description: "You may not have permission to view content pages."
-        });
       } else {
         setPages(data as ContentPage[]);
       }
     } catch (error: any) {
       console.error("Error fetching pages:", error);
-      // Show empty pages instead of failing
       setPages([]);
       setError(error.message || "Failed to load content pages");
       toast.error("Error", {
@@ -58,6 +70,16 @@ export function useContentPages() {
         .eq("id", id);
 
       if (error) {
+        if (error.message.toLowerCase().includes('permission') || 
+            error.code === 'PGRST301') {
+          toast.error("Permission Denied", {
+            description: "You don't have permission to update page status"
+          });
+        } else {
+          toast.error("Error", {
+            description: "Failed to update page status"
+          });
+        }
         throw error;
       }
 
@@ -71,9 +93,6 @@ export function useContentPages() {
       });
     } catch (error: any) {
       console.error("Error updating page status:", error);
-      toast.error("Permission Denied", {
-        description: "You don't have permission to update page status."
-      });
     }
   };
 
@@ -89,6 +108,16 @@ export function useContentPages() {
         .eq("id", deleteId);
 
       if (error) {
+        if (error.message.toLowerCase().includes('permission') || 
+            error.code === 'PGRST301') {
+          toast.error("Permission Denied", {
+            description: "You don't have permission to delete this page"
+          });
+        } else {
+          toast.error("Error", {
+            description: "Failed to delete page"
+          });
+        }
         throw error;
       }
 
@@ -101,9 +130,6 @@ export function useContentPages() {
       });
     } catch (error: any) {
       console.error("Error deleting page:", error);
-      toast.error("Permission Denied", {
-        description: "You don't have permission to delete this page."
-      });
     } finally {
       setDeleting(false);
     }
@@ -115,6 +141,7 @@ export function useContentPages() {
     error,
     deleteId,
     deleting,
+    isPermissionError,
     setDeleteId,
     fetchPages,
     handleTogglePublish,

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Plus, FileText, ExternalLink, AlertTriangle } from "lucide-react";
+import { Edit, Plus, FileText, ExternalLink, AlertTriangle, ShieldAlert } from "lucide-react";
 
 export const PagesTabContent = () => {
   const [pages, setPages] = useState<any[]>([]);
@@ -36,9 +35,9 @@ export const PagesTabContent = () => {
         console.error('Error loading pages:', pagesError);
         
         // Check if it's a permission error
-        if (pagesError.message && 
-            (pagesError.message.includes('permission') || 
-             pagesError.message.includes('denied'))) {
+        if (pagesError.message.toLowerCase().includes('permission') || 
+            pagesError.message.toLowerCase().includes('denied') ||
+            pagesError.code === 'PGRST301') {
           setIsPermissionError(true);
           setError("You don't have permission to access content pages");
         } else {
@@ -90,7 +89,7 @@ export const PagesTabContent = () => {
       <Card className="border-amber-200 bg-amber-50">
         <CardContent className="pt-6 pb-6">
           <div className="flex flex-col items-center gap-3 text-center">
-            <AlertTriangle className="h-8 w-8 text-amber-500" />
+            <ShieldAlert className="h-8 w-8 text-amber-500" />
             <p className="text-[#ab233a] font-medium">Permission Denied</p>
             <p className="text-sm text-[#2c3e50] max-w-md mb-4">
               You don't have permission to access content pages. Try logging in with an admin account.

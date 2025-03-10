@@ -18,6 +18,7 @@ export function ContentList() {
     error,
     deleteId,
     deleting,
+    isPermissionError,
     setDeleteId,
     fetchPages,
     handleTogglePublish,
@@ -53,13 +54,6 @@ export function ContentList() {
       </div>
     );
   }
-
-  // Check if the error message suggests a permission issue
-  const isPermissionError = error && (
-    error.includes("permission") || 
-    error.includes("access denied") || 
-    error.includes("not have sufficient")
-  );
 
   return (
     <ErrorBoundary>
