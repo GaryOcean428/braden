@@ -76,7 +76,7 @@ const Navigation = () => {
     setIsOpen(false);
   };
   return <ErrorBoundary>
-      <nav className="">
+      <nav className="bg-[811a2c]">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity" onClick={handleHomeClick}>
