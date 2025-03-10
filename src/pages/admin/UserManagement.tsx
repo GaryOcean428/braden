@@ -10,8 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserPlus, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+type AdminUser = {
+  id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  email?: string;
+  created_at_user?: string;
+};
+
 export default function UserManagement() {
-  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
