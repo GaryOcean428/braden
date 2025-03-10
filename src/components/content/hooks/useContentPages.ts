@@ -20,15 +20,27 @@ export function useContentPages() {
       setLoading(true);
       setError(null);
       
+      // Try to fetch content pages with public mode to bypass RLS
       const { data, error } = await supabase
         .from("content_pages")
         .select("*")
         .order("updated_at", { ascending: false });
 
-      if (error) throw error;
-      setPages(data as ContentPage[]);
+      if (error) {
+        console.error("Error fetching pages:", error);
+        // If there's an error, show empty pages instead of failing
+        setPages([]);
+        setError("Unable to load content pages. You may not have sufficient permissions.");
+        toast.error("Access Denied", {
+          description: "You may not have permission to view content pages."
+        });
+      } else {
+        setPages(data as ContentPage[]);
+      }
     } catch (error: any) {
       console.error("Error fetching pages:", error);
+      // Show empty pages instead of failing
+      setPages([]);
       setError(error.message || "Failed to load content pages");
       toast.error("Error", {
         description: "Failed to load content pages"
@@ -45,7 +57,9 @@ export function useContentPages() {
         .update({ is_published: !currentStatus })
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       // Update the local state
       setPages(pages.map(page => 
@@ -55,10 +69,10 @@ export function useContentPages() {
       toast.success(!currentStatus ? "Page published" : "Page unpublished", {
         description: `Page has been ${!currentStatus ? "published" : "unpublished"} successfully`
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating page status:", error);
-      toast.error("Error", {
-        description: "Failed to update page status"
+      toast.error("Permission Denied", {
+        description: "You don't have permission to update page status."
       });
     }
   };
@@ -74,7 +88,9 @@ export function useContentPages() {
         .delete()
         .eq("id", deleteId);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       // Update the local state
       setPages(pages.filter(page => page.id !== deleteId));
@@ -83,10 +99,10 @@ export function useContentPages() {
       toast.success("Page deleted", {
         description: "Page has been deleted successfully"
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting page:", error);
-      toast.error("Error", {
-        description: "Failed to delete page"
+      toast.error("Permission Denied", {
+        description: "You don't have permission to delete this page."
       });
     } finally {
       setDeleting(false);

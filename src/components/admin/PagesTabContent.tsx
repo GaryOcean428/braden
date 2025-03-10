@@ -7,12 +7,13 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Plus, FileText, ExternalLink } from "lucide-react";
+import { Edit, Plus, FileText, ExternalLink, AlertTriangle } from "lucide-react";
 
 export const PagesTabContent = () => {
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPermissionError, setIsPermissionError] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export const PagesTabContent = () => {
     try {
       setLoading(true);
       setError(null);
+      setIsPermissionError(false);
       
       const { data: pagesData, error: pagesError } = await supabase
         .from('content_pages')
@@ -30,8 +32,28 @@ export const PagesTabContent = () => {
         .order('updated_at', { ascending: false })
         .limit(5);
 
-      if (pagesError) throw pagesError;
-      setPages(pagesData || []);
+      if (pagesError) {
+        console.error('Error loading pages:', pagesError);
+        
+        // Check if it's a permission error
+        if (pagesError.message && 
+            (pagesError.message.includes('permission') || 
+             pagesError.message.includes('denied'))) {
+          setIsPermissionError(true);
+          setError("You don't have permission to access content pages");
+        } else {
+          setError(pagesError.message || "Failed to load pages");
+        }
+        
+        setPages([]);
+        toast({
+          title: "Error",
+          description: "Failed to load pages. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        setPages(pagesData || []);
+      }
     } catch (error: any) {
       console.error('Error loading pages:', error);
       setError(error.message || "Failed to load pages");
@@ -63,7 +85,26 @@ export const PagesTabContent = () => {
     );
   }
 
-  if (error) {
+  if (isPermissionError) {
+    return (
+      <Card className="border-amber-200 bg-amber-50">
+        <CardContent className="pt-6 pb-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <AlertTriangle className="h-8 w-8 text-amber-500" />
+            <p className="text-[#ab233a] font-medium">Permission Denied</p>
+            <p className="text-sm text-[#2c3e50] max-w-md mb-4">
+              You don't have permission to access content pages. Try logging in with an admin account.
+            </p>
+            <Button className="bg-[#2c3e50] hover:bg-[#34495e]" asChild>
+              <Link to="/admin/auth">Go to Login</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error && !isPermissionError) {
     return (
       <Alert variant="destructive" className="mb-4">
         <AlertDescription className="flex flex-col gap-2">

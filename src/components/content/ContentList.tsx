@@ -54,9 +54,12 @@ export function ContentList() {
     );
   }
 
-  if (error) {
-    return <ContentErrorState error={error} onRetry={fetchPages} />;
-  }
+  // Check if the error message suggests a permission issue
+  const isPermissionError = error && (
+    error.includes("permission") || 
+    error.includes("access denied") || 
+    error.includes("not have sufficient")
+  );
 
   return (
     <ErrorBoundary>
@@ -71,7 +74,13 @@ export function ContentList() {
           </Button>
         </div>
 
-        {pages.length === 0 ? (
+        {error ? (
+          isPermissionError ? (
+            <ContentEmptyState isPermissionError={true} />
+          ) : (
+            <ContentErrorState error={error} onRetry={fetchPages} />
+          )
+        ) : pages.length === 0 ? (
           <ContentEmptyState />
         ) : (
           <ContentPagesTable 
