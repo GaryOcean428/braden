@@ -29,19 +29,19 @@ export function AdminLoginForm({
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-[#ab233a]">Developer Login</CardTitle>
-          <CardDescription>Please login with your admin credentials</CardDescription>
+          <CardDescription>Access the Braden Group administration panel</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="mb-4 border-[#ab233a] bg-red-50">
+              <AlertTriangle className="h-4 w-4 mr-2 text-[#ab233a]" />
+              <AlertDescription className="text-[#811a2c]">{error}</AlertDescription>
             </Alert>
           )}
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">Email</label>
+              <label htmlFor="email" className="text-sm font-medium text-[#2c3e50]">Email</label>
               <Input 
                 id="email" 
                 type="email" 
@@ -51,10 +51,11 @@ export function AdminLoginForm({
                 required 
                 disabled={isLoading} 
                 autoComplete="email"
+                className="border-[#95a5a6] focus-visible:ring-[#cbb26a]"
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">Password</label>
+              <label htmlFor="password" className="text-sm font-medium text-[#2c3e50]">Password</label>
               <Input 
                 id="password" 
                 type="password" 
@@ -64,18 +65,19 @@ export function AdminLoginForm({
                 required 
                 disabled={isLoading} 
                 autoComplete="current-password"
+                className="border-[#95a5a6] focus-visible:ring-[#cbb26a]"
               />
             </div>
-            <div className="p-3 bg-blue-50 rounded border border-blue-100 text-sm text-blue-800 flex items-start">
-              <InfoIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500 mt-0.5" />
+            <div className="p-3 bg-[#d8c690]/20 rounded border border-[#cbb26a] text-sm text-[#2c3e50] flex items-start">
+              <InfoIcon className="h-5 w-5 mr-2 flex-shrink-0 text-[#811a2c] mt-0.5" />
               <span>
-                Your administrator status is determined by the <code>is_admin</code> function in the database. 
-                If you continue to have issues, contact the database administrator.
+                Your developer access is verified through the database. 
+                If you need assistance, please contact the system administrator.
               </span>
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-[#ab233a] hover:bg-[#811a2c]" 
+              className="w-full bg-[#ab233a] hover:bg-[#811a2c] text-white" 
               disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Login'}

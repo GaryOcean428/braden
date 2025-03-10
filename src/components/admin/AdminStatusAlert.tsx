@@ -16,7 +16,7 @@ export function AdminStatusAlert({ isAdmin, error, adminUsersCount }: AdminStatu
       <Alert className="bg-[#d8c690]/20 border-[#cbb26a]">
         <Info className="h-4 w-4 text-[#811a2c]" />
         <AlertDescription className="text-[#2c3e50]">
-          You are confirmed as an admin. {adminUsersCount === 0 ? 
+          You are confirmed as a developer. {adminUsersCount === 0 ? 
           "The admin users list may not be visible due to database permissions, but your access is verified." : 
           "You have access to manage admin users."}
         </AlertDescription>

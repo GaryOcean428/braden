@@ -28,7 +28,7 @@ export function useAdminAuth() {
       }
       
       if (data.session) {
-        // Session exists, now check admin status using RPC
+        // Session exists, check admin status using RPC
         const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
         
         if (adminError) {
@@ -40,11 +40,12 @@ export function useAdminAuth() {
         if (isAdmin === true) {
           // User is confirmed as admin
           console.log("User confirmed as admin via RPC");
-          toast.success('Already authenticated as admin');
+          toast.success('Developer access confirmed');
           navigate('/admin');
         } else {
-          console.log("User is logged in but not an admin");
-          // Optionally handle non-admin authenticated users
+          console.log("User is logged in but not a developer");
+          // Sign out if user is not an admin
+          await supabase.auth.signOut();
         }
       } else {
         console.log("No active session found");
@@ -95,9 +96,9 @@ export function useAdminAuth() {
       
       if (adminError) {
         console.error('Admin check error:', adminError);
-        setError('Failed to verify admin status');
+        setError('Failed to verify developer status');
         toast.error('Verification Error', {
-          description: 'Failed to verify admin status'
+          description: 'Failed to verify developer status'
         });
         // Sign out if we can't verify admin status
         await supabase.auth.signOut();
@@ -106,13 +107,13 @@ export function useAdminAuth() {
       
       if (isAdmin === true) {
         // Success path - user is authenticated and is an admin
-        toast.success('Admin access confirmed');
+        toast.success('Developer access confirmed');
         navigate('/admin');
       } else {
         // User is authenticated but not an admin
-        setError('You do not have admin access');
+        setError('You do not have developer access');
         toast.error('Access Denied', {
-          description: 'You do not have admin privileges'
+          description: 'You do not have developer privileges'
         });
         // Sign out since they don't have admin access
         await supabase.auth.signOut();
