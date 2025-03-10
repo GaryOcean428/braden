@@ -33,19 +33,24 @@ const AdminAuth = () => {
 
       if (data.user) {
         // Check if user is an admin
+        console.log("Authenticated user:", data.user.id);
+        
         const { data: adminData, error: adminError } = await supabase
           .from('admin_users')
           .select('id')
-          .eq('user_id', data.user.id)
-          .single();
+          .eq('user_id', data.user.id);
 
-        if (adminError || !adminData) {
+        console.log("Admin data:", adminData, "Admin error:", adminError);
+
+        if (adminError || !adminData || adminData.length === 0) {
+          console.log("Not an admin user");
           await supabase.auth.signOut();
-          toast.error('Unauthorized access');
+          toast.error('Unauthorized access. Admin rights required.');
           setIsLoading(false);
           return;
         }
 
+        console.log("Login successful as admin");
         toast.success('Login successful');
         navigate('/admin');
       }
