@@ -1,49 +1,71 @@
 
-import { useNavigate } from "react-router-dom";
-import ServicesDropdown from "./ServicesDropdown";
-import { navigationItems } from "@/config/navigation";
+import { supabase } from "@/integrations/supabase/client";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface DesktopMenuProps {
-  isAdmin: boolean;
+  isAdmin?: boolean;
   scrollToSection: (sectionId: string) => void;
 }
 
 const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
   const navigate = useNavigate();
 
-  const handleItemClick = (action: 'scroll' | 'navigate', target: string) => {
-    if (action === 'scroll') {
-      scrollToSection(target);
-    } else {
-      navigate(target);
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast.error("Logout failed", {
+          description: error.message
+        });
+      } else {
+        toast.success("Logged out successfully");
+        navigate('/admin/auth?logout=true', { replace: true });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Logout failed");
     }
   };
 
   return (
-    <div className="hidden md:flex items-center space-x-8">
-      {navigationItems.map((item) => (
-        <button
-          key={item.label}
-          onClick={() => handleItemClick(item.action, item.target)}
-          className="text-white font-opensans relative overflow-hidden group"
-        >
-          <span className="relative z-10 hover:opacity-80 transition-opacity">
-            {item.label}
-          </span>
-          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
-        </button>
-      ))}
-      <ServicesDropdown scrollToSection={scrollToSection} />
+    <div className="hidden md:flex items-center space-x-6 text-white">
+      <button
+        onClick={() => scrollToSection("services")}
+        className="hover:opacity-80 transition-opacity"
+      >
+        Services
+      </button>
+      
+      <button
+        onClick={() => scrollToSection("about")}
+        className="hover:opacity-80 transition-opacity"
+      >
+        About
+      </button>
+      
+      <button
+        onClick={() => scrollToSection("contact")}
+        className="hover:opacity-80 transition-opacity"
+      >
+        Contact
+      </button>
+      
       {isAdmin && (
-        <button
-          onClick={() => navigate('/admin')}
-          className="text-white font-opensans relative overflow-hidden group"
-        >
-          <span className="relative z-10 hover:opacity-80 transition-opacity">
-            Admin Dashboard
-          </span>
-          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-left scale-x-0 transition-transform group-hover:scale-x-100" />
-        </button>
+        <>
+          <Link
+            to="/admin"
+            className="hover:opacity-80 transition-opacity"
+          >
+            Admin
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="bg-[#ab233a] text-white px-3 py-1 rounded hover:bg-[#811a2c] transition-colors"
+          >
+            Logout
+          </button>
+        </>
       )}
     </div>
   );

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { DashboardCards } from "@/components/admin/DashboardCards";
 import { ContentTabs } from "@/components/admin/ContentTabs";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,6 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { toast: toastUI } = useToast();
 
   useEffect(() => {
     checkAuth();
@@ -23,6 +21,8 @@ const Dashboard = () => {
   const checkAuth = async () => {
     try {
       setIsLoading(true);
+      setAuthError(null);
+      
       const { data, error } = await supabase.auth.getSession();
       
       if (error || !data.session) {
@@ -34,62 +34,83 @@ const Dashboard = () => {
         return;
       }
       
-      try {
-        // Execute RPC to check admin status directly
-        const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      // Store user ID for reference
+      const userId = data.session.user.id;
+      
+      // Execute RPC to check admin status directly
+      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      
+      if (adminCheckError) {
+        console.error("Admin check error:", adminCheckError);
         
-        if (adminCheckError) {
-          console.error("Admin check error:", adminCheckError);
+        // Try to create an admin user record
+        const { error: insertError } = await supabase
+          .from('admin_users')
+          .insert({ user_id: userId });
           
-          // If it's a permission error for admin_users table, try to insert the user as admin
-          if (adminCheckError.code === '42501' && adminCheckError.message.includes('admin_users')) {
-            const { error: insertError } = await supabase
-              .from('admin_users')
-              .insert({ user_id: data.session.user.id });
-              
-            if (!insertError) {
-              // Successfully added as admin, continue to dashboard
-              setIsLoading(false);
-              return;
-            }
-          }
+        if (insertError) {
+          console.error("Error creating admin user:", insertError);
           
-          toast.error("Permission Check Failed", {
-            description: "Could not verify admin permissions"
-          });
-        } else if (!isAdmin) {
-          // If not an admin, create admin record
-          const { error: insertError } = await supabase
-            .from('admin_users')
-            .insert({ user_id: data.session.user.id });
-            
-          if (insertError) {
-            console.error('Error adding admin user:', insertError);
-            if (insertError.code !== '23505') { // Not a duplicate error
-              throw insertError;
-            }
-          } else {
-            // Successfully added as admin
-            setIsLoading(false);
+          // If not a duplicate error
+          if (insertError.code !== '23505') {
+            setAuthError("Failed to verify or set admin status");
+            toast.error("Permission Error", {
+              description: "Could not verify admin permissions"
+            });
+            // Redirect after a brief delay
+            setTimeout(() => {
+              navigate('/admin/auth');
+            }, 1500);
             return;
           }
+        } else {
+          toast.success("Admin access granted");
         }
-      } catch (err) {
-        console.error("Admin verification error:", err);
-        setAuthError("Failed to verify or set admin status");
-        toast.error("Access Error", {
-          description: "There was a problem verifying your admin status"
-        });
-        setTimeout(() => {
-          navigate('/admin/auth');
-        }, 1500);
-        return;
+      } else if (!isAdmin) {
+        // Try to create an admin user record
+        const { error: insertError } = await supabase
+          .from('admin_users')
+          .insert({ user_id: userId });
+          
+        if (insertError) {
+          console.error("Error creating admin user:", insertError);
+          
+          // If not a duplicate error
+          if (insertError.code !== '23505') {
+            setAuthError("Failed to verify or set admin status");
+            toast.error("Permission Error", {
+              description: "Could not grant admin permissions"
+            });
+            // Redirect after a brief delay
+            setTimeout(() => {
+              navigate('/admin/auth');
+            }, 1500);
+            return;
+          }
+        } else {
+          toast.success("Admin access granted");
+        }
       }
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");
+      // Redirect after a brief delay
+      setTimeout(() => {
+        navigate('/admin/auth');
+      }, 1500);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Logged out successfully");
+      navigate('/admin/auth?logout=true');
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Logout failed");
     }
   };
 
@@ -123,7 +144,16 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+        <Button 
+          variant="outline" 
+          className="border-[#ab233a] text-[#ab233a] hover:bg-[#ab233a] hover:text-white"
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </div>
       <DashboardCards />
       <ContentTabs />
     </div>

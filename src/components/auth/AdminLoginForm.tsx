@@ -1,8 +1,9 @@
 
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AdminLoginFormProps {
   email: string;
@@ -11,6 +12,7 @@ interface AdminLoginFormProps {
   setPassword: (password: string) => void;
   isLoading: boolean;
   handleLogin: (e: React.FormEvent) => Promise<void>;
+  error?: string | null;
 }
 
 export function AdminLoginForm({ 
@@ -19,7 +21,8 @@ export function AdminLoginForm({
   password, 
   setPassword, 
   isLoading, 
-  handleLogin 
+  handleLogin,
+  error
 }: AdminLoginFormProps) {
   return (
     <div className="container mx-auto flex items-center justify-center min-h-[calc(100vh-200px)]">
@@ -29,6 +32,13 @@ export function AdminLoginForm({
           <CardDescription>Please login with your admin credentials</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">Email</label>

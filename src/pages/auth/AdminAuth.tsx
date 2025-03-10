@@ -2,6 +2,10 @@
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { AuthLoadingState } from '@/components/auth/AuthLoadingState';
 import { AdminLoginForm } from '@/components/auth/AdminLoginForm';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminAuth = () => {
   const {
@@ -11,8 +15,30 @@ const AdminAuth = () => {
     setPassword,
     isLoading,
     isCheckingAuth,
-    handleLogin
+    handleLogin,
+    error
   } = useAdminAuth();
+  
+  const navigate = useNavigate();
+  
+  // Handle logout if user comes to this page while already logged in
+  useEffect(() => {
+    const logout = async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error);
+        toast.error('Error logging out');
+      }
+    };
+    
+    // Check URL for logout parameter
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('logout') === 'true') {
+      logout();
+      toast.success('Logged out successfully');
+      navigate('/admin/auth', { replace: true });
+    }
+  }, [navigate]);
   
   if (isCheckingAuth) {
     return <AuthLoadingState />;
@@ -26,6 +52,7 @@ const AdminAuth = () => {
       setPassword={setPassword}
       isLoading={isLoading}
       handleLogin={handleLogin}
+      error={error}
     />
   );
 };

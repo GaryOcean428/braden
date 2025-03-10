@@ -9,6 +9,7 @@ export function useAdminAuth() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -60,15 +61,26 @@ export function useAdminAuth() {
               toast.success('Admin access granted');
               navigate('/admin');
               return;
+            } else {
+              console.error('Error adding as admin:', insertError);
+              // If it's a duplicate error, the user is already an admin
+              if (insertError.code === '23505') {
+                toast.success('Already an admin, redirecting');
+                navigate('/admin');
+                return;
+              }
             }
           }
         } catch (err) {
           console.error('Admin verification error:', err);
-          // Continue to login form
+          setError('Failed to verify admin status');
+          // Sign out on error to clean up state
+          await supabase.auth.signOut();
         }
       }
     } catch (error) {
       console.error('Session check error:', error);
+      setError('Failed to check existing session');
     } finally {
       setIsCheckingAuth(false);
     }
@@ -76,8 +88,10 @@ export function useAdminAuth() {
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
     if (!email || !password) {
-      toast.error('Please enter both email and password');
+      setError('Please enter both email and password');
       return;
     }
     
@@ -89,7 +103,10 @@ export function useAdminAuth() {
         password: password.trim()
       });
       
-      if (error) throw error;
+      if (error) {
+        setError(error.message);
+        throw error;
+      }
       
       if (data.user) {
         try {
@@ -100,26 +117,22 @@ export function useAdminAuth() {
             console.error('Admin check error:', adminError);
             
             // If it's a permission error, directly try to insert admin record
-            if (adminError.code === '42501') {
-              // Create admin record
-              const { error: insertError } = await supabase
-                .from('admin_users')
-                .insert({ user_id: data.user.id });
+            const { error: insertError } = await supabase
+              .from('admin_users')
+              .insert({ user_id: data.user.id });
                 
-              if (insertError) {
-                console.error('Error adding admin user:', insertError);
-                if (insertError.code !== '23505') { // Not a duplicate error
-                  throw insertError;
-                }
-              } else {
-                toast.success('Admin access granted');
-                setTimeout(() => {
-                  navigate('/admin');
-                }, 500);
-                return;
+            if (insertError) {
+              console.error('Error adding admin user:', insertError);
+              if (insertError.code !== '23505') { // Not a duplicate error
+                setError('Failed to grant admin access');
+                throw insertError;
               }
             } else {
-              throw new Error('Could not verify admin status');
+              toast.success('Admin access granted');
+              setTimeout(() => {
+                navigate('/admin');
+              }, 500);
+              return;
             }
           } else if (!isAdmin) {
             // If not an admin, create admin record
@@ -130,6 +143,7 @@ export function useAdminAuth() {
             if (insertError) {
               console.error('Error adding admin user:', insertError);
               if (insertError.code !== '23505') { // Not a duplicate error
+                setError('Failed to grant admin access');
                 throw insertError;
               }
             }
@@ -143,15 +157,12 @@ export function useAdminAuth() {
           }, 500);
         } catch (err) {
           console.error('Admin verification error:', err);
-          toast.error('Failed to verify admin status. Please try again.');
+          setError('Failed to verify admin status. Please try again.');
         }
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error instanceof Error ? error.message : 'Login failed. Please check your credentials.');
-      
-      // Sign out on error to clean up state
-      await supabase.auth.signOut();
+      // Don't sign out on error, allow the user to try again
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +175,7 @@ export function useAdminAuth() {
     setPassword,
     isLoading,
     isCheckingAuth,
-    handleLogin
+    handleLogin,
+    error
   };
 }
