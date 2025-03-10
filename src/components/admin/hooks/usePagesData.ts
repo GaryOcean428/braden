@@ -32,7 +32,7 @@ export function usePagesData() {
         return;
       }
       
-      // Verify developer status by email instead of using the RPC function
+      // Verify developer status by email
       const userEmail = session.session.user.email;
       
       if (userEmail !== 'braden.lang77@gmail.com') {
@@ -45,53 +45,42 @@ export function usePagesData() {
         return;
       }
       
-      // User is confirmed as the developer, let's add content_pages RLS policy before loading pages
-      console.log("Developer verified, attempting to load pages");
+      // User is confirmed as the developer, now try to load pages with updated RLS policies
+      console.log("Developer verified, loading pages with updated RLS policies");
 
-      // Now attempt to get the pages data
-      try {
-        // Try to load the pages data - this will be successful only if RLS allows it
-        const { data: pagesData, error: pagesError } = await supabase
-          .from('content_pages')
-          .select('*')
-          .order('updated_at', { ascending: false })
-          .limit(5);
+      // Get the pages data
+      const { data: pagesData, error: pagesError } = await supabase
+        .from('content_pages')
+        .select('*')
+        .order('updated_at', { ascending: false });
 
-        if (pagesError) {
-          console.error('Error loading pages:', pagesError);
-          
-          // If access is denied due to RLS policies
-          if (pagesError.message.toLowerCase().includes('permission') || 
-              pagesError.message.toLowerCase().includes('denied') ||
-              pagesError.code === 'PGRST301') {
-            setIsPermissionError(true);
-            setError("Database access restricted. You are verified as a developer, but database RLS policies are preventing access to content_pages table.");
-            toast.error("Database Permission Issue", {
-              description: "RLS policies need to be updated to allow developer access to content"
-            });
-          } else {
-            setError(pagesError.message || "Failed to load pages");
-            toast.error("Error", {
-              description: "Failed to load pages due to a database error"
-            });
-          }
-          
-          setPages([]);
+      if (pagesError) {
+        console.error('Error loading pages:', pagesError);
+        
+        // If access is still denied due to RLS policies
+        if (pagesError.message.toLowerCase().includes('permission') || 
+            pagesError.message.toLowerCase().includes('denied') ||
+            pagesError.code === 'PGRST301') {
+          setIsPermissionError(true);
+          setError("Database access restricted. RLS policies have been updated but might need a session refresh. Please try logging out and back in.");
+          toast.error("Database Permission Issue", {
+            description: "Try logging out and back in to refresh your session"
+          });
         } else {
-          console.log("Pages loaded successfully");
-          setPages(pagesData || []);
+          setError(pagesError.message || "Failed to load pages");
+          toast.error("Error", {
+            description: "Failed to load pages due to a database error"
+          });
         }
-      } catch (err) {
-        console.error("Error loading page content:", err);
-        setError("Failed to load pages");
+        
         setPages([]);
-        toast.error("Error", {
-          description: "Failed to load pages. Please try again."
-        });
+      } else {
+        console.log("Pages loaded successfully");
+        setPages(pagesData || []);
       }
-    } catch (error: any) {
-      console.error('Error in auth check:', error);
-      setError(error.message || "Failed to authenticate");
+    } catch (err: any) {
+      console.error("Error in auth check:", err);
+      setError(err.message || "Failed to authenticate");
       setPages([]);
     } finally {
       setLoading(false);

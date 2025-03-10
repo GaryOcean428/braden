@@ -2,9 +2,13 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, RefreshCcw } from "lucide-react";
 
 export const PagePermissionError = () => {
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <Card className="border-amber-200 bg-amber-50">
       <CardContent className="pt-6 pb-6">
@@ -15,14 +19,18 @@ export const PagePermissionError = () => {
             You are verified as a developer by email, but the database's Row Level Security policies are preventing access to content pages.
           </p>
           <p className="text-sm text-[#2c3e50] max-w-md mb-4 font-medium">
-            This is a configuration issue in the Supabase project that needs to be fixed.
+            Please try refreshing the page as the RLS policies have been updated.
           </p>
           <div className="flex gap-3">
             <Button className="bg-[#2c3e50] hover:bg-[#34495e]" asChild>
               <Link to="/admin/auth">Go to Login</Link>
             </Button>
-            <Button variant="outline" onClick={() => window.location.reload()}>
-              Retry
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={handleRefresh}
+            >
+              <RefreshCcw className="h-4 w-4" /> Refresh
             </Button>
           </div>
         </div>

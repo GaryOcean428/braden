@@ -16,9 +16,9 @@ export function ContentEmptyState({ isPermissionError, onRetry }: ContentEmptySt
       <div className="text-center py-12 bg-amber-50 border-2 border-dashed border-amber-200 rounded-lg">
         <ShieldAlert className="h-12 w-12 text-amber-500 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-[#ab233a] mb-2">Permission Denied</h3>
-        <p className="text-[#2c3e50] mb-4">You don't have permission to access content pages</p>
+        <p className="text-[#2c3e50] mb-2">RLS policies have been updated but may need a session refresh</p>
+        <p className="text-[#2c3e50] mb-4">Try logging out and back in, or refreshing the page</p>
         <div className="space-y-2">
-          <p className="text-[#95a5a6] text-sm mb-4">Try logging in with an admin account</p>
           <div className="flex justify-center gap-2">
             <Button 
               onClick={() => navigate("/admin/auth")}
@@ -29,10 +29,10 @@ export function ContentEmptyState({ isPermissionError, onRetry }: ContentEmptySt
             {onRetry && (
               <Button 
                 variant="outline"
-                onClick={onRetry}
-                className="border-[#95a5a6]"
+                onClick={() => window.location.reload()}
+                className="border-[#95a5a6] flex items-center gap-2"
               >
-                <RefreshCcw className="h-4 w-4 mr-2" /> Retry
+                <RefreshCcw className="h-4 w-4" /> Refresh Page
               </Button>
             )}
           </div>

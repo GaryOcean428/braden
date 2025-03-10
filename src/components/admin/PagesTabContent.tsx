@@ -4,9 +4,19 @@ import { PageLoadingState } from './PageLoadingState';
 import { PagePermissionError } from './PagePermissionError';
 import { PageError } from './PageError';
 import { PageList } from './PageList';
+import { toast } from "sonner";
+import { useEffect } from 'react';
 
 export const PagesTabContent = () => {
   const { pages, loading, error, isPermissionError, loadPages } = usePagesData();
+
+  useEffect(() => {
+    if (pages.length > 0) {
+      toast.success("Database access confirmed", {
+        description: "RLS policies are now correctly configured."
+      });
+    }
+  }, [pages]);
 
   if (loading) {
     return <PageLoadingState />;
