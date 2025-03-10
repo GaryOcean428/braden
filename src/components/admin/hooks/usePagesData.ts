@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -9,6 +8,7 @@ export function usePagesData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPermissionError, setIsPermissionError] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     loadPages();
@@ -47,6 +47,7 @@ export function usePagesData() {
       
       // User is confirmed as the developer, now try to load pages with updated RLS policies
       console.log("Developer verified, loading pages with updated RLS policies");
+      setIsAdmin(true);
 
       // Get the pages data
       const { data: pagesData, error: pagesError } = await supabase
@@ -92,6 +93,7 @@ export function usePagesData() {
     loading,
     error,
     isPermissionError,
+    isAdmin,
     loadPages
   };
 }

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +9,7 @@ export function useAdminAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -35,6 +35,7 @@ export function useAdminAuth() {
           // User is confirmed as admin by email
           console.log("User confirmed as developer by email");
           toast.success('Developer access confirmed');
+          setIsAdmin(true);
           navigate('/admin');
         } else {
           console.log("User is logged in but not a developer");
@@ -89,6 +90,7 @@ export function useAdminAuth() {
       if (data.user.email === 'braden.lang77@gmail.com') {
         // Success path - user is authenticated and is the developer
         toast.success('Developer access confirmed');
+        setIsAdmin(true);
         navigate('/admin');
       } else {
         // User is authenticated but not the developer
@@ -118,6 +120,7 @@ export function useAdminAuth() {
     isLoading,
     isCheckingAuth,
     handleLogin,
-    error
+    error,
+    isAdmin
   };
 }

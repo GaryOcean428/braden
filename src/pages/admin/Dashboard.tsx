@@ -40,7 +40,10 @@ const Dashboard = () => {
       // Verify if the user is Braden (the developer) by checking email
       const userEmail = data.session.user.email;
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      if (userEmail === 'braden.lang77@gmail.com') {
+        console.log("Admin status confirmed via email check");
+        toast.success("Developer access confirmed");
+      } else {
         console.log("User is not an admin");
         setAuthError("You don't have admin permissions");
         toast.error("Permission Denied", {
@@ -53,7 +56,6 @@ const Dashboard = () => {
         return;
       }
       
-      console.log("Admin status confirmed via email check");
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");

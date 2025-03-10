@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,13 @@ export default function ContentEditor() {
       
       if (!session) {
         navigate('/admin/auth');
+        return;
+      }
+
+      const userEmail = session.user.email;
+      
+      if (userEmail === 'braden.lang77@gmail.com') {
+        setIsAdmin(true);
         return;
       }
 
