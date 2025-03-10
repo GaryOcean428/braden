@@ -19,6 +19,13 @@ type AdminUser = {
   created_at_user?: string;
 };
 
+// Define the shape of the user data from auth.admin.listUsers
+interface UserData {
+  id: string;
+  email?: string;
+  created_at?: string;
+}
+
 export default function UserManagement() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,15 +79,15 @@ export default function UserManagement() {
       // Get the user profiles for each admin
       if (adminData && adminData.length > 0) {
         const userIds = adminData.map(admin => admin.user_id);
-        const { data: userProfiles, error: profilesError } = await supabase.auth.admin.listUsers();
+        const { data: userData, error: profilesError } = await supabase.auth.admin.listUsers();
         
         if (profilesError) {
           console.warn("Could not fetch user profiles:", profilesError);
           setAdminUsers(adminData);
-        } else if (userProfiles) {
+        } else if (userData) {
           // Merge the admin data with user profiles
           const enrichedAdmins = adminData.map(admin => {
-            const matchingUser = userProfiles.users?.find(user => user.id === admin.user_id);
+            const matchingUser = userData.users?.find((user: UserData) => user.id === admin.user_id);
             return {
               ...admin,
               email: matchingUser?.email || 'Unknown',
