@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContentList } from "@/components/content/ContentList";
@@ -32,15 +31,10 @@ export default function ContentManager() {
         return;
       }
       
-      // Execute RPC to check admin status directly
-      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      // Check if the user is the developer by email
+      const userEmail = data.session.user.email;
       
-      if (adminCheckError) {
-        console.error("Admin check error:", adminCheckError);
-        toast.error("Permission Check Failed", {
-          description: "Could not verify admin permissions"
-        });
-      } else if (!isAdmin) {
+      if (userEmail !== 'braden.lang77@gmail.com') {
         setAuthError("You must be an admin to access content management");
         toast.error("Access Denied", {
           description: "You don't have admin permissions"
@@ -52,6 +46,8 @@ export default function ContentManager() {
         }, 1500);
         return;
       }
+      
+      console.log("Admin status confirmed via email check");
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");

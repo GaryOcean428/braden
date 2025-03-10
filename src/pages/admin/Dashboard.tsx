@@ -37,23 +37,10 @@ const Dashboard = () => {
       
       console.log("User is logged in, checking admin status...");
       
-      // Skip table operations and use RPC directly since it's working
-      const { data: isAdmin, error: adminCheckError } = await supabase.rpc('is_admin');
+      // Verify if the user is Braden (the developer) by checking email
+      const userEmail = data.session.user.email;
       
-      if (adminCheckError) {
-        console.error("Admin check error:", adminCheckError);
-        setAuthError("Failed to verify admin status");
-        toast.error("Permission Error", {
-          description: "Could not verify admin permissions"
-        });
-        // Redirect after a brief delay
-        setTimeout(() => {
-          navigate('/admin/auth');
-        }, 1500);
-        return;
-      }
-      
-      if (!isAdmin) {
+      if (userEmail !== 'braden.lang77@gmail.com') {
         console.log("User is not an admin");
         setAuthError("You don't have admin permissions");
         toast.error("Permission Denied", {
@@ -66,7 +53,7 @@ const Dashboard = () => {
         return;
       }
       
-      console.log("Admin status confirmed");
+      console.log("Admin status confirmed via email check");
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");

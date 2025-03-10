@@ -21,19 +21,22 @@ export function useAdminUsers() {
   // Check admin status and load users
   const checkAdminAndLoadUsers = async () => {
     try {
-      // Check if user is admin using RPC function
-      const { data: isAdminCheck, error: adminError } = await supabase.rpc('is_admin');
+      // Check if user is authenticated
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       
-      if (adminError) {
-        console.error("Admin check error:", adminError);
+      if (sessionError || !sessionData.session) {
+        console.error("Session check error:", sessionError);
         toast.error("Authentication Error", {
-          description: "Failed to verify admin status"
+          description: "You must be logged in to access this page"
         });
         setIsLoading(false);
         return;
       }
       
-      if (!isAdminCheck) {
+      // Check if user is developer by email
+      const userEmail = sessionData.session.user.email;
+      
+      if (userEmail !== 'braden.lang77@gmail.com') {
         toast.error("Access Denied", {
           description: "You do not have administrator privileges"
         });

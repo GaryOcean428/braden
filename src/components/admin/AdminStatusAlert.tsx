@@ -12,7 +12,10 @@ export function AdminStatusAlert({ isAdmin, error, adminUsersCount }: AdminStatu
   if (!isAdmin) return null;
 
   // If there's an error, but it's related to permissions, we still want to show the admin status alert
-  const isPermissionError = error?.includes("permission") || error?.includes("restrictions");
+  const isPermissionError = error?.includes("permission") || 
+                            error?.includes("restrictions") || 
+                            error?.includes("role") || 
+                            error?.includes("admin");
 
   return (
     <div className="mb-4">
@@ -23,7 +26,7 @@ export function AdminStatusAlert({ isAdmin, error, adminUsersCount }: AdminStatu
         }
         <AlertDescription className="text-[#2c3e50]">
           {isPermissionError ? 
-            "You are confirmed as a developer with admin privileges. Direct database access to the admin_users table is restricted, but your admin status is verified through secure RPC functions." : 
+            "You are confirmed as a developer with admin privileges. Direct database access to the admin_users table is restricted for security reasons, but your admin status is verified through email authentication." : 
             `You are confirmed as a developer. ${adminUsersCount === 0 ? 
               "The admin users list may not be visible due to database permissions, but your access is verified." : 
               "You have access to manage admin users."}`
