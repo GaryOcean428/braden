@@ -1,6 +1,6 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Layout from "../components/Layout";
 import Hero from "../components/Hero";
 import Services from "../components/Services";
 import About from "../components/About";
@@ -28,37 +28,35 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout showBreadcrumb={false}>
-      <main className="min-h-screen">
+    <>
+      <ErrorBoundary>
+        <Hero />
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <div id="services" className="scroll-mt-20">
+          <Services />
+        </div>
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <div id="about" className="scroll-mt-20">
+          <About />
+        </div>
+      </ErrorBoundary>
+      
+      <ErrorBoundary>
+        <div id="contact" className="scroll-mt-20">
+          <Contact />
+        </div>
+      </ErrorBoundary>
+      
+      {isAdmin && (
         <ErrorBoundary>
-          <Hero />
+          <MediaManager />
         </ErrorBoundary>
-        
-        <ErrorBoundary>
-          <div id="services" className="scroll-mt-20">
-            <Services />
-          </div>
-        </ErrorBoundary>
-        
-        <ErrorBoundary>
-          <div id="about" className="scroll-mt-20">
-            <About />
-          </div>
-        </ErrorBoundary>
-        
-        <ErrorBoundary>
-          <div id="contact" className="scroll-mt-20">
-            <Contact />
-          </div>
-        </ErrorBoundary>
-        
-        {isAdmin && (
-          <ErrorBoundary>
-            <MediaManager />
-          </ErrorBoundary>
-        )}
-      </main>
-    </Layout>
+      )}
+    </>
   );
 };
 
