@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { useEnhancedContactForm } from './useEnhancedContactForm';
-import ContactFormFields from './ContactFormFields';
+import { ContactFormFields } from './ContactFormFields';
 
 const EnhancedContactForm = () => {
   const [formData, setFormData] = useState({
