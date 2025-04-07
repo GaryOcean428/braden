@@ -1,5 +1,5 @@
 
-import { EnhancedContactForm } from "@/components/contact/EnhancedContactForm";
+import EnhancedContactForm from "@/components/contact/EnhancedContactForm.jsx";
 
 export function Contact() {
   return (
