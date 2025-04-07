@@ -66,6 +66,191 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_feedback: {
+        Row: {
+          created_at: string | null
+          feedback: string
+          id: string
+          idea_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          feedback: string
+          id?: string
+          idea_id: string
+        }
+        Update: {
+          created_at?: string | null
+          feedback?: string
+          id?: string
+          idea_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_feedback_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_providers: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          model_name: string
+          priority: number
+          tier_required: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id: string
+          model_name: string
+          priority: number
+          tier_required?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          model_name?: string
+          priority?: number
+          tier_required?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_providers_tier_required_fkey"
+            columns: ["tier_required"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      awards: {
+        Row: {
+          award_fixed_id: number
+          code: string
+          created_at: string | null
+          name: string
+          operativefrom: string
+          operativeto: string | null
+          published_year: number
+          version_number: number
+        }
+        Insert: {
+          award_fixed_id?: number
+          code: string
+          created_at?: string | null
+          name: string
+          operativefrom: string
+          operativeto?: string | null
+          published_year: number
+          version_number: number
+        }
+        Update: {
+          award_fixed_id?: number
+          code?: string
+          created_at?: string | null
+          name?: string
+          operativefrom?: string
+          operativeto?: string | null
+          published_year?: number
+          version_number?: number
+        }
+        Relationships: []
+      }
+      business_plan_sections: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          idea_id: string
+          order: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          order: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          order?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_plan_sections_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classifications: {
+        Row: {
+          award_fixed_id: number | null
+          base_rate: number | null
+          base_rate_type: string | null
+          calculated_rate: number | null
+          calculated_rate_type: string | null
+          classification: string
+          classification_fixed_id: number
+          classification_level: number
+          created_at: string | null
+          operative_from: string
+          operative_to: string | null
+        }
+        Insert: {
+          award_fixed_id?: number | null
+          base_rate?: number | null
+          base_rate_type?: string | null
+          calculated_rate?: number | null
+          calculated_rate_type?: string | null
+          classification: string
+          classification_fixed_id?: number
+          classification_level: number
+          created_at?: string | null
+          operative_from: string
+          operative_to?: string | null
+        }
+        Update: {
+          award_fixed_id?: number | null
+          base_rate?: number | null
+          base_rate_type?: string | null
+          calculated_rate?: number | null
+          calculated_rate_type?: string | null
+          classification?: string
+          classification_fixed_id?: number
+          classification_level?: number
+          created_at?: string | null
+          operative_from?: string
+          operative_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classifications_award_fixed_id_fkey"
+            columns: ["award_fixed_id"]
+            isOneToOne: false
+            referencedRelation: "awards"
+            referencedColumns: ["award_fixed_id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           created_at: string
@@ -489,6 +674,57 @@ export type Database = {
         }
         Relationships: []
       }
+      ideas: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string
+          id: string
+          project_id: string | null
+          status: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description: string
+          id?: string
+          project_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          project_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ideas_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           company: string | null
@@ -522,6 +758,244 @@ export type Database = {
         }
         Relationships: []
       }
+      llm_api_keys: {
+        Row: {
+          active: boolean | null
+          api_key: string
+          created_at: string | null
+          id: string
+          is_test: boolean | null
+          provider: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          api_key: string
+          created_at?: string | null
+          id?: string
+          is_test?: boolean | null
+          provider: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          is_test?: boolean | null
+          provider?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      llm_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          idea_id: string
+          messages: Json
+          provider_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          messages?: Json
+          provider_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          messages?: Json
+          provider_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "llm_conversations_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "llm_conversations_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "llm_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "llm_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      llm_feedback: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          idea_id: string
+          mode: string
+          provider_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          mode: string
+          provider_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          mode?: string
+          provider_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "llm_feedback_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "llm_feedback_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "llm_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "llm_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      llm_providers: {
+        Row: {
+          active: boolean | null
+          api_key_id: string | null
+          created_at: string | null
+          id: string
+          max_tokens: number
+          model: string
+          name: string
+          provider: string
+          rate_limit_id: string | null
+          temperature: number
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          api_key_id?: string | null
+          created_at?: string | null
+          id?: string
+          max_tokens: number
+          model: string
+          name: string
+          provider: string
+          rate_limit_id?: string | null
+          temperature?: number
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          api_key_id?: string | null
+          created_at?: string | null
+          id?: string
+          max_tokens?: number
+          model?: string
+          name?: string
+          provider?: string
+          rate_limit_id?: string | null
+          temperature?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "llm_providers_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "llm_api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "llm_providers_rate_limit_id_fkey"
+            columns: ["rate_limit_id"]
+            isOneToOne: false
+            referencedRelation: "llm_rate_limits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      llm_rate_limits: {
+        Row: {
+          created_at: string | null
+          current_requests: number
+          current_tokens: number
+          id: string
+          provider_id: string
+          requests_per_minute: number
+          reset_at: string
+          tokens_per_minute: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_requests?: number
+          current_tokens?: number
+          id?: string
+          provider_id: string
+          requests_per_minute?: number
+          reset_at?: string
+          tokens_per_minute?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_requests?: number
+          current_tokens?: number
+          id?: string
+          provider_id?: string
+          requests_per_minute?: number
+          reset_at?: string
+          tokens_per_minute?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "llm_rate_limits_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "llm_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media: {
         Row: {
           created_at: string
@@ -552,41 +1026,190 @@ export type Database = {
         }
         Relationships: []
       }
+      mind_map_nodes: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          idea_id: string
+          parent_id: string | null
+          position_x: number | null
+          position_y: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          parent_id?: string | null
+          position_x?: number | null
+          position_y?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          parent_id?: string | null
+          position_x?: number | null
+          position_y?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mind_map_nodes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mind_map_nodes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "mind_map_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
+          content: string | null
           created_at: string
           id: number
           title: string
+          updated_at: string
+          user_id: string | null
         }
         Insert: {
+          content?: string | null
           created_at?: string
           id?: never
           title: string
+          updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          content?: string | null
           created_at?: string
           id?: never
           title?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
       organizations: {
         Row: {
           created_at: string | null
+          description: string | null
           id: string
           name: string
+          slug: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          description?: string | null
           id?: string
           name: string
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      platform_roles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          level: number
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          level: number
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          level?: number
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          updated_at?: string | null
+          username?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
-          name?: string
+          updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       Qualification: {
         Row: {
@@ -654,6 +1277,75 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_research: {
+        Row: {
+          created_at: string | null
+          id: string
+          idea_id: string
+          notes: string | null
+          title: string
+          updated_at: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          notes?: string | null
+          title: string
+          updated_at?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          notes?: string | null
+          title?: string
+          updated_at?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_research_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_research_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_tiers: {
+        Row: {
+          created_at: string | null
+          description: string
+          features: Json
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          features?: Json
+          id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          features?: Json
+          id?: string
+        }
+        Relationships: []
+      }
       SupportContact: {
         Row: {
           action_items: string[] | null
@@ -709,6 +1401,41 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "Employee"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todos: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -938,6 +1665,96 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          expires_at: string | null
+          tier_id: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          expires_at?: string | null
+          tier_id?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          expires_at?: string | null
+          tier_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       WorkplaceInspection: {
         Row: {
           attachments: string[] | null
@@ -996,9 +1813,29 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      current_user_info: {
+        Row: {
+          email: string | null
+          id: string | null
+          is_admin: boolean | null
+          roles: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      admin_bypass: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      allow_if_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      bypass_rls: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       bypass_rls_for_user:
         | {
             Args: Record<PropertyKey, never>
@@ -1010,10 +1847,53 @@ export type Database = {
             }
             Returns: undefined
           }
-      is_admin: {
+      fix_user_access: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_llm_api_key:
+        | {
+            Args: Record<PropertyKey, never>
+            Returns: string
+          }
+        | {
+            Args: {
+              provider_name: string
+            }
+            Returns: string
+          }
+      get_my_user_info: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      has_admin_role: {
+        Args: {
+          input_id?: string
+        }
         Returns: boolean
       }
+      has_role_access:
+        | {
+            Args: Record<PropertyKey, never>
+            Returns: boolean
+          }
+        | {
+            Args: {
+              required_role: string
+            }
+            Returns: boolean
+          }
+      is_admin:
+        | {
+            Args: Record<PropertyKey, never>
+            Returns: boolean
+          }
+        | {
+            Args: {
+              user_id: string
+            }
+            Returns: boolean
+          }
       is_admin_user: {
         Args: {
           user_uuid: string
@@ -1023,6 +1903,10 @@ export type Database = {
       is_braden_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      version: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {
