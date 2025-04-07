@@ -1,8 +1,7 @@
 import { useSupabaseInitialization } from '@/hooks/useSupabaseInitialization';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import Home from './pages/Home';
-import About from './pages/About';
+import Index from './pages/Index';
 import Contact from './pages/Contact';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -18,9 +17,11 @@ function App() {
         <Header />
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/" element={<Index />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/apprenticeships" element={<Index />} />
+            <Route path="/traineeships" element={<Index />} />
+            <Route path="/recruitment" element={<Index />} />
           </Routes>
         </main>
         <Footer />
