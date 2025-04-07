@@ -22,7 +22,7 @@ export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps =
 
   return (
     <Form {...formProps}>
-      <form onSubmit={formProps.handleSubmit((data) => submitHandler(data))} className="space-y-6 text-left">
+      <form onSubmit={formProps.handleSubmit(submitHandler)} className="space-y-6 text-left">
         <ContactFormFields form={formProps} />
         <Button 
           type="submit" 
