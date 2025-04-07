@@ -18,7 +18,7 @@ export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps =
   // Use provided props or fall back to defaults from useContactForm
   const formProps = form || defaultFormValues.form;
   const submitting = isSubmitting !== undefined ? isSubmitting : defaultFormValues.isSubmitting;
-  const submitHandler: SubmitHandler<ContactFormValues> = onSubmit || defaultFormValues.onSubmit;
+  const submitHandler = onSubmit || defaultFormValues.onSubmit;
 
   return (
     <Form {...formProps}>
