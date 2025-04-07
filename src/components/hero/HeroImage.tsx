@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader } from 'lucide-react';
 
 interface HeroImageProps {
-  onError: (error: Error) => void;
+  onError?: (error: Error) => void;
 }
 
-export const HeroImage = ({ onError }: HeroImageProps) => {
+export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
   const [heroImage, setHeroImage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
@@ -18,15 +18,46 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         setIsLoading(true);
         setImageError(false);
         
-        // Set the default image path with the correct base URL for Vercel deployment
-        const defaultImagePath = import.meta.env.BASE_URL 
-          ? `${import.meta.env.BASE_URL}/hero-image.jpg` 
-          : '/hero-image.jpg';
+        // Use a data URI for a fallback gradient background
+        const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlNoYXBpbmcgVG9tb3Jyb3cncyBXb3JrZm9yY2UgVG9kYXk8L3RleHQ+PC9zdmc+';
         
-        setHeroImage(defaultImagePath);
+        // Set the fallback image immediately
+        setHeroImage(fallbackImage);
         
-        // Try to fetch from Supabase
+        // Try to fetch from Supabase hero-images bucket
         try {
+          // First check if we have any images in the hero-images bucket
+          const { data: files, error: listError } = await supabase.storage
+            .from(STORAGE_BUCKETS.HERO_IMAGES)
+            .list();
+            
+          if (listError) {
+            console.log('Error listing hero images:', listError);
+            setIsLoading(false);
+            return;
+          }
+          
+          // If we have any hero images, use the first one
+          if (files && files.length > 0) {
+            const { data: { publicUrl } } = supabase.storage
+              .from(STORAGE_BUCKETS.HERO_IMAGES)
+              .getPublicUrl(files[0].name);
+              
+            // Preload the image
+            const img = new Image();
+            img.onload = () => {
+              setHeroImage(publicUrl);
+              setIsLoading(false);
+            };
+            img.onerror = () => {
+              console.error('Error loading image from storage');
+              setIsLoading(false);
+            };
+            img.src = publicUrl;
+            return;
+          }
+          
+          // If no images in hero-images bucket, try the media table as fallback
           const { data, error } = await supabase
             .from('media')
             .select('file_path')
@@ -34,13 +65,12 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
             .maybeSingle();
             
           if (error) {
-            // If there's a Supabase error, log it but continue with default image
-            console.log('Supabase error, using default image:', error);
+            console.log('Supabase media query error:', error);
             setIsLoading(false);
             return;
           }
           
-          // If no custom hero image is set, use default and finish loading
+          // If no custom hero image is set, use fallback and finish loading
           if (!data?.file_path) {
             setIsLoading(false);
             return;
@@ -63,7 +93,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
           };
           img.src = publicUrl;
         } catch (supabaseError) {
-          // If there's any error in the Supabase process, use default image
+          // If there's any error in the Supabase process, use fallback image
           console.error('Error with Supabase operations:', supabaseError);
           setIsLoading(false);
         }
@@ -93,17 +123,10 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
   };
 
   const handleImageError = () => {
-    // Try with absolute URL if relative URL fails
-    if (!heroImage.startsWith('http') && !heroImage.includes('data:image')) {
-      const absoluteUrl = window.location.origin + (heroImage.startsWith('/') ? heroImage : '/' + heroImage);
-      console.log('Trying absolute URL:', absoluteUrl);
-      setHeroImage(absoluteUrl);
-      return;
-    }
-    
-    setImageError(true);
+    // Use data URI fallback if image loading fails
+    const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlNoYXBpbmcgVG9tb3Jyb3cncyBXb3JrZm9yY2UgVG9kYXk8L3RleHQ+PC9zdmc+';
+    setHeroImage(fallbackImage);
     setIsLoading(false);
-    onError(new Error('Failed to load hero image'));
   };
 
   if (isLoading) {

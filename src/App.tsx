@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { useAuth } from '@/hooks/useAuth';
+import Layout from '@/components/Layout';
 import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminAuth from '@/pages/admin/Auth';
 import Index from '@/pages/Index';
@@ -27,29 +28,38 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // NotFound component
 const NotFound = () => (
-  <div className="flex flex-col items-center justify-center h-screen">
-    <h1 className="text-4xl font-bold mb-4">404</h1>
-    <p className="text-xl mb-6">Page not found</p>
-    <button 
-      onClick={() => window.location.href = '/'}
-      className="px-4 py-2 bg-[#811a2c] text-white rounded hover:bg-[#ab233a]"
-    >
-      Return Home
-    </button>
-  </div>
+  <Layout showBreadcrumb={false}>
+    <div className="flex flex-col items-center justify-center py-20">
+      <h1 className="text-4xl font-bold mb-4">404</h1>
+      <p className="text-xl mb-6">Page not found</p>
+      <button 
+        onClick={() => window.location.href = '/'}
+        className="px-4 py-2 bg-[#811a2c] text-white rounded hover:bg-[#ab233a]"
+      >
+        Return Home
+      </button>
+    </div>
+  </Layout>
+);
+
+// Page wrapper component to apply Layout to regular pages
+const PageWithLayout = ({ component: Component }: { component: React.ComponentType }) => (
+  <Layout>
+    <Component />
+  </Layout>
 );
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/apprenticeships" element={<Apprenticeships />} />
-        <Route path="/traineeships" element={<Traineeships />} />
-        <Route path="/recruitment" element={<Recruitment />} />
+        <Route path="/" element={<PageWithLayout component={Index} />} />
+        <Route path="/contact" element={<PageWithLayout component={Contact} />} />
+        <Route path="/apprenticeships" element={<PageWithLayout component={Apprenticeships} />} />
+        <Route path="/traineeships" element={<PageWithLayout component={Traineeships} />} />
+        <Route path="/recruitment" element={<PageWithLayout component={Recruitment} />} />
         
-        {/* Admin routes */}
+        {/* Admin routes - no Layout for these */}
         <Route path="/admin/auth" element={<AdminAuth />} />
         <Route 
           path="/admin/dashboard" 
