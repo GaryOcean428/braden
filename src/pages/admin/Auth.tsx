@@ -22,12 +22,38 @@ const AdminAuth: React.FC = () => {
       setLoading(true);
       setError(null);
       
+      console.log('Attempting login with email:', email);
+      
+      // Create a test user if in development mode
+      if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+        // Check if test user exists
+        const { data: userData } = await supabase.auth.getUser();
+        if (!userData?.user) {
+          console.log('Development mode: Creating test user');
+          // Create a test user for development
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: 'admin@example.com',
+            password: 'password123',
+          });
+          
+          if (signUpError) {
+            console.warn('Could not create test user:', signUpError);
+          }
+        }
+      }
+      
+      // Attempt login
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Authentication error:', error);
+        throw error;
+      }
+      
+      console.log('Login successful:', data);
       
       // Successful login
       navigate('/admin/dashboard');

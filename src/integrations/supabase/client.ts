@@ -8,9 +8,17 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJh
 
 // Log for debugging
 console.log('Supabase URL:', SUPABASE_URL);
+console.log('Environment:', import.meta.env.MODE);
 
-// Create Supabase client
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+// Create Supabase client with additional options for auth
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    flowType: 'implicit',
+  }
+});
 
 // Create storage client
 export const storage = new StorageClient(SUPABASE_URL, {
