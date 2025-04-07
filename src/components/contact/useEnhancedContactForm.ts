@@ -1,124 +1,89 @@
+
 import { useContactForm } from "./useContactForm";
-import { sendLeadConfirmationEmail } from "@/lib/email/emailService";
-import { createFollowUpTask, ensureTaskTablesExist, getStaffDetails } from "@/lib/tasks/taskService";
-import { sendStaffNotificationEmail } from "@/lib/email/emailService";
-import { supabase } from "@/integrations/supabase/client";
 import { ContactFormValues } from "./types";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useEnhancedContactForm = () => {
   const baseForm = useContactForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   
-  // Initialize task tables on component mount
+  // Initialize on component mount
   useEffect(() => {
-    const initializeTables = async () => {
+    const initialize = async () => {
       try {
-        await ensureTaskTablesExist();
+        console.log("Initializing enhanced contact form");
+        // Check if we can connect to Supabase
+        const { error } = await supabase
+          .from('clients')
+          .select('count(*)', { count: 'exact', head: true });
+          
+        if (error) {
+          console.error("Error connecting to database:", error);
+        }
+        
         setIsInitialized(true);
       } catch (error) {
-        console.error("Error initializing task tables:", error);
-        // Continue anyway as tables might already exist
-        setIsInitialized(true);
+        console.error("Initialization error:", error);
+        setIsInitialized(true); // Continue anyway
       }
     };
     
-    initializeTables();
+    initialize();
   }, []);
   
   const enhancedSubmit = async (values: ContactFormValues) => {
     try {
-      // First, submit the form data to Supabase (original functionality)
-      baseForm.form.handleSubmit(async () => {
-        try {
-          baseForm.setIsSubmitting(true);
-          
-          // Create a new lead
-          const { data: leadData, error: leadError } = await supabase
-            .from('leads')
-            .insert([{
-              name: values.name,
-              email: values.email,
-              phone: values.phone,
-              company: values.company,
-              service_type: values.serviceType,
-              message: values.message,
-            }])
-            .select();
-            
-          if (leadError) throw leadError;
-          
-          // Create a new client
-          const { error: clientError } = await supabase
-            .from('clients')
-            .insert([{
-              name: values.company,
-              email: values.email,
-              phone: values.phone,
-              service_type: values.serviceType,
-            }]);
-            
-          if (clientError) throw clientError;
-          
-          // Send confirmation email to the lead
-          await sendLeadConfirmationEmail(
-            values.email,
-            values.name,
-            values.serviceType
-          );
-          
-          // Create follow-up task for staff
-          const leadId = leadData?.[0]?.id;
-          if (leadId) {
-            const { success: taskSuccess, taskId } = await createFollowUpTask(
-              leadId,
-              values.serviceType
-            );
-            
-            if (taskSuccess && taskId) {
-              // Get assigned staff details
-              const { data: taskData } = await supabase
-                .from('tasks')
-                .select('assigned_to')
-                .eq('id', taskId)
-                .single();
-                
-              if (taskData?.assigned_to) {
-                const staffDetails = await getStaffDetails(taskData.assigned_to);
-                
-                if (staffDetails?.email) {
-                  // Send notification email to assigned staff
-                  await sendStaffNotificationEmail(
-                    staffDetails.email,
-                    {
-                      ...values,
-                      leadId,
-                      taskId,
-                    }
-                  );
-                }
-              }
-            }
-          }
-          
-          toast.success("Thank you for your message. We'll be in touch soon!");
-          baseForm.form.reset();
-        } catch (error) {
-          console.error('Error submitting form:', error);
-          toast.error("There was an error submitting your message. Please try again.");
-        } finally {
-          baseForm.setIsSubmitting(false);
-        }
-      })();
+      setIsSubmitting(true);
+      
+      // Create a new lead
+      const { data: leadData, error: leadError } = await supabase
+        .from('leads')
+        .insert({
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          company: values.company,
+          service_type: values.serviceType,
+          message: values.message,
+        })
+        .select('id');
+        
+      if (leadError) {
+        throw leadError;
+      }
+      
+      // Create a new client
+      const { error: clientError } = await supabase
+        .from('clients')
+        .insert({
+          name: values.company,
+          email: values.email,
+          phone: values.phone,
+          service_type: values.serviceType,
+        });
+        
+      if (clientError) {
+        throw clientError;
+      }
+      
+      // Notify the user that the message was sent
+      toast.success("Thank you for your message. We'll be in touch soon!");
+      baseForm.form.reset();
     } catch (error) {
-      console.error('Error in enhanced submit:', error);
+      console.error('Error submitting form:', error);
+      toast.error("There was an error submitting your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
   return {
-    ...baseForm,
+    form: baseForm.form,
+    isSubmitting,
+    onSubmit: enhancedSubmit,
     isInitialized,
-    onSubmit: baseForm.form.handleSubmit(enhancedSubmit),
   };
 };

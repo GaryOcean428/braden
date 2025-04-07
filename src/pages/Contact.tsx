@@ -1,7 +1,6 @@
-import { ContactForm } from "@/components/ContactForm";
+
 import { EnhancedContactForm } from "@/components/contact/EnhancedContactForm";
 
-// Update the import in the file that uses ContactForm to use EnhancedContactForm instead
 export function Contact() {
   return (
     <div className="container mx-auto py-12">
@@ -12,3 +11,5 @@ export function Contact() {
     </div>
   );
 }
+
+export default Contact;

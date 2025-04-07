@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Layout from './components/Layout';
 import Index from './pages/Index';
-import Contact from './pages/Contact';
+import { Contact } from './pages/Contact';
 import Dashboard from './pages/admin/Dashboard';
 import ContentEditor from './pages/admin/ContentEditor';
 import ContentManager from './pages/admin/ContentManager';

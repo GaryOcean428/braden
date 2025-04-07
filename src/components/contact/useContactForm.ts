@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -49,25 +50,26 @@ export const useContactForm = () => {
       // Create a new lead
       const { error: leadError } = await supabase
         .from('leads')
-        .insert([{
+        .insert({
           name: values.name,
           email: values.email,
           phone: values.phone,
           company: values.company,
           service_type: values.serviceType,
-        }]);
+          message: values.message,
+        });
 
       if (leadError) throw leadError;
 
       // Create a new client
       const { error: clientError } = await supabase
         .from('clients')
-        .insert([{
+        .insert({
           name: values.company,
           email: values.email,
           phone: values.phone,
           service_type: values.serviceType,
-        }]);
+        });
 
       if (clientError) throw clientError;
 
