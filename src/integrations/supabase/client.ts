@@ -84,13 +84,97 @@ export const initializeStorageBuckets = async () => {
           console.error(`Error creating bucket ${bucketName}:`, error);
         } else {
           console.log(`Created bucket: ${bucketName}`);
+          
+          // Set RLS policies for the bucket to allow authenticated users to perform operations
+          await setupBucketPolicies(bucketName);
         }
+      } else {
+        // Ensure policies are set for existing buckets
+        await setupBucketPolicies(bucketName);
       }
     }
     
     return { success: true };
   } catch (error) {
     console.error('Error initializing storage buckets:', error);
+    return { success: false, error };
+  }
+};
+
+// Helper function to set up RLS policies for a bucket
+const setupBucketPolicies = async (bucketName: string) => {
+  try {
+    // Get current user session
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      console.warn('No active session found, cannot set bucket policies');
+      return { success: false };
+    }
+    
+    // Create SQL to set up RLS policies for the bucket
+    const { error } = await supabase.rpc('setup_storage_policies', {
+      bucket_name: bucketName
+    });
+    
+    if (error) {
+      console.error(`Error setting up policies for bucket ${bucketName}:`, error);
+      return { success: false, error };
+    }
+    
+    console.log(`Set up policies for bucket: ${bucketName}`);
+    return { success: true };
+  } catch (error) {
+    console.error(`Error setting up policies for bucket ${bucketName}:`, error);
+    return { success: false, error };
+  }
+};
+
+// Function to create a default admin user if none exists
+export const ensureAdminUser = async () => {
+  try {
+    // Check if we have an active session
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+      console.log('Active session found, no need to create admin user');
+      return { success: true };
+    }
+    
+    // Try to sign in with default admin credentials
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: 'admin@example.com',
+      password: 'Admin123!',
+    });
+    
+    if (error && error.status === 400) {
+      // User doesn't exist, create it
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: 'admin@example.com',
+        password: 'Admin123!',
+        options: {
+          data: {
+            role: 'admin',
+          }
+        }
+      });
+      
+      if (signUpError) {
+        console.error('Error creating admin user:', signUpError);
+        return { success: false, error: signUpError };
+      }
+      
+      console.log('Created default admin user');
+      return { success: true, data: signUpData };
+    } else if (error) {
+      console.error('Error checking for admin user:', error);
+      return { success: false, error };
+    }
+    
+    console.log('Signed in with existing admin user');
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error ensuring admin user:', error);
     return { success: false, error };
   }
 };
