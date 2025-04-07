@@ -1,4 +1,5 @@
-import { sendLeadToCRM } from '../lib/crmIntegration';
+import { useState } from 'react';
+import { sendLeadToCRM } from '../../lib/crmIntegration';
 
 // Enhanced contact form hook with CRM integration
 export const useEnhancedContactForm = () => {
@@ -13,12 +14,12 @@ export const useEnhancedContactForm = () => {
     try {
       // Format the lead data
       const leadData = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone || null,
         message: formData.message || null,
-        service_interest: formData.services || [],
+        services: formData.services || [],
         submission_page: 'contact',
         // Capture UTM parameters if available
         utm_source: getUtmParameter('utm_source'),
