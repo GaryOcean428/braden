@@ -12,4 +12,5 @@ export function Contact() {
   );
 }
 
+// Make sure to export as default too
 export default Contact;

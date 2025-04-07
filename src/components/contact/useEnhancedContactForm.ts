@@ -18,7 +18,7 @@ export const useEnhancedContactForm = () => {
         // Check if we can connect to Supabase
         const { error } = await supabase
           .from('clients')
-          .select('count(*)', { count: 'exact', head: true });
+          .select('count', { count: 'exact', head: true });
           
         if (error) {
           console.error("Error connecting to database:", error);
@@ -39,7 +39,7 @@ export const useEnhancedContactForm = () => {
       setIsSubmitting(true);
       
       // Create a new lead
-      const { data: leadData, error: leadError } = await supabase
+      await supabase
         .from('leads')
         .insert({
           name: values.name,
@@ -48,15 +48,10 @@ export const useEnhancedContactForm = () => {
           company: values.company,
           service_type: values.serviceType,
           message: values.message,
-        })
-        .select('id');
+        });
         
-      if (leadError) {
-        throw leadError;
-      }
-      
       // Create a new client
-      const { error: clientError } = await supabase
+      await supabase
         .from('clients')
         .insert({
           name: values.company,
@@ -64,10 +59,6 @@ export const useEnhancedContactForm = () => {
           phone: values.phone,
           service_type: values.serviceType,
         });
-        
-      if (clientError) {
-        throw clientError;
-      }
       
       // Notify the user that the message was sent
       toast.success("Thank you for your message. We'll be in touch soon!");
