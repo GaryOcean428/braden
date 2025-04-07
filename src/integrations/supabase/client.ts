@@ -9,14 +9,47 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJh
 // Log for debugging
 console.log('Supabase URL:', SUPABASE_URL);
 console.log('Environment:', import.meta.env.MODE);
+console.log('Auth Configuration: Using enhanced settings for SPA');
 
-// Create Supabase client with additional options for auth
+// Create Supabase client with comprehensive options for auth in SPA
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'implicit',
+    storageKey: 'braden-auth-token',
+    storage: {
+      getItem: (key) => {
+        try {
+          const storedValue = window.localStorage.getItem(key);
+          return storedValue ? JSON.parse(storedValue) : null;
+        } catch (error) {
+          console.error('Error retrieving auth from localStorage:', error);
+          return null;
+        }
+      },
+      setItem: (key, value) => {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+          console.error('Error storing auth in localStorage:', error);
+        }
+      },
+      removeItem: (key) => {
+        try {
+          window.localStorage.removeItem(key);
+        } catch (error) {
+          console.error('Error removing auth from localStorage:', error);
+        }
+      }
+    },
+    flowType: 'pkce', // More secure flow for SPAs
+    debug: true // Enable debug mode in production to help diagnose issues
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'braden-website'
+    }
   }
 });
 
