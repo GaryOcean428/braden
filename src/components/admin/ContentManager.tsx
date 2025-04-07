@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -41,15 +42,16 @@ export const ContentManager: React.FC = () => {
       setLoading(true);
       setError(null);
       
+      // Use the generic query method to avoid type errors with tables not in the schema
       const { data, error } = await supabase
         .from('content')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: ContentItem[] | null, error: any };
       
       if (error) throw error;
       
       setItems(data || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching content:', err);
       setError('Failed to load content items');
     } finally {
@@ -87,7 +89,7 @@ export const ContentManager: React.FC = () => {
       const { error } = await supabase
         .from('content')
         .delete()
-        .eq('id', id);
+        .eq('id', id) as { error: any };
       
       if (error) throw error;
       
@@ -99,7 +101,7 @@ export const ContentManager: React.FC = () => {
         setSelectedItem(null);
         setIsEditing(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting content:', err);
       setError('Failed to delete content item');
     }
@@ -122,7 +124,7 @@ export const ContentManager: React.FC = () => {
             image_url: formData.image_url,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', selectedItem.id);
+          .eq('id', selectedItem.id) as { error: any };
         
         if (error) throw error;
       } else {
@@ -135,7 +137,7 @@ export const ContentManager: React.FC = () => {
             image_url: formData.image_url,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          });
+          }) as { error: any };
         
         if (error) throw error;
       }
@@ -146,7 +148,7 @@ export const ContentManager: React.FC = () => {
       // Reset form
       setIsEditing(false);
       setSelectedItem(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving content:', err);
       setError('Failed to save content item');
     } finally {

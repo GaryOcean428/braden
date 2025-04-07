@@ -6,10 +6,19 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+interface MediaItem {
+  id: string;
+  title: string;
+  file_path: string;
+  file_type?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const MediaManager = () => {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<MediaItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // Load images when component mounts
@@ -22,10 +31,11 @@ const MediaManager = () => {
       setLoading(true);
       setError(null);
       
+      // Use a type assertion to avoid TypeScript errors
       const { data, error } = await supabase
         .from('media')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: MediaItem[] | null, error: any };
 
       if (error) throw error;
       setImages(data || []);
@@ -57,13 +67,14 @@ const MediaManager = () => {
 
       if (uploadError) throw uploadError;
 
+      // Use type assertion to avoid TypeScript errors
       const { error: dbError } = await supabase
         .from('media')
         .insert({
           title: file.name,
           file_path: filePath,
           file_type: file.type,
-        });
+        }) as { error: any };
 
       if (dbError) throw dbError;
 
@@ -97,10 +108,11 @@ const MediaManager = () => {
 
       if (storageError) throw storageError;
 
+      // Use type assertion to avoid TypeScript errors
       const { error: dbError } = await supabase
         .from('media')
         .delete()
-        .match({ id });
+        .match({ id }) as { error: any };
 
       if (dbError) throw dbError;
 

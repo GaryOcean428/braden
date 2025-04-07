@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase, STORAGE_BUCKETS } from '@/integrations/supabase/client';
 
@@ -34,11 +35,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true, // Changed to true to overwrite if file exists
-          duplex: 'half',
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-            'x-upsert': 'true'
-          }
+          duplex: 'half'
         });
       
       if (uploadError) {
@@ -76,11 +73,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
       
       const { error: deleteError } = await supabase.storage
         .from(bucketName)
-        .remove([filePath], {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
-          }
-        });
+        .remove([filePath]);
       
       if (deleteError) {
         console.error('Delete error details:', deleteError);

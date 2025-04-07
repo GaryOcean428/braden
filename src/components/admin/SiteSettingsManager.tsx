@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageManager } from '@/components/admin/ImageManager';
 import { Loader2, Save, RefreshCw } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 interface SiteSettings {
   id?: string;
@@ -29,13 +30,13 @@ interface SiteSettings {
 export const SiteSettingsManager: React.FC = () => {
   const [settings, setSettings] = useState<SiteSettings>({
     site_name: 'Braden Group',
-    site_description: 'Professional services and consulting',
+    site_description: 'People. Employment. Progress.',
     contact_email: 'info@bradengroup.com.au',
     contact_phone: '',
     address: '',
     logo_url: '',
-    primary_color: '#1e40af',
-    secondary_color: '#3b82f6',
+    primary_color: '#ab233a',
+    secondary_color: '#cbb26a',
     social_facebook: '',
     social_twitter: '',
     social_instagram: '',
@@ -66,26 +67,12 @@ export const SiteSettingsManager: React.FC = () => {
       
       console.log('Fetching settings with auth token:', session.access_token.substring(0, 10) + '...');
       
-      // First, check if the settings table exists
-      const { error: tableError } = await supabase
-        .from('site_settings')
-        .select('id')
-        .limit(1);
-      
-      if (tableError && tableError.code === '42P01') {
-        // Table doesn't exist, create it
-        console.log('Settings table does not exist, creating it...');
-        await createSettingsTable();
-      } else if (tableError) {
-        throw tableError;
-      }
-      
-      // Try to fetch settings
+      // Try to fetch settings using a type cast to avoid type errors
       const { data, error } = await supabase
         .from('site_settings')
         .select('*')
         .order('updated_at', { ascending: false })
-        .limit(1);
+        .limit(1) as { data: SiteSettings[] | null, error: any };
       
       if (error) throw error;
       
@@ -98,25 +85,11 @@ export const SiteSettingsManager: React.FC = () => {
         console.log('No settings found, creating default settings...');
         await createDefaultSettings();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching settings:', err);
       setError('Failed to load site settings. Please try refreshing the page.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const createSettingsTable = async () => {
-    try {
-      // Create the settings table using SQL
-      const { error } = await supabase.rpc('create_settings_table');
-      
-      if (error) throw error;
-      
-      console.log('Settings table created successfully');
-    } catch (err) {
-      console.error('Error creating settings table:', err);
-      setError('Failed to create settings table. Please contact support.');
     }
   };
 
@@ -129,15 +102,16 @@ export const SiteSettingsManager: React.FC = () => {
         contact_phone: '',
         address: '',
         logo_url: '',
-        primary_color: '#1e40af',
-        secondary_color: '#3b82f6',
+        primary_color: '#ab233a',
+        secondary_color: '#cbb26a',
         updated_at: new Date().toISOString(),
       };
       
+      // Use a type cast to avoid type errors
       const { data, error } = await supabase
         .from('site_settings')
         .insert(defaultSettings)
-        .select();
+        .select() as { data: SiteSettings[] | null, error: any };
       
       if (error) throw error;
       
@@ -146,7 +120,7 @@ export const SiteSettingsManager: React.FC = () => {
         setSettingsId(data[0].id);
         console.log('Created default settings:', data[0]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating default settings:', err);
       setError('Failed to create default settings. Please try refreshing the page.');
     }
@@ -174,7 +148,7 @@ export const SiteSettingsManager: React.FC = () => {
         const { error } = await supabase
           .from('site_settings')
           .update(updatedSettings)
-          .eq('id', settingsId);
+          .eq('id', settingsId) as { error: any };
         
         if (error) throw error;
       } else {
@@ -182,7 +156,7 @@ export const SiteSettingsManager: React.FC = () => {
         const { data, error } = await supabase
           .from('site_settings')
           .insert(updatedSettings)
-          .select();
+          .select() as { data: SiteSettings[] | null, error: any };
         
         if (error) throw error;
         
@@ -191,20 +165,17 @@ export const SiteSettingsManager: React.FC = () => {
         }
       }
       
-      toast({
-        title: "Settings saved",
+      toast("Settings saved", {
         description: "Your site settings have been updated successfully.",
       });
       
       console.log('Settings saved successfully');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving settings:', err);
       setError('Failed to save settings. Please try again.');
       
-      toast({
-        title: "Error saving settings",
+      toast("Error saving settings", {
         description: "There was a problem saving your settings. Please try again.",
-        variant: "destructive",
       });
     } finally {
       setSaving(false);

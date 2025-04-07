@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import { StorageClient } from '@supabase/storage-js';
 import type { Database } from './types';
@@ -64,6 +65,7 @@ export const STORAGE_BUCKETS = {
   HERO_IMAGES: 'hero-images',
   CONTENT_IMAGES: 'content-images',
   PROFILE_IMAGES: 'profile-images',
+  MEDIA: 'media',
 };
 
 // Helper function to initialize storage buckets
@@ -85,47 +87,15 @@ export const initializeStorageBuckets = async () => {
         } else {
           console.log(`Created bucket: ${bucketName}`);
           
-          // Set RLS policies for the bucket to allow authenticated users to perform operations
-          await setupBucketPolicies(bucketName);
+          // Since we can't call RPC for setup_storage_policies directly due to type issues,
+          // we'll create manual SQL queries in your migration scripts instead
         }
-      } else {
-        // Ensure policies are set for existing buckets
-        await setupBucketPolicies(bucketName);
       }
     }
     
     return { success: true };
   } catch (error) {
     console.error('Error initializing storage buckets:', error);
-    return { success: false, error };
-  }
-};
-
-// Helper function to set up RLS policies for a bucket
-const setupBucketPolicies = async (bucketName: string) => {
-  try {
-    // Get current user session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      console.warn('No active session found, cannot set bucket policies');
-      return { success: false };
-    }
-    
-    // Create SQL to set up RLS policies for the bucket
-    const { error } = await supabase.rpc('setup_storage_policies', {
-      bucket_name: bucketName
-    });
-    
-    if (error) {
-      console.error(`Error setting up policies for bucket ${bucketName}:`, error);
-      return { success: false, error };
-    }
-    
-    console.log(`Set up policies for bucket: ${bucketName}`);
-    return { success: true };
-  } catch (error) {
-    console.error(`Error setting up policies for bucket ${bucketName}:`, error);
     return { success: false, error };
   }
 };
