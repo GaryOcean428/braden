@@ -1,69 +1,88 @@
-# Welcome to your Lovable project
+# Braden Website
 
-## Project info
+This repository contains the Braden website with enhanced functionality for lead management, email automation, and task assignment.
 
-**URL**: https://lovable.dev/projects/b390c2d0-3257-4724-90ed-c2c387931c61
+## Features
 
-## How can I edit this code?
+- **Contact Form**: Collects lead information and stores it in Supabase
+- **Email Automation**: Sends confirmation emails to leads and notification emails to staff
+- **Task Assignment**: Automatically assigns follow-up tasks to staff members based on service type
 
-There are several ways of editing your application.
+## Setup Instructions
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b390c2d0-3257-4724-90ed-c2c387931c61) and start prompting.
+- Node.js (v14 or higher)
+- npm or yarn
+- Supabase account
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1. Clone the repository:
+```bash
+git clone https://github.com/GaryOcean428/braden.git
+cd braden
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. Install dependencies:
+```bash
+npm install
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. Create a `.env` file with the following variables:
+```
+# Supabase Configuration
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
-Follow these steps:
+# Email Configuration
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@example.com
+EMAIL_PASSWORD=your-password
+EMAIL_FROM=no-reply@braden.com.au
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Database Schema
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The application uses the following tables in Supabase:
 
-**Use GitHub Codespaces**
+- **leads**: Stores information about leads from the contact form
+- **clients**: Stores client information
+- **staff**: Stores information about staff members who can be assigned to leads
+- **tasks**: Stores follow-up tasks assigned to staff members
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Email Templates
 
-## What technologies are used for this project?
+The application includes the following email templates:
 
-This project is built with .
+- **Lead Confirmation**: Sent to leads after form submission
+- **Staff Notification**: Sent to staff members when assigned a new lead
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+The website is deployed on Vercel. Any changes pushed to the main branch will be automatically deployed.
 
-Simply open [Lovable](https://lovable.dev/projects/b390c2d0-3257-4724-90ed-c2c387931c61) and click on Share -> Publish.
+## Development
 
-## I want to use a custom domain - is that possible?
+### Running Tests
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+```bash
+npm test
+```
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+## Contact
+
+For any questions or issues, please contact support@braden.com.au
