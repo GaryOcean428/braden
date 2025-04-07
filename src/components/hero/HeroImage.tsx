@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,7 +8,7 @@ interface HeroImageProps {
 }
 
 export const HeroImage = ({ onError }: HeroImageProps) => {
-  const [heroImage, setHeroImage] = useState("/hero-image.jpg");
+  const [heroImage, setHeroImage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
@@ -18,7 +17,14 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
       try {
         setIsLoading(true);
         setImageError(false);
-
+        
+        // Set the default image path with the correct base URL for Vercel deployment
+        const defaultImagePath = import.meta.env.BASE_URL 
+          ? `${import.meta.env.BASE_URL}/hero-image.jpg` 
+          : '/hero-image.jpg';
+        
+        setHeroImage(defaultImagePath);
+        
         // Try to fetch from Supabase
         try {
           const { data, error } = await supabase
@@ -26,25 +32,25 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
             .select('file_path')
             .eq('title', 'hero-image')
             .maybeSingle();
-
+            
           if (error) {
             // If there's a Supabase error, log it but continue with default image
             console.log('Supabase error, using default image:', error);
             setIsLoading(false);
             return;
           }
-
+          
           // If no custom hero image is set, use default and finish loading
           if (!data?.file_path) {
             setIsLoading(false);
             return;
           }
-
+          
           // If we have a file path, try to get the public URL
           const { data: { publicUrl } } = supabase.storage
             .from('media')
             .getPublicUrl(data.file_path);
-
+            
           // Preload the image
           const img = new Image();
           img.onload = () => {
@@ -68,9 +74,9 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         onError(error instanceof Error ? error : new Error('Failed to load hero image'));
       }
     };
-
+    
     loadHeroImage();
-
+    
     // Set a safety timeout to ensure loading state doesn't persist indefinitely
     const safetyTimeout = setTimeout(() => {
       if (isLoading) {
@@ -78,7 +84,7 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
         console.log('Safety timeout triggered to prevent infinite loading');
       }
     }, 3000);
-
+    
     return () => clearTimeout(safetyTimeout);
   }, [onError]);
 
@@ -87,6 +93,14 @@ export const HeroImage = ({ onError }: HeroImageProps) => {
   };
 
   const handleImageError = () => {
+    // Try with absolute URL if relative URL fails
+    if (!heroImage.startsWith('http') && !heroImage.includes('data:image')) {
+      const absoluteUrl = window.location.origin + (heroImage.startsWith('/') ? heroImage : '/' + heroImage);
+      console.log('Trying absolute URL:', absoluteUrl);
+      setHeroImage(absoluteUrl);
+      return;
+    }
+    
     setImageError(true);
     setIsLoading(false);
     onError(new Error('Failed to load hero image'));
