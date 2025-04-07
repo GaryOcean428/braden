@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {
+    "SUPABASE_URL": "https://iykrauzuutvmnxpqppzk.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5a3JhdXp1dXR2bW54cHFwcHprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4NzE1NjcsImV4cCI6MjA1MTQ0NzU2N30.kvAGD6FrOhmdpYzRHMyXam3p337w8Ijd5_raruHPd6U",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5a3JhdXp1dXR2bW54cHFwcHprIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNTg3MTU2NywiZXhwIjoyMDUxNDQ3NTY3fQ.8PId-HuQvEJ5Vq1x8WPjLUZF5PAsuy42P0Y_9lpI3AE",
+    "EMAIL_HOST": "smtp.example.com",
+    "EMAIL_PORT": "587",
+    "EMAIL_USER": "your-email@example.com",
+    "EMAIL_PASSWORD": "your-password",
+    "EMAIL_FROM": "no-reply@braden.com.au"
+  }
+}
