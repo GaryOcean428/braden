@@ -1,124 +1,110 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { DashboardCards } from "@/components/admin/DashboardCards";
-import { ContentTabs } from "@/components/admin/ContentTabs";
-import { supabase } from "@/integrations/supabase/client";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { HeroImageManager } from '@/components/admin/HeroImageManager';
+import { ContentManager } from '@/components/admin/ContentManager';
+import { Button } from '@/components/ui/button';
+import { LayoutDashboard, Image, FileText, Users, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
-const Dashboard = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null);
+const AdminDashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('hero');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      setIsLoading(true);
-      setAuthError(null);
-      
-      console.log("Checking auth status...");
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error || !data.session) {
-        console.log("No session found, redirecting to login");
-        setAuthError("You must be logged in to access the admin dashboard");
-        toast.error("Authentication Required", {
-          description: "Please log in to access the admin dashboard"
-        });
-        navigate('/admin/auth');
-        return;
-      }
-      
-      console.log("User is logged in, checking admin status...");
-      
-      // Verify if the user is Braden (the developer) by checking email
-      const userEmail = data.session.user.email;
-      
-      if (userEmail === 'braden.lang77@gmail.com') {
-        console.log("Admin status confirmed via email check");
-        toast.success("Developer access confirmed");
-      } else {
-        console.log("User is not an admin");
-        setAuthError("You don't have admin permissions");
-        toast.error("Permission Denied", {
-          description: "You don't have admin permissions"
-        });
-        // Redirect after a brief delay
-        setTimeout(() => {
-          navigate('/admin/auth');
-        }, 1500);
-        return;
-      }
-      
-    } catch (error) {
-      console.error("Auth check error:", error);
-      setAuthError("Failed to verify authentication");
-      // Redirect after a brief delay
-      setTimeout(() => {
-        navigate('/admin/auth');
-      }, 1500);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success("Logged out successfully");
-      navigate('/admin/auth?logout=true');
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Logout failed");
-    }
+    await supabase.auth.signOut();
+    navigate('/');
   };
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto p-6">
-        <Skeleton className="h-10 w-1/3 mb-6" />
-        <Skeleton className="h-6 w-2/3 mb-8" />
-        <Skeleton className="h-64 w-full rounded-lg" />
-      </div>
-    );
-  }
-
-  if (authError) {
-    return (
-      <div className="container mx-auto p-6">
-        <Alert variant="destructive">
-          <AlertTitle>Authentication Error</AlertTitle>
-          <AlertDescription className="space-y-4">
-            <p>{authError}</p>
-            <Button onClick={() => navigate('/admin/auth')}>Go to Login</Button>
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-[#ab233a]">Admin Dashboard</h1>
         <Button 
-          variant="outline" 
+          onClick={handleLogout} 
+          variant="outline"
           className="border-[#ab233a] text-[#ab233a] hover:bg-[#ab233a] hover:text-white"
-          onClick={handleLogout}
         >
           Logout
         </Button>
       </div>
-      <DashboardCards />
-      <ContentTabs />
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="md:col-span-1">
+          <Card>
+            <CardContent className="p-4">
+              <nav className="space-y-2">
+                <Button 
+                  variant={activeTab === 'hero' ? 'default' : 'ghost'} 
+                  className="w-full justify-start" 
+                  onClick={() => setActiveTab('hero')}
+                >
+                  <Image className="mr-2 h-4 w-4" />
+                  Hero Images
+                </Button>
+                <Button 
+                  variant={activeTab === 'content' ? 'default' : 'ghost'} 
+                  className="w-full justify-start" 
+                  onClick={() => setActiveTab('content')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Content
+                </Button>
+                <Button 
+                  variant={activeTab === 'users' ? 'default' : 'ghost'} 
+                  className="w-full justify-start" 
+                  onClick={() => setActiveTab('users')}
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Users
+                </Button>
+                <Button 
+                  variant={activeTab === 'settings' ? 'default' : 'ghost'} 
+                  className="w-full justify-start" 
+                  onClick={() => setActiveTab('settings')}
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </Button>
+              </nav>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="md:col-span-3">
+          {activeTab === 'hero' && <HeroImageManager />}
+          {activeTab === 'content' && <ContentManager />}
+          {activeTab === 'users' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>User Management</CardTitle>
+                <CardDescription>Manage website users and permissions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center py-8 text-gray-500">
+                  User management functionality coming soon.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          {activeTab === 'settings' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Settings</CardTitle>
+                <CardDescription>Configure website settings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center py-8 text-gray-500">
+                  Site settings functionality coming soon.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;

@@ -1,54 +1,69 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import { useAuth } from '@/hooks/useAuth';
+import AdminDashboard from '@/pages/admin/Dashboard';
+import AdminAuth from '@/pages/admin/Auth';
+import Index from '@/pages/Index';
+import Contact from '@/pages/Contact';
+import Apprenticeships from '@/pages/apprenticeships';
+import Traineeships from '@/pages/traineeships';
+import Recruitment from '@/pages/recruitment';
 
-import { useSupabaseInitialization } from '@/hooks/useSupabaseInitialization';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import Layout from './components/Layout';
-import Index from './pages/Index';
-// Import Contact page correctly
-import Contact from './pages/Contact';
-import Dashboard from './pages/admin/Dashboard';
-import ContentEditor from './pages/admin/ContentEditor';
-import ContentManager from './pages/admin/ContentManager';
-import SiteSettings from './pages/admin/SiteSettings';
-import UserManagement from './pages/admin/UserManagement';
-import AdminAuth from './pages/auth/AdminAuth';
-import { Debug } from './components/Debug';
-import { useState, useEffect } from 'react';
+// Protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/admin/auth" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+// NotFound component
+const NotFound = () => (
+  <div className="flex flex-col items-center justify-center h-screen">
+    <h1 className="text-4xl font-bold mb-4">404</h1>
+    <p className="text-xl mb-6">Page not found</p>
+    <button 
+      onClick={() => window.location.href = '/'}
+      className="px-4 py-2 bg-[#811a2c] text-white rounded hover:bg-[#ab233a]"
+    >
+      Return Home
+    </button>
+  </div>
+);
 
 function App() {
-  // Initialize Supabase tables when the app starts
-  useSupabaseInitialization();
-  
-  const [showDebug, setShowDebug] = useState(false);
-  
-  useEffect(() => {
-    // Check if debug mode is enabled via URL parameter
-    const queryParams = new URLSearchParams(window.location.search);
-    const debugMode = queryParams.get('debug') === 'true';
-    setShowDebug(debugMode || process.env.NODE_ENV === 'development');
-    
-    // Output helpful diagnostics on startup
-    if (debugMode || process.env.NODE_ENV === 'development') {
-      console.info('App initialized in debug mode');
-      console.info('Environment:', process.env.NODE_ENV);
-      console.info('Supabase URL:', 'https://iykrauzuutvmnxpqppzk.supabase.co');
-    }
-  }, []);
-  
   return (
     <Router>
-      <Toaster position="top-center" richColors />
-      {showDebug && <Debug />}
       <Routes>
-        <Route path="/" element={<Layout><Index /></Layout>} />
-        <Route path="/contact" element={<Layout><Contact /></Layout>} />
-        <Route path="/admin" element={<Layout><Dashboard /></Layout>} />
-        <Route path="/admin/content-editor" element={<Layout><ContentEditor /></Layout>} />
-        <Route path="/admin/content-manager" element={<Layout><ContentManager /></Layout>} />
-        <Route path="/admin/settings" element={<Layout><SiteSettings /></Layout>} />
-        <Route path="/admin/users" element={<Layout><UserManagement /></Layout>} />
+        <Route path="/" element={<Index />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/apprenticeships" element={<Apprenticeships />} />
+        <Route path="/traineeships" element={<Traineeships />} />
+        <Route path="/recruitment" element={<Recruitment />} />
+        
+        {/* Admin routes */}
         <Route path="/admin/auth" element={<AdminAuth />} />
+        <Route 
+          path="/admin/dashboard" 
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* 404 route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster />
     </Router>
   );
 }
