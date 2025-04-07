@@ -1,14 +1,16 @@
+
 import { renderHook } from '@testing-library/react';
 import { useEnhancedContactForm } from '../useEnhancedContactForm';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock Supabase
-jest.mock('@/integrations/supabase/client', () => ({
+vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockReturnThis(),
-    then: jest.fn(),
-    catch: jest.fn(),
+    from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    then: vi.fn(),
+    catch: vi.fn(),
   },
 }));
 
