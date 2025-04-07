@@ -20,14 +20,9 @@ export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps =
   const submitting = isSubmitting !== undefined ? isSubmitting : defaultFormValues.isSubmitting;
   const submitHandler = onSubmit || defaultFormValues.onSubmit;
 
-  // Create a handler that will pass the form values to the onSubmit function
-  const handleSubmit = formProps.handleSubmit((data: ContactFormValues) => {
-    return submitHandler(data);
-  });
-
   return (
     <Form {...formProps}>
-      <form onSubmit={handleSubmit} className="space-y-6 text-left">
+      <form onSubmit={formProps.handleSubmit((data) => submitHandler(data))} className="space-y-6 text-left">
         <ContactFormFields form={formProps} />
         <Button 
           type="submit" 

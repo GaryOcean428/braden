@@ -39,7 +39,7 @@ export const useEnhancedContactForm = () => {
       setIsSubmitting(true);
       
       // Create a new lead
-      await supabase
+      const { error: leadError } = await supabase
         .from('leads')
         .insert({
           name: values.name,
@@ -50,8 +50,10 @@ export const useEnhancedContactForm = () => {
           message: values.message,
         });
         
+      if (leadError) throw leadError;
+        
       // Create a new client
-      await supabase
+      const { error: clientError } = await supabase
         .from('clients')
         .insert({
           name: values.company,
@@ -59,6 +61,8 @@ export const useEnhancedContactForm = () => {
           phone: values.phone,
           service_type: values.serviceType,
         });
+      
+      if (clientError) throw clientError;
       
       // Notify the user that the message was sent
       toast.success("Thank you for your message. We'll be in touch soon!");
