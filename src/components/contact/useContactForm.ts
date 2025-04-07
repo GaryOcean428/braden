@@ -1,6 +1,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { ContactFormValues } from "./types";
 import { useState } from "react";
@@ -43,7 +43,7 @@ export const useContactForm = () => {
     },
   });
 
-  const onSubmit = async (values: ContactFormValues) => {
+  const handleFormSubmit: SubmitHandler<ContactFormValues> = async (values) => {
     try {
       setIsSubmitting(true);
       
@@ -86,6 +86,6 @@ export const useContactForm = () => {
   return {
     form,
     isSubmitting,
-    onSubmit: form.handleSubmit(onSubmit),
+    onSubmit: handleFormSubmit,
   };
 };

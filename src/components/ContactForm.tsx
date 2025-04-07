@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ContactFormFields } from "./contact/ContactFormFields";
 import { useContactForm } from "./contact/useContactForm";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, SubmitHandler } from "react-hook-form";
 import { ContactFormValues } from "./contact/types";
 
 interface ContactFormProps {
   form?: UseFormReturn<ContactFormValues>;
   isSubmitting?: boolean;
-  onSubmit?: (values: ContactFormValues) => Promise<void>;
+  onSubmit?: SubmitHandler<ContactFormValues>;
 }
 
 export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps = {}) {
@@ -18,7 +18,7 @@ export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps =
   // Use provided props or fall back to defaults from useContactForm
   const formProps = form || defaultFormValues.form;
   const submitting = isSubmitting !== undefined ? isSubmitting : defaultFormValues.isSubmitting;
-  const submitHandler = onSubmit || defaultFormValues.onSubmit;
+  const submitHandler: SubmitHandler<ContactFormValues> = onSubmit || defaultFormValues.onSubmit;
 
   return (
     <Form {...formProps}>

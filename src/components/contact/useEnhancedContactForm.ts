@@ -4,6 +4,7 @@ import { ContactFormValues } from "./types";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { SubmitHandler } from "react-hook-form";
 
 export const useEnhancedContactForm = () => {
   const baseForm = useContactForm();
@@ -34,7 +35,7 @@ export const useEnhancedContactForm = () => {
     initialize();
   }, []);
   
-  const enhancedSubmit = async (values: ContactFormValues) => {
+  const enhancedSubmit: SubmitHandler<ContactFormValues> = async (values) => {
     try {
       setIsSubmitting(true);
       
