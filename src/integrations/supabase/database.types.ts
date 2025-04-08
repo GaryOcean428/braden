@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -114,6 +115,63 @@ export interface Database {
         }
         Relationships: []
       }
+      content_pages: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          content: Json
+          meta_description: string | null
+          is_published: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          content: Json
+          meta_description?: string | null
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          content?: Json
+          meta_description?: string | null
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          id: string
+          user_id: string
+          created_at: string
+          updated_at: string
+          email: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          created_at?: string
+          updated_at?: string
+          email?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+          email?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -130,4 +188,25 @@ export interface Database {
       [_ in never]: never
     }
   }
+}
+
+// Define ContentPage type based on the content_pages table structure
+export type ContentPage = {
+  id: string
+  title: string
+  slug: string
+  content: Json
+  meta_description: string | null
+  is_published: boolean
+  created_at: string
+  updated_at: string
+}
+
+// Define AdminUser type based on the admin_users table structure
+export type AdminUser = {
+  id: string
+  user_id: string
+  created_at: string
+  updated_at: string
+  email: string | null
 }
