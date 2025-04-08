@@ -66,7 +66,7 @@ const Hero = () => {
         </div>
         
         <div className="mt-8 inline-block">
-          <p className="text-[#cbb26a] font-semibold">People. Employment. Progress.</p>
+          <p className="text-braden-gold font-semibold font-montserrat">People. Employment. Progress.</p>
         </div>
       </div>
     </section>
