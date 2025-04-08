@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/database.types';
+import { EmptyResults } from './components';
 
 interface Section {
   id: string;
@@ -110,8 +112,19 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
         }
         
         if (data && data.layout_data) {
-          setLayoutData(data.layout_data as LayoutData);
-          setSelectedTemplate(data.layout_data.template || 'standard');
+          // Properly type cast the JSON data to our LayoutData type
+          const layoutFromDb = data.layout_data as Json;
+          
+          // Validate the structure before assigning
+          if (
+            typeof layoutFromDb === 'object' && 
+            layoutFromDb !== null && 
+            !Array.isArray(layoutFromDb) && 
+            'template' in layoutFromDb
+          ) {
+            setLayoutData(layoutFromDb as unknown as LayoutData);
+            setSelectedTemplate((layoutFromDb as any).template || 'standard');
+          }
         }
       } catch (error) {
         console.error('Error loading layout:', error);
@@ -147,6 +160,13 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
     try {
       setIsLoading(true);
       
+      // Prepare layout data as Json compatible object
+      const jsonLayoutData: Json = {
+        template: layoutData.template,
+        sections: layoutData.sections,
+        lastUpdated: layoutData.lastUpdated
+      };
+      
       // First check if a layout exists for this page
       const { data: existingLayout } = await supabase
         .from('page_layouts')
@@ -159,7 +179,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
         const { error } = await supabase
           .from('page_layouts')
           .update({ 
-            layout_data: layoutData,
+            layout_data: jsonLayoutData,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingLayout.id);
@@ -171,7 +191,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
           .from('page_layouts')
           .insert({ 
             page_id: 'home',
-            layout_data: layoutData,
+            layout_data: jsonLayoutData,
             is_published: false
           });
         
