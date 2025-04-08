@@ -210,3 +210,12 @@ export type AdminUser = {
   updated_at: string
   email: string | null
 }
+
+// Define SiteSettings type based on the site_settings table structure
+export type SiteSettings = {
+  id: string
+  type: string
+  settings: Json
+  created_at: string
+  updated_at: string
+}

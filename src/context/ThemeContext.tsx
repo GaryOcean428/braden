@@ -1,9 +1,15 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
-export interface ThemeSettings {
+export type ColorSet = {
+  name: string;
+  hex: string;
+  description: string;
+  usage: string;
+};
+
+export type ThemeSettings = {
   colors: {
     primary: ColorSet[];
     secondary: ColorSet[];
@@ -12,214 +18,231 @@ export interface ThemeSettings {
   typography: {
     headingFont: string;
     bodyFont: string;
-    baseSize: string;
+    baseFontSize: string;
   };
   spacing: {
-    baseUnit: string;
-    scale: string;
+    baseSpacingUnit: string;
+    spacingScale: string;
   };
-}
+};
 
-export interface ColorSet {
-  name: string;
-  hex: string;
-  rgb: string;
-  hsl: string;
-  usage: string;
-}
-
-interface ThemeContextType {
-  theme: ThemeSettings | null;
-  loading: boolean;
-  applyTheme: (theme: ThemeSettings) => void;
-}
-
+// Default theme based on Braden Group brand colors
 const defaultTheme: ThemeSettings = {
   colors: {
     primary: [
       {
-        name: "Braden Red",
-        hex: "#ab233a",
-        rgb: "171, 35, 58",
-        hsl: "350, 66%, 40%",
-        usage: "Main text, primary headers, important announcements"
+        name: 'Braden Red',
+        hex: '#ab233a',
+        description: 'Primary brand color',
+        usage: 'Main text, primary headers, important announcements'
       },
       {
-        name: "Braden Dark Red",
-        hex: "#811a2c",
-        rgb: "129, 26, 44",
-        hsl: "350, 66%, 30%",
-        usage: "Secondary headers, footers, subheadings"
+        name: 'Braden Dark Red',
+        hex: '#811a2c',
+        description: 'Darker variant of primary color',
+        usage: 'Secondary headers, footers, subheadings'
       },
       {
-        name: "Braden Gold",
-        hex: "#cbb26a",
-        rgb: "203, 178, 106",
-        hsl: "45, 48%, 61%",
-        usage: "Highlighting key points, accents, call-to-action text"
+        name: 'Braden Gold',
+        hex: '#cbb26a',
+        description: 'Primary accent color',
+        usage: 'Highlighting key points, accents in headers and footers'
       }
     ],
     secondary: [
       {
-        name: "Braden Light Gold",
-        hex: "#d8c690",
-        rgb: "216, 198, 144",
-        hsl: "45, 48%, 71%",
-        usage: "Backgrounds for highlighted sections, borders, subtle accents"
+        name: 'Braden Light Gold',
+        hex: '#d8c690',
+        description: 'Lighter variant of accent color',
+        usage: 'Backgrounds for highlighted sections, borders, subtle accents'
       },
       {
-        name: "Braden Bronze",
-        hex: "#be9e44",
-        rgb: "190, 158, 68",
-        hsl: "45, 48%, 51%",
-        usage: "Decorative elements, dividers, icons"
+        name: 'Braden Bronze',
+        hex: '#be9e44',
+        description: 'Darker variant of accent color',
+        usage: 'Decorative elements, dividers, icons'
       }
     ],
     extended: [
       {
-        name: "Braden Navy",
-        hex: "#2c3e50",
-        rgb: "44, 62, 80",
-        hsl: "210, 45%, 24%",
-        usage: "Primary text for business documents, headers, footers"
+        name: 'Braden Navy',
+        hex: '#2c3e50',
+        description: 'Dark blue color',
+        usage: 'Primary text for business documents, headers, footers'
       },
       {
-        name: "Braden Slate",
-        hex: "#95a5a6",
-        rgb: "149, 165, 166",
-        hsl: "180, 7%, 62%",
-        usage: "Secondary text, subheadings, backgrounds"
+        name: 'Braden Slate',
+        hex: '#95a5a6',
+        description: 'Light gray color',
+        usage: 'Secondary text, subheadings, backgrounds for highlighted sections'
       },
       {
-        name: "Braden Sky",
-        hex: "#3498db",
-        rgb: "52, 152, 219",
-        hsl: "204, 70%, 53%",
-        usage: "Call-to-action buttons, links, highlights"
+        name: 'Braden Sky',
+        hex: '#3498db',
+        description: 'Bright blue color',
+        usage: 'Call-to-action buttons, links, highlights'
       },
       {
-        name: "Braden Forest",
-        hex: "#27ae60",
-        rgb: "39, 174, 96",
-        hsl: "145, 63%, 42%",
-        usage: "Accents, highlights, graphical elements"
+        name: 'Braden Forest',
+        hex: '#27ae60',
+        description: 'Green color',
+        usage: 'Accents, highlights, graphical elements'
       },
       {
-        name: "Braden Lavender",
-        hex: "#9b59b6",
-        rgb: "155, 89, 182",
-        hsl: "282, 39%, 53%",
-        usage: "Subtle accents, highlight sections, decorative elements"
+        name: 'Braden Lavender',
+        hex: '#9b59b6',
+        description: 'Purple color',
+        usage: 'Subtle accents, highlight sections, decorative elements'
       }
     ]
   },
   typography: {
-    headingFont: "Montserrat, sans-serif",
-    bodyFont: "Inter, sans-serif",
-    baseSize: "16px"
+    headingFont: 'Montserrat, sans-serif',
+    bodyFont: 'Inter, sans-serif',
+    baseFontSize: '16px'
   },
   spacing: {
-    baseUnit: "4px",
-    scale: "1.5"
+    baseSpacingUnit: '4px',
+    spacingScale: '1.5'
   }
 };
 
+type ThemeContextType = {
+  theme: ThemeSettings;
+  applyTheme: (theme: ThemeSettings) => void;
+};
+
 const ThemeContext = createContext<ThemeContextType>({
-  theme: null,
-  loading: true,
-  applyTheme: () => {},
+  theme: defaultTheme,
+  applyTheme: () => {}
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<ThemeSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [theme, setTheme] = useState<ThemeSettings>(defaultTheme);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load theme on initial mount
   useEffect(() => {
-    fetchTheme();
+    const loadThemeFromDb = async () => {
+      try {
+        setIsLoading(true);
+        
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('settings')
+          .eq('type', 'theme')
+          .single();
+        
+        if (error) {
+          if (error.code !== 'PGRST116') { // Not found error
+            console.error('Error loading theme:', error);
+          }
+          return;
+        }
+        
+        if (data && data.settings) {
+          const loadedTheme = data.settings as ThemeSettings;
+          setTheme(loadedTheme);
+          applyThemeToCss(loadedTheme);
+        }
+      } catch (error) {
+        console.error('Error loading theme settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadThemeFromDb();
   }, []);
 
-  const fetchTheme = async () => {
-    try {
-      setLoading(true);
-      
-      const { data, error } = await supabase
-        .from('site_settings' as any)
-        .select('settings')
-        .eq('type', 'theme')
-        .single() as any;
-      
-      if (error) {
-        if (error.code === 'PGRST116') { // Not found
-          // Apply default theme if no theme is stored
-          setTheme(defaultTheme);
-        } else {
-          console.error("Error fetching theme:", error);
-          toast.error("Failed to load theme settings");
-          // Fallback to default theme on error
-          setTheme(defaultTheme);
-        }
-      } else if (data) {
-        setTheme(data.settings);
-      } else {
-        // Fallback to default theme
-        setTheme(defaultTheme);
-      }
-    } catch (err) {
-      console.error("Error loading theme:", err);
-      // Fallback to default theme
-      setTheme(defaultTheme);
-    } finally {
-      setLoading(false);
+  const applyThemeToCss = (themeToApply: ThemeSettings) => {
+    // Apply colors
+    themeToApply.colors.primary.forEach((color, index) => {
+      document.documentElement.style.setProperty(`--primary-color-${index + 1}`, color.hex);
+    });
+    
+    themeToApply.colors.secondary.forEach((color, index) => {
+      document.documentElement.style.setProperty(`--secondary-color-${index + 1}`, color.hex);
+    });
+    
+    themeToApply.colors.extended.forEach((color, index) => {
+      document.documentElement.style.setProperty(`--extended-color-${index + 1}`, color.hex);
+    });
+    
+    // Apply typography
+    document.documentElement.style.setProperty('--heading-font', themeToApply.typography.headingFont);
+    document.documentElement.style.setProperty('--body-font', themeToApply.typography.bodyFont);
+    document.documentElement.style.setProperty('--base-font-size', themeToApply.typography.baseFontSize);
+    
+    // Apply spacing
+    document.documentElement.style.setProperty('--base-spacing-unit', themeToApply.typography.baseFontSize);
+    document.documentElement.style.setProperty('--spacing-scale', themeToApply.spacing.spacingScale);
+    
+    // Apply to Tailwind CSS variables
+    document.documentElement.style.setProperty(
+      '--primary', 
+      getHslFromHex(themeToApply.colors.primary[0].hex)
+    );
+    document.documentElement.style.setProperty(
+      '--secondary', 
+      getHslFromHex(themeToApply.colors.secondary[0].hex)
+    );
+  };
+  
+  // Helper function to convert hex to hsl format for Tailwind CSS variables
+  const getHslFromHex = (hex: string): string => {
+    // Remove the # if it exists
+    hex = hex.replace('#', '');
+    
+    // Convert hex to RGB
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    
+    // Find greatest and smallest values
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    
+    // Calculate lightness
+    const l = (max + min) / 2;
+    
+    // Calculate saturation
+    let s = 0;
+    if (max !== min) {
+      s = l > 0.5 
+        ? (max - min) / (2 - max - min) 
+        : (max - min) / (max + min);
     }
+    
+    // Calculate hue
+    let h = 0;
+    if (max !== min) {
+      if (max === r) {
+        h = (g - b) / (max - min) + (g < b ? 6 : 0);
+      } else if (max === g) {
+        h = (b - r) / (max - min) + 2;
+      } else {
+        h = (r - g) / (max - min) + 4;
+      }
+      h *= 60;
+    }
+    
+    // Round values
+    h = Math.round(h);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+    
+    return `${h} ${s}% ${l}%`;
   };
 
-  // Apply theme to the application
   const applyTheme = (newTheme: ThemeSettings) => {
     setTheme(newTheme);
-    
-    // Set CSS variables
-    const root = document.documentElement;
-    
-    // Set primary colors
-    newTheme.colors.primary.forEach((color, index) => {
-      root.style.setProperty(`--primary-color-${index + 1}`, color.hex);
-    });
-    
-    // Set secondary colors
-    newTheme.colors.secondary.forEach((color, index) => {
-      root.style.setProperty(`--secondary-color-${index + 1}`, color.hex);
-    });
-    
-    // Set extended colors
-    newTheme.colors.extended.forEach((color, index) => {
-      root.style.setProperty(`--extended-color-${index + 1}`, color.hex);
-    });
-    
-    // Set typography
-    root.style.setProperty('--heading-font', newTheme.typography.headingFont);
-    root.style.setProperty('--body-font', newTheme.typography.bodyFont);
-    root.style.setProperty('--base-font-size', newTheme.typography.baseSize);
-    
-    // Set spacing
-    root.style.setProperty('--base-spacing-unit', newTheme.spacing.baseUnit);
-    root.style.setProperty('--spacing-scale', newTheme.spacing.scale);
-    
-    // Apply the main colors to existing Tailwind variables
-    root.style.setProperty('--primary', newTheme.colors.primary[0].hex);
-    root.style.setProperty('--secondary', newTheme.colors.secondary[0].hex);
+    applyThemeToCss(newTheme);
   };
 
-  useEffect(() => {
-    if (theme) {
-      applyTheme(theme);
-    }
-  }, [theme]);
-
   return (
-    <ThemeContext.Provider value={{ theme, loading, applyTheme }}>
+    <ThemeContext.Provider value={{ theme, applyTheme }}>
       {children}
     </ThemeContext.Provider>
   );

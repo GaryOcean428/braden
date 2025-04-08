@@ -461,6 +461,33 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_components: {
+        Row: {
+          component_data: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          component_data?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          component_data?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       Customer: {
         Row: {
           apprentice_capacity: number | null
@@ -1128,6 +1155,33 @@ export type Database = {
         }
         Relationships: []
       }
+      page_layouts: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_published: boolean
+          layout_data: Json
+          page_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_published?: boolean
+          layout_data?: Json
+          page_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_published?: boolean
+          layout_data?: Json
+          page_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       platform_roles: {
         Row: {
           created_at: string | null
@@ -1324,6 +1378,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          settings: Json
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          settings?: Json
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          settings?: Json
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       subscription_tiers: {
         Row: {
