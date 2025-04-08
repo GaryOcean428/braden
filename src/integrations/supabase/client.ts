@@ -86,9 +86,6 @@ export const initializeStorageBuckets = async () => {
           console.error(`Error creating bucket ${bucketName}:`, error);
         } else {
           console.log(`Created bucket: ${bucketName}`);
-          
-          // Since we can't call RPC for setup_storage_policies directly due to type issues,
-          // we'll create manual SQL queries in your migration scripts instead
         }
       }
     }

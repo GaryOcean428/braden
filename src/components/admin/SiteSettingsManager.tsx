@@ -69,7 +69,7 @@ export const SiteSettingsManager: React.FC = () => {
       
       // Try to fetch settings using a type cast to avoid type errors
       const { data, error } = await supabase
-        .from('site_settings')
+        .from('site_settings' as any)
         .select('*')
         .order('updated_at', { ascending: false })
         .limit(1) as { data: SiteSettings[] | null, error: any };
@@ -109,7 +109,7 @@ export const SiteSettingsManager: React.FC = () => {
       
       // Use a type cast to avoid type errors
       const { data, error } = await supabase
-        .from('site_settings')
+        .from('site_settings' as any)
         .insert(defaultSettings)
         .select() as { data: SiteSettings[] | null, error: any };
       
@@ -146,7 +146,7 @@ export const SiteSettingsManager: React.FC = () => {
       if (settingsId) {
         // Update existing settings
         const { error } = await supabase
-          .from('site_settings')
+          .from('site_settings' as any)
           .update(updatedSettings)
           .eq('id', settingsId) as { error: any };
         
@@ -154,7 +154,7 @@ export const SiteSettingsManager: React.FC = () => {
       } else {
         // Create new settings
         const { data, error } = await supabase
-          .from('site_settings')
+          .from('site_settings' as any)
           .insert(updatedSettings)
           .select() as { data: SiteSettings[] | null, error: any };
         

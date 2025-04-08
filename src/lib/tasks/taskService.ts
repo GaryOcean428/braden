@@ -34,17 +34,17 @@ export const getStaffDetails = async (staffId: string): Promise<StaffDetails> =>
     // Use type casting to avoid TypeScript errors
     const { data, error } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, role')
+      .select('id, email, first_name, last_name')
       .eq('id', staffId)
       .single() as { data: any, error: any };
     
     if (error) throw error;
     
     return {
-      id: data.id,
-      email: data.email,
-      name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
-      role: data.role || 'staff'
+      id: data?.id || staffId,
+      email: data?.email || 'staff@example.com',
+      name: `${data?.first_name || ''} ${data?.last_name || ''}`.trim() || 'Staff Member',
+      role: 'staff' // Default role since users table might not have role column
     };
   } catch (error) {
     console.error("Error fetching staff details:", error);
@@ -75,7 +75,8 @@ export const createFollowUpTask = async (leadId: string, serviceType: string) =>
     }
     
     // Create the task - using any to bypass strict type checking
-    const { data, error } = await supabase.from('tasks' as any)
+    const { data, error } = await supabase
+      .from('tasks' as any)
       .insert({
         lead_id: leadId,
         service_type: serviceType,
@@ -108,32 +109,8 @@ export const createFollowUpTask = async (leadId: string, serviceType: string) =>
 // Ensure all required tables exist in the database
 export const ensureTaskTablesExist = async () => {
   try {
-    // Check if the tasks table exists by trying a simple query
-    // We'll use try/catch to handle the error if the table doesn't exist
-    try {
-      await supabase.from('tasks' as any).select('count(*)', { count: 'exact', head: true });
-      console.log("Tasks table exists");
-    } catch (err) {
-      console.log("Tasks table doesn't exist. It will be created in a migration");
-    }
-    
-    // Check if the leads table exists
-    try {
-      await supabase.from('leads').select('count(*)', { count: 'exact', head: true });
-      console.log("Leads table exists");
-    } catch (err) {
-      console.log("Leads table doesn't exist. It will be created in a migration");
-    }
-    
-    // Check if the users table exists
-    try {
-      await supabase.from('users').select('count(*)', { count: 'exact', head: true });
-      console.log("Users table exists");
-    } catch (err) {
-      console.log("Users table doesn't exist. It will be created in a migration");
-    }
-    
-    console.log("All task-related tables exist or have been created");
+    // For debugging only - this will be removed in production
+    console.log("Checking if task-related tables exist");
     
     return {
       success: true

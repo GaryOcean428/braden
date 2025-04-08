@@ -42,9 +42,9 @@ export const ContentManager: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      // Use the generic query method to avoid type errors with tables not in the schema
+      // Use the generic query method with type assertions to avoid type errors
       const { data, error } = await supabase
-        .from('content')
+        .from('content' as any)
         .select('*')
         .order('created_at', { ascending: false }) as { data: ContentItem[] | null, error: any };
       
@@ -87,7 +87,7 @@ export const ContentManager: React.FC = () => {
       setError(null);
       
       const { error } = await supabase
-        .from('content')
+        .from('content' as any)
         .delete()
         .eq('id', id) as { error: any };
       
@@ -117,7 +117,7 @@ export const ContentManager: React.FC = () => {
       if (selectedItem) {
         // Update existing item
         const { error } = await supabase
-          .from('content')
+          .from('content' as any)
           .update({
             title: formData.title,
             content: formData.content,
@@ -130,7 +130,7 @@ export const ContentManager: React.FC = () => {
       } else {
         // Create new item
         const { error } = await supabase
-          .from('content')
+          .from('content' as any)
           .insert({
             title: formData.title,
             content: formData.content,

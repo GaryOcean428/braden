@@ -34,8 +34,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
         .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true, // Changed to true to overwrite if file exists
-          duplex: 'half'
+          upsert: true // Changed to true to overwrite if file exists
         });
       
       if (uploadError) {
