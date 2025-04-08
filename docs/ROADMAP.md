@@ -5,9 +5,9 @@
 - [x] Create initial roadmap and documentation
 - [ ] Set up content structure in Supabase 
 - [ ] Enhance admin dashboard UI
-- [ ] Improve media library management
+- [x] Improve media library management
 - [ ] Add basic content editing capabilities
-- [ ] Implement theme customization foundation
+- [x] Implement theme customization foundation
 
 ## Phase 2: Visual Editing
 - [ ] Create drag-and-drop layout editor
@@ -27,4 +27,5 @@
 1. Create admin editor foundation
 2. Set up visual theme customizer
 3. Enhance media management
-4. Improve content editing interface
+4. Implement SQL migrations for database tables
+5. Add theme settings persistence and application

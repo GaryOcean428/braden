@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,51 +6,161 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 0%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+ 
+    /* Use theme primary color */
+    --primary: 350 66% 40%;
+    --primary-foreground: 210 40% 98%;
+ 
+    /* Use theme secondary color */
+    --secondary: 45 48% 61%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --ring: 215 20.2% 65.1%;
+ 
+    --radius: 0.5rem;
+    
+    /* Braden Group theme CSS variables */
+    --primary-color-1: #ab233a;
+    --primary-color-2: #811a2c;
+    --primary-color-3: #cbb26a;
+    
+    --secondary-color-1: #d8c690;
+    --secondary-color-2: #be9e44;
+    
+    --extended-color-1: #2c3e50;
+    --extended-color-2: #95a5a6;
+    --extended-color-3: #3498db;
+    --extended-color-4: #27ae60;
+    --extended-color-5: #9b59b6;
+    
+    --heading-font: 'Montserrat, sans-serif';
+    --body-font: 'Inter, sans-serif';
+    --base-font-size: 16px;
+    
+    --base-spacing-unit: 4px;
+    --spacing-scale: 1.5;
+  }
+ 
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+ 
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+ 
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --ring: 216 34% 17%;
+ 
     --radius: 0.5rem;
   }
+}
 
+/* Apply theme fonts */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading-font);
+}
+
+body {
+  font-family: var(--body-font);
+  font-size: var(--base-font-size);
+}
+ 
+@layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-.hover-underline {
-  position: relative;
+/* Custom Braden Group theme classes */
+.bg-braden-red {
+  background-color: var(--primary-color-1);
 }
 
-.hover-underline::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 1px;
-  bottom: -2px;
-  left: 0;
-  background-color: currentColor;
-  transition: width 0.3s ease;
+.text-braden-red {
+  color: var(--primary-color-1);
 }
 
-.hover-underline:hover::after {
-  width: 100%;
+.bg-braden-dark-red {
+  background-color: var(--primary-color-2);
+}
+
+.text-braden-dark-red {
+  color: var(--primary-color-2);
+}
+
+.bg-braden-gold {
+  background-color: var(--primary-color-3);
+}
+
+.text-braden-gold {
+  color: var(--primary-color-3);
+}
+
+.bg-braden-light-gold {
+  background-color: var(--secondary-color-1);
+}
+
+.text-braden-light-gold {
+  color: var(--secondary-color-1);
+}
+
+.bg-braden-navy {
+  background-color: var(--extended-color-1);
+}
+
+.text-braden-navy {
+  color: var(--extended-color-1);
+}
+
+.bg-braden-slate {
+  background-color: var(--extended-color-2);
+}
+
+.text-braden-slate {
+  color: var(--extended-color-2);
+}
+
+.bg-braden-sky {
+  background-color: var(--extended-color-3);
+}
+
+.text-braden-sky {
+  color: var(--extended-color-3);
 }

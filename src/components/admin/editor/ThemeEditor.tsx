@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -145,15 +144,12 @@ export const ThemeEditor: React.FC<ThemeEditorProps> = ({ onChange }) => {
       setIsLoading(true);
       
       // Try to fetch theme settings from Supabase
-      // Using type assertion since we're working with dynamic tables
+      // Using type assertion to fix TypeScript error
       const { data, error } = await supabase
-        .from('site_settings')
+        .from('site_settings' as any)
         .select('*')
         .eq('type', 'theme')
-        .single() as unknown as { 
-          data: { id: string, settings: ThemeSettings, updated_at: string } | null, 
-          error: any 
-        };
+        .single() as any;
       
       if (error) {
         if (error.code !== 'PGRST116') { // Not found error
@@ -186,24 +182,24 @@ export const ThemeEditor: React.FC<ThemeEditorProps> = ({ onChange }) => {
       if (themeSettings.id) {
         // Update existing settings
         const { error } = await supabase
-          .from('site_settings')
+          .from('site_settings' as any)
           .update({
             settings: themeSettings,
             updated_at: new Date().toISOString()
           })
-          .eq('id', themeSettings.id) as { error: any };
+          .eq('id', themeSettings.id) as any;
           
         if (error) throw error;
       } else {
         // Create new settings
         const { error } = await supabase
-          .from('site_settings')
+          .from('site_settings' as any)
           .insert({
             type: 'theme',
             settings: themeSettings,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          }) as { error: any };
+          }) as any;
           
         if (error) throw error;
       }
