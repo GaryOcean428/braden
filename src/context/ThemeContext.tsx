@@ -130,7 +130,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         
         const { data, error } = await supabase
           .from('site_settings')
-          .select('settings')
+          .select('*')
           .eq('type', 'theme')
           .single();
         
@@ -204,8 +204,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     
-    // Calculate lightness
-    const l = (max + min) / 2;
+    // Calculate lightness - changed from const to let since we need to modify it later
+    let l = (max + min) / 2;
     
     // Calculate saturation
     let s = 0;

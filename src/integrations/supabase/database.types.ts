@@ -191,31 +191,10 @@ export interface Database {
 }
 
 // Define ContentPage type based on the content_pages table structure
-export type ContentPage = {
-  id: string
-  title: string
-  slug: string
-  content: Json
-  meta_description: string | null
-  is_published: boolean
-  created_at: string
-  updated_at: string
-}
+export type ContentPage = Database['public']['Tables']['content_pages']['Row'];
 
 // Define AdminUser type based on the admin_users table structure
-export type AdminUser = {
-  id: string
-  user_id: string
-  created_at: string
-  updated_at: string
-  email: string | null
-}
+export type AdminUser = Database['public']['Tables']['admin_users']['Row'];
 
 // Define SiteSettings type based on the site_settings table structure
-export type SiteSettings = {
-  id: string
-  type: string
-  settings: Json
-  created_at: string
-  updated_at: string
-}
+export type SiteSettings = Database['public']['Tables']['site_settings']['Row'];
