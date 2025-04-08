@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { HeroImageManager } from '@/components/admin/HeroImageManager';
 import { ContentManager } from '@/components/admin/ContentManager';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Image, FileText, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, Image, FileText, Users, Settings, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -21,13 +22,23 @@ const AdminDashboard: React.FC = () => {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-[#ab233a]">Admin Dashboard</h1>
-        <Button 
-          onClick={handleLogout} 
-          variant="outline"
-          className="border-[#ab233a] text-[#ab233a] hover:bg-[#ab233a] hover:text-white"
-        >
-          Logout
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => navigate('/admin/site-editor')}
+            variant="outline"
+            className="border-[#ab233a] text-[#ab233a] hover:bg-[#ab233a] hover:text-white flex items-center gap-1"
+          >
+            <Palette className="h-4 w-4" />
+            Site Editor
+          </Button>
+          <Button 
+            onClick={handleLogout} 
+            variant="outline"
+            className="border-[#ab233a] text-[#ab233a] hover:bg-[#ab233a] hover:text-white"
+          >
+            Logout
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -67,6 +78,14 @@ const AdminDashboard: React.FC = () => {
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start mt-4" 
+                  onClick={() => navigate('/admin/site-editor')}
+                >
+                  <Palette className="mr-2 h-4 w-4" />
+                  Visual Site Editor
+                </Button>
               </nav>
             </CardContent>
           </Card>
@@ -95,9 +114,19 @@ const AdminDashboard: React.FC = () => {
                 <CardDescription>Configure website settings</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-center py-8 text-gray-500">
-                  Site settings functionality coming soon.
-                </p>
+                <div className="space-y-6">
+                  <p className="text-gray-500 mb-4">
+                    Basic site settings can be configured here. For advanced visual customization, use the Site Editor.
+                  </p>
+                  
+                  <Button 
+                    onClick={() => navigate('/admin/site-editor')}
+                    className="w-full bg-[#ab233a] hover:bg-[#811a2c]"
+                  >
+                    <Palette className="mr-2 h-4 w-4" />
+                    Open Visual Site Editor
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}

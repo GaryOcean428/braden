@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { useAuth } from '@/hooks/useAuth';
 import Layout from '@/components/Layout';
 import AdminDashboard from '@/pages/admin/Dashboard';
+import SiteEditor from '@/pages/admin/SiteEditor';
 import AdminAuth from '@/pages/admin/Auth';
 import Index from '@/pages/Index';
 import Contact from '@/pages/Contact';
@@ -66,6 +68,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/site-editor" 
+          element={
+            <ProtectedRoute>
+              <SiteEditor />
             </ProtectedRoute>
           } 
         />
