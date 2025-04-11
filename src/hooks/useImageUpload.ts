@@ -28,12 +28,14 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
       console.log(`Upload initiated${isAuthenticated ? ' with authentication' : ' without authentication'}`);
       
       // Upload file to Supabase Storage
-      const { data, error: uploadError } = await supabase.storage
+      let uploadResult = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
         });
+      
+      let { data, error: uploadError } = uploadResult;
       
       if (uploadError) {
         console.error('Upload error details:', uploadError);
@@ -45,19 +47,19 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
           
           if (adminResult) {
             // Retry upload
-            const { data: retryData, error: retryError } = await supabase.storage
+            const retryResult = await supabase.storage
               .from(bucketName)
               .upload(filePath, file, {
                 cacheControl: '3600',
                 upsert: true
               });
               
-            if (retryError) {
-              console.error('Retry upload failed:', retryError);
-              throw retryError;
+            if (retryResult.error) {
+              console.error('Retry upload failed:', retryResult.error);
+              throw retryResult.error;
             }
             
-            data = retryData;
+            data = retryResult.data;
             console.log('Upload succeeded after admin sign in');
           } else {
             throw uploadError;

@@ -106,16 +106,13 @@ export const initializeStorageBuckets = async () => {
 // Create public policy for bucket access
 const createPublicBucketPolicy = async (bucketName: string) => {
   try {
-    // This SQL would normally be run as a migration, but we'll use the API approach here
-    const policyName = `public_${bucketName}_policy`;
-    
-    // For SELECT (read) operations
-    const { error: selectError } = await supabase.rpc('setup_storage_policies', { 
-      bucket_name: bucketName 
+    // Call edge function to setup storage policies
+    const { error } = await supabase.functions.invoke('ensure-guest-storage-access', { 
+      body: { bucket: bucketName } 
     });
     
-    if (selectError) {
-      console.error(`Error setting up storage policies for ${bucketName}:`, selectError);
+    if (error) {
+      console.error(`Error setting up storage policies for ${bucketName}:`, error);
     } else {
       console.log(`Public storage policies set up for ${bucketName}`);
     }
