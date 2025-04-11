@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { MediaItem } from "./types";
+import { MediaItem as MediaItemComponent } from "./MediaItem";
 
 interface MediaGalleryProps {
   loading: boolean;
@@ -37,7 +38,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {images.map((image) => (
-        <MediaItem 
+        <MediaItemComponent 
           key={image.id}
           image={image}
           onDeleteImage={onDeleteImage}
