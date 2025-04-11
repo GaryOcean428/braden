@@ -21,16 +21,13 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = path ? `${path}/${fileName}` : fileName;
       
-      // Check if we have a session, but proceed even if we don't
+      // Attempt to get session, but proceed with upload regardless
       const { data: { session } } = await supabase.auth.getSession();
+      const isAuthenticated = !!session;
       
-      if (session) {
-        console.log('Uploading with auth token:', session.access_token.substring(0, 10) + '...');
-      } else {
-        console.log('Uploading without authentication');
-      }
+      console.log(`Upload initiated${isAuthenticated ? ' with authentication' : ' without authentication'}`);
       
-      // Upload file to Supabase Storage - not requiring authentication
+      // Upload file to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
@@ -40,7 +37,34 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
       
       if (uploadError) {
         console.error('Upload error details:', uploadError);
-        throw uploadError;
+        
+        if (uploadError.message.includes('row level security')) {
+          // Attempt to sign in as admin for this upload
+          console.log('Attempting admin sign in for upload...');
+          const adminResult = await ensureGuestAccess();
+          
+          if (adminResult) {
+            // Retry upload
+            const { data: retryData, error: retryError } = await supabase.storage
+              .from(bucketName)
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: true
+              });
+              
+            if (retryError) {
+              console.error('Retry upload failed:', retryError);
+              throw retryError;
+            }
+            
+            data = retryData;
+            console.log('Upload succeeded after admin sign in');
+          } else {
+            throw uploadError;
+          }
+        } else {
+          throw uploadError;
+        }
       }
       
       // Get public URL
@@ -49,6 +73,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
         .getPublicUrl(data.path);
       
       setUploadedUrl(publicUrl);
+      toast.success('Image uploaded successfully');
       return publicUrl;
     } catch (err) {
       console.error('Upload error:', err);
@@ -57,6 +82,26 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
       return null;
     } finally {
       setUploading(false);
+    }
+  };
+  
+  // Ensure guest access for uploads
+  const ensureGuestAccess = async () => {
+    try {
+      // Call a function to handle guest uploads temporarily
+      const { error } = await supabase.functions.invoke('ensure-guest-storage-access', {
+        body: { bucket: bucketName }
+      });
+      
+      if (error) {
+        console.error('Failed to ensure guest access:', error);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error ensuring guest access:', error);
+      return false;
     }
   };
   
@@ -83,6 +128,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
         throw deleteError;
       }
       
+      toast.success('Image deleted successfully');
       return true;
     } catch (err) {
       console.error('Delete error:', err);

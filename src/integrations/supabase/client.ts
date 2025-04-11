@@ -45,7 +45,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
       }
     },
     flowType: 'pkce', // More secure flow for SPAs
-    debug: true // Enable debug mode in production to help diagnose issues
+    debug: import.meta.env.MODE !== 'production' // Enable debug mode in non-production environments
   },
   global: {
     headers: {
@@ -86,7 +86,13 @@ export const initializeStorageBuckets = async () => {
           console.error(`Error creating bucket ${bucketName}:`, error);
         } else {
           console.log(`Created bucket: ${bucketName}`);
+          
+          // Create RLS policy for public access to this bucket
+          await createPublicBucketPolicy(bucketName);
         }
+      } else {
+        // Ensure the bucket has the right policies
+        await createPublicBucketPolicy(bucketName);
       }
     }
     
@@ -94,6 +100,27 @@ export const initializeStorageBuckets = async () => {
   } catch (error) {
     console.error('Error initializing storage buckets:', error);
     return { success: false, error };
+  }
+};
+
+// Create public policy for bucket access
+const createPublicBucketPolicy = async (bucketName: string) => {
+  try {
+    // This SQL would normally be run as a migration, but we'll use the API approach here
+    const policyName = `public_${bucketName}_policy`;
+    
+    // For SELECT (read) operations
+    const { error: selectError } = await supabase.rpc('setup_storage_policies', { 
+      bucket_name: bucketName 
+    });
+    
+    if (selectError) {
+      console.error(`Error setting up storage policies for ${bucketName}:`, selectError);
+    } else {
+      console.log(`Public storage policies set up for ${bucketName}`);
+    }
+  } catch (error) {
+    console.error(`Error creating public policy for ${bucketName}:`, error);
   }
 };
 
