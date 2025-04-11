@@ -13,6 +13,7 @@ import Contact from '@/pages/Contact';
 import Apprenticeships from '@/pages/apprenticeships';
 import Traineeships from '@/pages/traineeships';
 import Recruitment from '@/pages/recruitment';
+import Service from '@/pages/Service';
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -64,6 +65,13 @@ function App() {
           <Route path="/apprenticeships" element={<PageWithLayout component={Apprenticeships} />} />
           <Route path="/traineeships" element={<PageWithLayout component={Traineeships} />} />
           <Route path="/recruitment" element={<PageWithLayout component={Recruitment} />} />
+          
+          {/* Service routes */}
+          <Route path="/compliance" element={<Service />} />
+          <Route path="/mentoring" element={<Service />} />
+          <Route path="/technology" element={<Service />} />
+          <Route path="/future-services" element={<Service />} />
+          <Route path="/service/:serviceId" element={<Service />} />
           
           {/* Admin routes - no Layout for these */}
           <Route path="/admin/auth" element={

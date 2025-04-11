@@ -63,6 +63,8 @@ const Services = () => {
                 key={index} 
                 className="p-8 border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 bg-white cursor-pointer transform hover:-translate-y-1 group"
                 onClick={() => handleServiceClick(service.path)}
+                role="button"
+                aria-label={`Learn more about ${service.title}`}
               >
                 <div className="flex items-center mb-4">
                   {service.icon}
