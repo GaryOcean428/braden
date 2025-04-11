@@ -11,6 +11,11 @@ interface ContactFormFieldsProps {
 }
 
 export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
+  if (!form || !form.control) {
+    console.error("Form or form.control is undefined in ContactFormFields");
+    return <div className="text-red-500">Form configuration error</div>;
+  }
+
   return (
     <>
       <FormField
