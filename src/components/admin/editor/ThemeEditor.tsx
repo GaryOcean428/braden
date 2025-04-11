@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Loader2, Save } from 'lucide-react';
-import { useThemeEditor } from '@/hooks/useThemeEditor';
+import { useThemeEditor } from '@/hooks/theme';
 import { toast } from 'sonner';
 import { ColorsPanel } from './components/ColorsPanel';
 import { TypographyPanel } from './components/TypographyPanel';
