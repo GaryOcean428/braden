@@ -3,6 +3,7 @@ import React from "react";
 import { ContactForm } from "../ContactForm";
 import { useEnhancedContactForm } from "./useEnhancedContactForm";
 import { Card, CardContent } from "@/components/ui/card";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function EnhancedContactForm() {
   const { form, isSubmitting, onSubmit, isInitialized } = useEnhancedContactForm();
@@ -22,13 +23,15 @@ export function EnhancedContactForm() {
   return (
     <Card className="shadow-md border-braden-light-gold/20">
       <CardContent className="pt-6">
-        {form && (
-          <ContactForm 
-            form={form} 
-            isSubmitting={isSubmitting} 
-            onSubmit={onSubmit} 
-          />
-        )}
+        <ErrorBoundary>
+          {form && (
+            <ContactForm 
+              form={form} 
+              isSubmitting={isSubmitting} 
+              onSubmit={onSubmit} 
+            />
+          )}
+        </ErrorBoundary>
       </CardContent>
     </Card>
   );

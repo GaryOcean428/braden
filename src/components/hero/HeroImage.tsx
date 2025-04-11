@@ -21,47 +21,53 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
         setIsLoading(true);
         setImageError(false);
         
-        // Set the fallback image immediately
+        // Set the fallback image immediately to ensure we always have something to show
         setHeroImage(fallbackImage);
         
         try {
-          // Check if we have any images in the hero-images bucket
+          // Try to load an image from the public folder as a reliable fallback
+          const publicImagePath = '/hero-image.jpg';
+          
+          // Create an image element to test if the public image is available
+          const publicImg = new Image();
+          publicImg.onload = () => {
+            setHeroImage(publicImagePath);
+            setIsLoading(false);
+          };
+          
+          // Start loading the public image
+          publicImg.src = publicImagePath;
+          
+          // We still attempt to fetch from Supabase if possible
           const { data: files, error: listError } = await supabase.storage
             .from(STORAGE_BUCKETS.HERO_IMAGES)
             .list();
             
           if (listError) {
-            console.log('Error listing hero images:', listError);
-            setIsLoading(false);
-            return;
-          }
-          
-          // If we have any hero images, use the first one
-          if (files && files.length > 0) {
-            const { data: { publicUrl } } = supabase.storage
+            console.log('Could not list hero images from Supabase:', listError);
+            // We'll continue with the public image or fallback
+          } else if (files && files.length > 0) {
+            const { data } = supabase.storage
               .from(STORAGE_BUCKETS.HERO_IMAGES)
               .getPublicUrl(files[0].name);
               
-            // Preload the image
-            const img = new Image();
-            img.onload = () => {
-              setHeroImage(publicUrl);
-              setIsLoading(false);
-            };
-            img.onerror = () => {
-              console.error('Error loading image from storage');
-              // Keep using the fallback
-              setIsLoading(false);
-            };
-            img.src = publicUrl;
-            return;
+            if (data?.publicUrl) {
+              // Preload the Supabase image
+              const img = new Image();
+              img.onload = () => {
+                setHeroImage(data.publicUrl);
+                setIsLoading(false);
+              };
+              img.onerror = () => {
+                // Keep using the public image or fallback
+                console.log('Could not load image from Supabase');
+              };
+              img.src = data.publicUrl;
+            }
           }
-          
-          // Just use the fallback image and finish loading
-          setIsLoading(false);
         } catch (supabaseError) {
           console.error('Error with Supabase operations:', supabaseError);
-          // Continue with fallback image
+          // We already have the fallback image set
           setIsLoading(false);
         }
       } catch (error) {
@@ -85,7 +91,6 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
     return () => clearTimeout(safetyTimeout);
   }, [onError, fallbackImage]);
 
-  // Skip redundant handlers since we're using the fallback
   if (isLoading) {
     return (
       <div className="w-full h-full bg-gradient-to-r from-braden-navy to-braden-dark-red flex items-center justify-center" aria-busy="true">
@@ -106,10 +111,10 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
     <div className="w-full h-full">
       <img
         src={heroImage}
-        alt="Braden Group"
+        alt="Braden Group - People. Employment. Progress."
         className="w-full h-full object-cover"
         onError={() => {
-          // If image fails to load, use the fallback
+          // If image fails to load, ensure we're using the fallback
           setHeroImage(fallbackImage);
         }}
       />
