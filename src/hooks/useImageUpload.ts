@@ -1,6 +1,7 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase, STORAGE_BUCKETS } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
   const [uploading, setUploading] = useState(false);
@@ -20,21 +21,21 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = path ? `${path}/${fileName}` : fileName;
       
-      // Get current user session to ensure we're authenticated
+      // Check if we have a session, but proceed even if we don't
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) {
-        throw new Error('You must be logged in to upload images');
+      if (session) {
+        console.log('Uploading with auth token:', session.access_token.substring(0, 10) + '...');
+      } else {
+        console.log('Uploading without authentication');
       }
       
-      console.log('Uploading with auth token:', session.access_token.substring(0, 10) + '...');
-      
-      // Upload file to Supabase Storage with explicit auth header
+      // Upload file to Supabase Storage - not requiring authentication
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true // Changed to true to overwrite if file exists
+          upsert: true
         });
       
       if (uploadError) {
@@ -52,6 +53,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
     } catch (err) {
       console.error('Upload error:', err);
       setError(err instanceof Error ? err : new Error('Unknown error during upload'));
+      toast.error("Upload failed: " + (err instanceof Error ? err.message : "Unknown error"));
       return null;
     } finally {
       setUploading(false);
@@ -63,11 +65,13 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
     try {
       setError(null);
       
-      // Get current user session to ensure we're authenticated
+      // Check if we have a session, but proceed even if we don't
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) {
-        throw new Error('You must be logged in to delete images');
+      if (session) {
+        console.log('Deleting with auth token:', session.access_token.substring(0, 10) + '...');
+      } else {
+        console.log('Deleting without authentication');
       }
       
       const { error: deleteError } = await supabase.storage
@@ -83,6 +87,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
     } catch (err) {
       console.error('Delete error:', err);
       setError(err instanceof Error ? err : new Error('Unknown error during deletion'));
+      toast.error("Delete failed: " + (err instanceof Error ? err.message : "Unknown error"));
       return false;
     }
   };
@@ -92,11 +97,12 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
     try {
       setError(null);
       
-      // Get current user session to ensure we're authenticated
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) {
-        console.warn('No active session found, listing may be restricted');
+      if (session) {
+        console.log('Listing with auth token:', session.access_token.substring(0, 10) + '...');
+      } else {
+        console.log('Listing without authentication');
       }
       
       const { data, error: listError } = await supabase.storage
@@ -132,6 +138,7 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
     } catch (err) {
       console.error('List error:', err);
       setError(err instanceof Error ? err : new Error('Unknown error listing files'));
+      toast.error("Failed to list images: " + (err instanceof Error ? err.message : "Unknown error"));
       return [];
     }
   };

@@ -78,7 +78,7 @@ export const initializeStorageBuckets = async () => {
       
       if (!bucketExists) {
         const { error } = await supabase.storage.createBucket(bucketName, {
-          public: true,
+          public: true, // Make the bucket public
           fileSizeLimit: 10485760, // 10MB
         });
         
@@ -96,6 +96,17 @@ export const initializeStorageBuckets = async () => {
     return { success: false, error };
   }
 };
+
+// Make sure storage buckets are initialized when the app loads
+window.addEventListener('DOMContentLoaded', () => {
+  initializeStorageBuckets().then(result => {
+    if (result.success) {
+      console.log('Storage buckets initialized successfully');
+    } else {
+      console.error('Failed to initialize storage buckets:', result.error);
+    }
+  });
+});
 
 // Function to create a default admin user if none exists
 export const ensureAdminUser = async () => {
