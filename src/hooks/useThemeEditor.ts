@@ -2,8 +2,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ThemeSettings, ColorSet } from '@/context/ThemeContext';
-import { useTheme } from '@/context/ThemeContext';
+import { ThemeSettings, ColorSet, useTheme } from '@/context/theme';
 
 export const useThemeEditor = () => {
   const { theme: currentTheme, applyTheme } = useTheme();

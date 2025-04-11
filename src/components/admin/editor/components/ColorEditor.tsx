@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ColorSet } from '@/context/ThemeContext';
+import { ColorSet } from '@/context/theme';
 
 interface ColorEditorProps {
   color: ColorSet;

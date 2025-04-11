@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ColorEditor } from './ColorEditor';
-import { ColorSet } from '@/context/ThemeContext';
+import { ColorSet } from '@/context/theme';
 
 interface ColorsPanelProps {
   primaryColors: ColorSet[];
