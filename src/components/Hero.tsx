@@ -18,7 +18,8 @@ const Hero = () => {
   };
 
   const handleImageError = (error: Error) => {
-    toast.error("Failed to load hero image");
+    console.error("Hero image error:", error);
+    // No need to show a toast as we already handle fallbacks in HeroImage
   };
 
   return (
@@ -32,7 +33,7 @@ const Hero = () => {
         <ErrorBoundary>
           <HeroImage onError={handleImageError} />
         </ErrorBoundary>
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#2c3e50]/80 to-[#811a2c]/80 rounded-sm"></div>
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#2c3e50]/80 to-[#811a2c]/80"></div>
       </div>
       
       <div 
@@ -66,7 +67,7 @@ const Hero = () => {
         </div>
         
         <div className="mt-8 inline-block">
-          <p className="text-braden-gold font-semibold font-montserrat">People. Employment. Progress.</p>
+          <p className="text-[#cbb26a] font-semibold font-montserrat">People. Employment. Progress.</p>
         </div>
       </div>
     </section>

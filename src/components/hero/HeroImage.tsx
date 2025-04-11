@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase, STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,21 +12,20 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
+  // Create a fallback gradient background with Braden colors
+  const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlBlb3BsZS4gRW1wbG95bWVudC4gUHJvZ3Jlc3MuPC90ZXh0Pjwvc3ZnPg==';
+
   useEffect(() => {
     const loadHeroImage = async () => {
       try {
         setIsLoading(true);
         setImageError(false);
         
-        // Use a data URI for a fallback gradient background
-        const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlBlb3BsZS4gRW1wbG95bWVudC4gUHJvZ3Jlc3MuPC90ZXh0Pjwvc3ZnPg==';
-        
         // Set the fallback image immediately
         setHeroImage(fallbackImage);
         
-        // Try to fetch from Supabase hero-images bucket
         try {
-          // First check if we have any images in the hero-images bucket
+          // Check if we have any images in the hero-images bucket
           const { data: files, error: listError } = await supabase.storage
             .from(STORAGE_BUCKETS.HERO_IMAGES)
             .list();
@@ -52,18 +50,18 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
             };
             img.onerror = () => {
               console.error('Error loading image from storage');
+              // Keep using the fallback
               setIsLoading(false);
             };
             img.src = publicUrl;
             return;
           }
           
-          // Don't try to query the media table since that's causing 401 errors
           // Just use the fallback image and finish loading
           setIsLoading(false);
         } catch (supabaseError) {
-          // If there's any error in the Supabase process, use fallback image
           console.error('Error with Supabase operations:', supabaseError);
+          // Continue with fallback image
           setIsLoading(false);
         }
       } catch (error) {
@@ -76,7 +74,7 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
     
     loadHeroImage();
     
-    // Set a safety timeout to ensure loading state doesn't persist indefinitely
+    // Safety timeout to avoid infinite loading state
     const safetyTimeout = setTimeout(() => {
       if (isLoading) {
         setIsLoading(false);
@@ -85,22 +83,12 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
     }, 3000);
     
     return () => clearTimeout(safetyTimeout);
-  }, [onError]);
+  }, [onError, fallbackImage]);
 
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
-
-  const handleImageError = () => {
-    // Use data URI fallback if image loading fails
-    const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlNoYXBpbmcgVG9tb3Jyb3cncyBXb3JrZm9yY2UgVG9kYXk8L3RleHQ+PC9zdmc+';
-    setHeroImage(fallbackImage);
-    setIsLoading(false);
-  };
-
+  // Skip redundant handlers since we're using the fallback
   if (isLoading) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="true">
+      <div className="w-full h-full bg-gradient-to-r from-braden-navy to-braden-dark-red flex items-center justify-center" aria-busy="true">
         <Skeleton className="w-full h-full absolute inset-0" />
       </div>
     );
@@ -108,7 +96,7 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
 
   if (imageError) {
     return (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center" aria-busy="false">
+      <div className="w-full h-full bg-gradient-to-r from-braden-navy to-braden-dark-red flex items-center justify-center" aria-busy="false">
         <Loader className="h-12 w-12 text-gray-400" />
       </div>
     );
@@ -118,10 +106,12 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
     <div className="w-full h-full">
       <img
         src={heroImage}
-        alt="Braden Group Apprentices"
+        alt="Braden Group"
         className="w-full h-full object-cover"
-        onLoad={handleImageLoad}
-        onError={handleImageError}
+        onError={() => {
+          // If image fails to load, use the fallback
+          setHeroImage(fallbackImage);
+        }}
       />
     </div>
   );

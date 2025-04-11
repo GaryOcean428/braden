@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { useAuth } from '@/hooks/useAuth';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import Layout from '@/components/Layout';
 import AdminDashboard from '@/pages/admin/Dashboard';
 import SiteEditor from '@/pages/admin/SiteEditor';
@@ -46,43 +47,55 @@ const NotFound = () => (
 
 // Page wrapper component to apply Layout to regular pages
 const PageWithLayout = ({ component: Component }: { component: React.ComponentType }) => (
-  <Layout>
-    <Component />
-  </Layout>
+  <ErrorBoundary>
+    <Layout>
+      <Component />
+    </Layout>
+  </ErrorBoundary>
 );
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<PageWithLayout component={Index} />} />
-        <Route path="/contact" element={<PageWithLayout component={Contact} />} />
-        <Route path="/apprenticeships" element={<PageWithLayout component={Apprenticeships} />} />
-        <Route path="/traineeships" element={<PageWithLayout component={Traineeships} />} />
-        <Route path="/recruitment" element={<PageWithLayout component={Recruitment} />} />
-        
-        {/* Admin routes - no Layout for these */}
-        <Route path="/admin/auth" element={<AdminAuth />} />
-        <Route 
-          path="/admin/dashboard" 
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/site-editor" 
-          element={
-            <ProtectedRoute>
-              <SiteEditor />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* 404 route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<PageWithLayout component={Index} />} />
+          <Route path="/contact" element={<PageWithLayout component={Contact} />} />
+          <Route path="/apprenticeships" element={<PageWithLayout component={Apprenticeships} />} />
+          <Route path="/traineeships" element={<PageWithLayout component={Traineeships} />} />
+          <Route path="/recruitment" element={<PageWithLayout component={Recruitment} />} />
+          
+          {/* Admin routes - no Layout for these */}
+          <Route path="/admin/auth" element={
+            <ErrorBoundary>
+              <AdminAuth />
+            </ErrorBoundary>
+          } />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ErrorBoundary>
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              </ErrorBoundary>
+            } 
+          />
+          <Route 
+            path="/admin/site-editor" 
+            element={
+              <ErrorBoundary>
+                <ProtectedRoute>
+                  <SiteEditor />
+                </ProtectedRoute>
+              </ErrorBoundary>
+            } 
+          />
+          
+          {/* 404 route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
       <Toaster />
     </Router>
   );
