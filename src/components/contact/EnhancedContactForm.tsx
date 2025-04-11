@@ -9,7 +9,7 @@ export function EnhancedContactForm() {
 
   return (
     <Card className="shadow-md">
-      <CardContent className="pt-6">
+      <CardContent className="pt-6 font-inter">
         {isInitialized ? (
           <ContactForm 
             form={form} 
@@ -18,7 +18,7 @@ export function EnhancedContactForm() {
           />
         ) : (
           <div className="flex justify-center items-center py-8">
-            <div className="spinner w-8 h-8 border-4 border-t-[#ab233a] border-[#cbb26a] rounded-full animate-spin"></div>
+            <div className="spinner w-8 h-8 border-4 border-t-braden-red border-braden-gold rounded-full animate-spin"></div>
           </div>
         )}
       </CardContent>

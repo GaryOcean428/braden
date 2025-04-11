@@ -32,7 +32,7 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
   };
 
   return (
-    <div className="hidden md:flex items-center space-x-6 text-white">
+    <div className="hidden md:flex items-center space-x-6 text-white font-montserrat">
       <button
         onClick={() => scrollToSection("services")}
         className="hover:opacity-80 transition-opacity"

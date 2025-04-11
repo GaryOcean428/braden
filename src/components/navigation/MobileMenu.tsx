@@ -23,7 +23,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
 
   return (
     <div 
-      className={`md:hidden fixed inset-x-0 top-[60px] bg-brand-primary/95 backdrop-blur-sm transition-all duration-300 ease-in-out ${
+      className={`md:hidden fixed inset-x-0 top-[60px] bg-brand-primary/95 backdrop-blur-sm transition-all duration-300 ease-in-out font-montserrat ${
         isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
       }`}
     >
@@ -33,7 +33,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
             <button
               key={item.label}
               onClick={() => handleItemClick(item.action, item.target)}
-              className="text-white font-opensans hover:text-opacity-80 transition-opacity text-left py-2"
+              className="text-white hover:text-opacity-80 transition-opacity text-left py-2"
             >
               {item.label}
             </button>
@@ -44,7 +44,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
                 navigate('/admin');
                 setIsOpen(false);
               }}
-              className="text-white font-opensans hover:text-opacity-80 transition-opacity text-left py-2"
+              className="text-white hover:text-opacity-80 transition-opacity text-left py-2"
             >
               Admin Dashboard
             </button>

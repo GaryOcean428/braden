@@ -22,11 +22,11 @@ export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps =
 
   return (
     <Form {...formProps}>
-      <form onSubmit={formProps.handleSubmit(submitHandler)} className="space-y-6 text-left">
+      <form onSubmit={formProps.handleSubmit(submitHandler)} className="space-y-6 text-left font-inter">
         <ContactFormFields form={formProps} />
         <Button 
           type="submit" 
-          className="w-full bg-brand-primary hover:bg-brand-primary/90"
+          className="w-full bg-braden-red hover:bg-braden-dark-red font-montserrat"
           disabled={submitting}
         >
           {submitting ? "Submitting..." : "Submit"}
