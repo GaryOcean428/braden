@@ -16,19 +16,21 @@ export const useEnhancedContactForm = () => {
     const initialize = async () => {
       try {
         console.log("Initializing enhanced contact form");
-        // Check if we can connect to Supabase
+        // Set initialization to true right away to prevent delays in UI rendering
+        setIsInitialized(true);
+        
+        // Check if we can connect to Supabase - but don't block rendering on this
         const { error } = await supabase
           .from('clients')
           .select('count', { count: 'exact', head: true });
           
         if (error) {
           console.error("Error connecting to database:", error);
+          // Continue anyway - the form should still work even if DB connection fails
         }
-        
-        setIsInitialized(true);
       } catch (error) {
         console.error("Initialization error:", error);
-        setIsInitialized(true); // Continue anyway
+        // Continue anyway
       }
     };
     

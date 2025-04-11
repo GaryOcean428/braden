@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase, STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,7 +20,7 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
         setImageError(false);
         
         // Use a data URI for a fallback gradient background
-        const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlNoYXBpbmcgVG9tb3Jyb3cncyBXb3JrZm9yY2UgVG9kYXk8L3RleHQ+PC9zdmc+';
+        const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAwIDYwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzJjM2U1MCIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4MTFhMmMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQycHgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+QnJhZGVuIEdyb3VwPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiPlBlb3BsZS4gRW1wbG95bWVudC4gUHJvZ3Jlc3MuPC90ZXh0Pjwvc3ZnPg==';
         
         // Set the fallback image immediately
         setHeroImage(fallbackImage);
@@ -57,41 +58,9 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
             return;
           }
           
-          // If no images in hero-images bucket, try the media table as fallback
-          const { data, error } = await supabase
-            .from('media')
-            .select('file_path')
-            .eq('title', 'hero-image')
-            .maybeSingle();
-            
-          if (error) {
-            console.log('Supabase media query error:', error);
-            setIsLoading(false);
-            return;
-          }
-          
-          // If no custom hero image is set, use fallback and finish loading
-          if (!data?.file_path) {
-            setIsLoading(false);
-            return;
-          }
-          
-          // If we have a file path, try to get the public URL
-          const { data: { publicUrl } } = supabase.storage
-            .from('media')
-            .getPublicUrl(data.file_path);
-            
-          // Preload the image
-          const img = new Image();
-          img.onload = () => {
-            setHeroImage(publicUrl);
-            setIsLoading(false);
-          };
-          img.onerror = () => {
-            console.error('Error loading image from storage');
-            setIsLoading(false);
-          };
-          img.src = publicUrl;
+          // Don't try to query the media table since that's causing 401 errors
+          // Just use the fallback image and finish loading
+          setIsLoading(false);
         } catch (supabaseError) {
           // If there's any error in the Supabase process, use fallback image
           console.error('Error with Supabase operations:', supabaseError);
