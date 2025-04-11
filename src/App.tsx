@@ -34,11 +34,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const NotFound = () => (
   <Layout showBreadcrumb={false}>
     <div className="flex flex-col items-center justify-center py-20">
-      <h1 className="text-4xl font-bold mb-4">404</h1>
+      <h1 className="text-4xl font-bold mb-4 text-braden-navy">404</h1>
       <p className="text-xl mb-6">Page not found</p>
       <button 
         onClick={() => window.location.href = '/'}
-        className="px-4 py-2 bg-[#811a2c] text-white rounded hover:bg-[#ab233a]"
+        className="px-4 py-2 bg-braden-dark-red text-white rounded hover:bg-braden-red"
       >
         Return Home
       </button>

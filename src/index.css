@@ -17,11 +17,11 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
  
-    /* Use theme primary color */
+    /* Braden theme primary color */
     --primary: 350 66% 40%;
     --primary-foreground: 210 40% 98%;
  
-    /* Use theme secondary color */
+    /* Braden theme secondary color */
     --secondary: 45 48% 61%;
     --secondary-foreground: 222.2 47.4% 11.2%;
  
@@ -96,6 +96,7 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--heading-font);
+  font-weight: 600;
 }
 
 body {
@@ -176,4 +177,50 @@ button, input, select, textarea {
 
 .text-braden-sky {
   color: var(--extended-color-3);
+}
+
+/* Additional utility classes for consistency */
+.brand-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.brand-transition {
+  transition: all 0.3s ease;
+}
+
+/* Fix for tailwind purge issues with dynamic classes */
+.text-\[\#ab233a\] {
+  color: #ab233a;
+}
+
+.text-\[\#811a2c\] {
+  color: #811a2c;
+}
+
+.text-\[\#2c3e50\] {
+  color: #2c3e50;
+}
+
+.bg-\[\#ab233a\] {
+  background-color: #ab233a;
+}
+
+.bg-\[\#811a2c\] {
+  background-color: #811a2c;
+}
+
+.bg-\[\#2c3e50\] {
+  background-color: #2c3e50;
+}
+
+.hover\:bg-\[\#ab233a\]:hover {
+  background-color: #ab233a;
+}
+
+.hover\:bg-\[\#811a2c\]:hover {
+  background-color: #811a2c;
+}
+
+.hover\:text-\[\#ab233a\]:hover {
+  color: #ab233a;
 }

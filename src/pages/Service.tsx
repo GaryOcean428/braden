@@ -75,11 +75,11 @@ const Service = () => {
       <Layout>
         <div className="container mx-auto py-12 px-4">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-[#2c3e50]">Service Not Found</h1>
+            <h1 className="text-3xl font-bold text-braden-navy">Service Not Found</h1>
             <p className="mt-4 mb-8">The requested service information is not available.</p>
             <button 
               onClick={() => navigate('/#services')}
-              className="px-4 py-2 bg-[#ab233a] text-white rounded hover:bg-[#811a2c]"
+              className="px-4 py-2 bg-braden-red text-white rounded hover:bg-braden-dark-red"
             >
               View All Services
             </button>
@@ -94,17 +94,17 @@ const Service = () => {
       <div className="container mx-auto py-12 px-4">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center mb-6">
-            <h1 className="text-3xl font-bold text-[#2c3e50]">{service.title}</h1>
+            <h1 className="text-3xl font-bold text-braden-navy">{service.title}</h1>
           </div>
           
-          <p className="text-lg text-gray-700 mb-8">{service.description}</p>
+          <p className="text-lg text-gray-700 mb-8 font-opensans">{service.description}</p>
           
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-[#ab233a]">Our Approach</h2>
-            <ul className="space-y-4">
+            <h2 className="text-2xl font-bold mb-4 text-braden-red">Our Approach</h2>
+            <ul className="space-y-4 font-opensans">
               {service.content.map((item, index) => (
                 <li key={index} className="flex items-start">
-                  <span className="text-[#cbb26a] mr-3">•</span>
+                  <span className="text-braden-gold mr-3">•</span>
                   <p>{item}</p>
                 </li>
               ))}
@@ -116,13 +116,13 @@ const Service = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 onClick={() => navigate('/contact')}
-                className="px-6 py-3 bg-[#ab233a] text-white rounded-lg hover:bg-[#811a2c]"
+                className="px-6 py-3 bg-braden-red text-white rounded-lg hover:bg-braden-dark-red"
               >
                 Contact Us
               </button>
               <button 
                 onClick={() => navigate('/#services')}
-                className="px-6 py-3 border border-[#ab233a] text-[#ab233a] rounded-lg hover:bg-gray-50"
+                className="px-6 py-3 border border-braden-red text-braden-red rounded-lg hover:bg-gray-50"
               >
                 View All Services
               </button>

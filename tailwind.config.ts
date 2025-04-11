@@ -28,8 +28,18 @@ export default {
         body: ["Inter", "sans-serif"],
       },
       colors: {
+        "braden-red": "#ab233a",
+        "braden-dark-red": "#811a2c",
+        "braden-gold": "#cbb26a",
+        "braden-light-gold": "#d8c690",
+        "braden-bronze": "#be9e44",
+        "braden-navy": "#2c3e50",
+        "braden-slate": "#95a5a6",
+        "braden-sky": "#3498db",
+        "braden-forest": "#27ae60",
+        "braden-lavender": "#9b59b6",
         brand: {
-          primary: "#B71C1C", // The deep red color from the screenshot
+          primary: "#B71C1C", 
           secondary: "#1A1A1A",
         },
         border: "hsl(var(--border))",
