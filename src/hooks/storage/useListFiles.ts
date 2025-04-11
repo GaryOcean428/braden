@@ -50,14 +50,22 @@ export const useListFiles = (bucketName: string) => {
       // Filter out folders, only include files
       const files = data.filter(item => !item.id.endsWith('/'));
       
-      // Map files to include public URLs
-      const filesWithUrls = files.map(file => {
+      // Map files to include public URLs and extract size and type from metadata
+      const filesWithUrls: FileWithUrl[] = files.map(file => {
         const filePath = path ? `${path}/${file.name}` : file.name;
         const publicUrl = getPublicUrl(bucketName, filePath);
         
+        // Extract size and type from metadata, or use default values if not available
+        const size = file.metadata?.size || 0;
+        const type = file.metadata?.mimetype || 'unknown';
+        
         return {
-          ...file,
-          publicUrl
+          id: file.id,
+          name: file.name,
+          publicUrl,
+          size,
+          type,
+          created_at: file.created_at || new Date().toISOString()
         };
       });
       
