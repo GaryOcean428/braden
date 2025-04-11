@@ -9,7 +9,7 @@ export function EnhancedContactForm() {
 
   return (
     <Card className="shadow-md">
-      <CardContent className="pt-6 font-inter">
+      <CardContent className="pt-6">
         {isInitialized ? (
           <ContactForm 
             form={form} 
