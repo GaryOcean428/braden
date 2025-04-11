@@ -82,7 +82,7 @@ const Navigation = () => {
   };
 
   return <ErrorBoundary>
-      <nav className="bg-[#811a2c]">
+      <nav className={`bg-[#811a2c] ${isScrolled ? 'shadow-md' : ''}`}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity" onClick={handleHomeClick}>
@@ -98,9 +98,9 @@ const Navigation = () => {
               </div>
             </div>
           </div>
-
-          <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} isAdmin={isAdmin} scrollToSection={scrollToSection} />
         </div>
+        
+        <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} isAdmin={isAdmin} scrollToSection={scrollToSection} />
       </nav>
     </ErrorBoundary>;
 };

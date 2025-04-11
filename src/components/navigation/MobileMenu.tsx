@@ -27,7 +27,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
         isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
       }`}
     >
-      <div className="container mx-auto px-4 py-4">
+      <div className="px-4 py-4">
         <div className="flex flex-col space-y-4">
           {navigationItems.map((item) => (
             <button
