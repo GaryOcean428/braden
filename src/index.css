@@ -89,6 +89,11 @@
 }
 
 /* Apply theme fonts */
+html {
+  font-family: var(--body-font);
+  font-size: var(--base-font-size);
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--heading-font);
 }
@@ -97,14 +102,22 @@ body {
   font-family: var(--body-font);
   font-size: var(--base-font-size);
 }
+
+/* Force font-family on form elements since they don't inherit properly in some browsers */
+button, input, select, textarea {
+  font-family: inherit;
+}
  
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
   }
 }
 

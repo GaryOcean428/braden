@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,10 +20,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        opensans: ["Open Sans", "sans-serif"],
         montserrat: ["Montserrat", "sans-serif"],
+        opensans: ["Open Sans", "sans-serif"],
         roboto: ["Roboto", "sans-serif"],
         lato: ["Lato", "sans-serif"],
+        heading: ["Montserrat", "sans-serif"],
+        body: ["Inter", "sans-serif"],
       },
       colors: {
         brand: {

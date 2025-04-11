@@ -64,13 +64,13 @@ export const applyThemeToCss = (theme: any) => {
     document.documentElement.style.setProperty(`--extended-color-${index + 1}`, color.hex);
   });
   
-  // Apply typography
+  // Apply typography - ensure proper quoting for font families
   document.documentElement.style.setProperty('--heading-font', theme.typography.headingFont);
   document.documentElement.style.setProperty('--body-font', theme.typography.bodyFont);
   document.documentElement.style.setProperty('--base-font-size', theme.typography.baseFontSize);
   
   // Apply spacing
-  document.documentElement.style.setProperty('--base-spacing-unit', theme.typography.baseFontSize);
+  document.documentElement.style.setProperty('--base-spacing-unit', theme.spacing.baseSpacingUnit);
   document.documentElement.style.setProperty('--spacing-scale', theme.spacing.spacingScale);
   
   // Apply to Tailwind CSS variables
@@ -80,6 +80,22 @@ export const applyThemeToCss = (theme: any) => {
   );
   document.documentElement.style.setProperty(
     '--secondary', 
-    getHslFromHex(theme.colors.secondary[0].hex)
+    getHslFromHex(theme.colors.primary[2].hex)
   );
+  
+  // Force refresh font styles
+  const bodyStyle = document.body.style;
+  bodyStyle.fontFamily = theme.typography.bodyFont;
+  
+  // Update heading fonts
+  const headingElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  headingElements.forEach(el => {
+    (el as HTMLElement).style.fontFamily = theme.typography.headingFont;
+  });
+
+  // Update form elements to inherit fonts properly
+  const formElements = document.querySelectorAll('button, input, select, textarea');
+  formElements.forEach(el => {
+    (el as HTMLElement).style.fontFamily = theme.typography.bodyFont;
+  });
 };
