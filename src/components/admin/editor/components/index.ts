@@ -9,3 +9,7 @@ export * from './TemplateSelector';
 export * from './TemplatePreview';
 export * from './LayoutInstructions';
 export * from './ColorSwatch';
+export * from './ColorEditor';
+export * from './ColorsPanel';
+export * from './TypographyPanel';
+export * from './SpacingPanel';

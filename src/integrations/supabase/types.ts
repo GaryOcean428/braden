@@ -130,6 +130,89 @@ export type Database = {
           },
         ]
       }
+      apprentice_profiles: {
+        Row: {
+          award_id: string | null
+          award_template_id: string | null
+          base_pay_rate: number
+          billable_options: Json
+          cost_config: Json
+          created_at: string | null
+          custom_settings: boolean
+          id: string
+          name: string
+          updated_at: string | null
+          user_id: string | null
+          work_config: Json
+          year: number
+        }
+        Insert: {
+          award_id?: string | null
+          award_template_id?: string | null
+          base_pay_rate: number
+          billable_options?: Json
+          cost_config?: Json
+          created_at?: string | null
+          custom_settings?: boolean
+          id?: string
+          name: string
+          updated_at?: string | null
+          user_id?: string | null
+          work_config?: Json
+          year: number
+        }
+        Update: {
+          award_id?: string | null
+          award_template_id?: string | null
+          base_pay_rate?: number
+          billable_options?: Json
+          cost_config?: Json
+          created_at?: string | null
+          custom_settings?: boolean
+          id?: string
+          name?: string
+          updated_at?: string | null
+          user_id?: string | null
+          work_config?: Json
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_award_template_id"
+            columns: ["award_template_id"]
+            isOneToOne: false
+            referencedRelation: "award_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      award_templates: {
+        Row: {
+          code: string
+          id: string
+          industry: string | null
+          name: string
+          rates: Json
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          id?: string
+          industry?: string | null
+          name: string
+          rates?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          id?: string
+          industry?: string | null
+          name?: string
+          rates?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       awards: {
         Row: {
           award_fixed_id: number
@@ -200,6 +283,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      calculation_templates: {
+        Row: {
+          apprentice_profiles: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          industry: string | null
+          is_public: boolean
+          name: string
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          apprentice_profiles?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          is_public?: boolean
+          name: string
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          apprentice_profiles?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          is_public?: boolean
+          name?: string
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       classifications: {
         Row: {
@@ -485,6 +607,48 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      custom_pay_rates: {
+        Row: {
+          created_at: string | null
+          id: string
+          industry: string | null
+          is_public: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string | null
+          year1_rate: number
+          year2_rate: number
+          year3_rate: number
+          year4_rate: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          industry?: string | null
+          is_public?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id?: string | null
+          year1_rate: number
+          year2_rate: number
+          year3_rate: number
+          year4_rate: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          industry?: string | null
+          is_public?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string | null
+          year1_rate?: number
+          year2_rate?: number
+          year3_rate?: number
+          year4_rate?: number
         }
         Relationships: []
       }
@@ -1723,6 +1887,7 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          settings: Json | null
           updated_at: string
         }
         Insert: {
@@ -1731,6 +1896,7 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          settings?: Json | null
           updated_at?: string
         }
         Update: {
@@ -1739,6 +1905,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          settings?: Json | null
           updated_at?: string
         }
         Relationships: []
