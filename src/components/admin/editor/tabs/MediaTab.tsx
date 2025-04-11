@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { MediaLibrary } from '@/components/admin/editor/MediaLibrary';
 import { FileImage, Upload } from 'lucide-react';
+import { MediaLibrary } from '@/components/admin/editor/media/MediaLibrary';
 
 interface MediaTabProps {
   onChange: () => void;
