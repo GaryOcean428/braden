@@ -8,7 +8,7 @@ export function EnhancedContactForm() {
   const { form, isSubmitting, onSubmit, isInitialized } = useEnhancedContactForm();
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md border-braden-light-gold/20">
       <CardContent className="pt-6">
         {isInitialized ? (
           <ContactForm 

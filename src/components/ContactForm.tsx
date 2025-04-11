@@ -23,10 +23,16 @@ export function ContactForm({ form, isSubmitting, onSubmit }: ContactFormProps =
   return (
     <Form {...formProps}>
       <form onSubmit={formProps.handleSubmit(submitHandler)} className="space-y-6 text-left font-inter">
+        <h3 className="text-2xl font-semibold mb-4 text-braden-navy font-montserrat">Contact Us</h3>
+        <p className="text-braden-slate mb-6">
+          Get in touch with our team to learn more about how we can help with your employment needs.
+        </p>
+        
         <ContactFormFields form={formProps} />
+        
         <Button 
           type="submit" 
-          className="w-full bg-braden-red hover:bg-braden-dark-red font-montserrat"
+          className="w-full bg-braden-red hover:bg-braden-dark-red text-white font-montserrat transition-colors"
           disabled={submitting}
         >
           {submitting ? "Submitting..." : "Submit"}
