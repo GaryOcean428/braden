@@ -47,8 +47,9 @@ export const useMediaLibrary = (onChange: () => void) => {
       if (listError) {
         console.error('Error listing files:', listError);
         
-        // Check if this is a permissions error
-        if (listError.message.includes('security policy') || listError.status === 400) {
+        // Check if this is a permissions error - we need to check the message content
+        // since StorageError doesn't have a status property
+        if (listError.message.includes('security policy') || listError.message.includes('permission')) {
           setError('You do not have permission to access this media library');
         } else {
           setError(`Failed to load media: ${listError.message}`);
