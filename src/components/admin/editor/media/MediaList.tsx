@@ -1,15 +1,14 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { FileVideo, Loader2, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { FileText, Search, Trash } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { MediaItem } from './types';
 
 interface MediaListProps {
   isLoading: boolean;
   items: MediaItem[];
   searchQuery: string;
-  onDeleteItem: (item: MediaItem) => Promise<void>;
+  onDeleteItem: (item: MediaItem) => void;
   onClearSearch: () => void;
 }
 
@@ -20,120 +19,89 @@ export const MediaList: React.FC<MediaListProps> = ({
   onDeleteItem,
   onClearSearch
 }) => {
+  // Loading state
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-[#ab233a]" />
+      <div className="space-y-3">
+        {[1, 2, 3].map(i => (
+          <div 
+            key={i}
+            className="h-16 bg-gray-200 rounded-md animate-pulse"
+          />
+        ))}
       </div>
     );
   }
 
-  if (items.length === 0) {
+  // No items state
+  if (items.length === 0 && !searchQuery) {
     return (
-      <div className="p-12 text-center border rounded-md">
-        <FileVideo className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-        <p className="text-gray-500">
-          {searchQuery ? 'No media files match your search' : 'No media files found'}
-        </p>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="mt-4"
+      <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-md">
+        <p className="text-gray-500 mb-2">No media files found</p>
+        <p className="text-sm text-gray-400">Upload files using the button above</p>
+      </div>
+    );
+  }
+  
+  // No search results
+  if (items.length === 0 && searchQuery) {
+    return (
+      <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-md">
+        <Search className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+        <p className="text-gray-500 mb-2">No media files matching "{searchQuery}"</p>
+        <button 
           onClick={onClearSearch}
+          className="text-sm text-[#ab233a] hover:underline"
         >
-          {searchQuery ? 'Clear Search' : 'Upload Media'}
-        </Button>
+          Clear search
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="border rounded-md overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              File
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Type
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Size
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Date
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {items.map(item => (
-            <tr key={item.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  {item.type.startsWith('image/') ? (
-                    <div className="h-10 w-10 flex-shrink-0">
-                      <img
-                        src={item.publicUrl}
-                        alt={item.name}
-                        className="h-10 w-10 object-cover rounded"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-10 w-10 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
-                      <FileVideo className="h-5 w-5 text-gray-500" />
-                    </div>
-                  )}
-                  <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                      {item.name}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">
-                  {item.type}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">
-                  {Math.round(item.size / 1024)} KB
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">
-                  {new Date(item.created_at).toLocaleDateString()}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex gap-2 justify-end">
-                  <Button 
-                    size="sm" 
-                    variant="ghost"
-                    onClick={() => {
-                      navigator.clipboard.writeText(item.publicUrl);
-                      toast.success("URL copied to clipboard");
-                    }}
-                  >
-                    Copy URL
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="destructive"
-                    onClick={() => onDeleteItem(item)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-2">
+      {items.map(item => (
+        <div 
+          key={item.id} 
+          className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-gray-100 p-2 rounded">
+              <FileText className="h-5 w-5 text-gray-500" />
+            </div>
+            <div>
+              <p className="font-medium text-sm truncate max-w-[200px]">{item.name}</p>
+              <p className="text-xs text-gray-500">
+                {formatFileSize(item.size)} • {new Date(item.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteItem(item);
+            }}
+            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
     </div>
   );
+};
+
+// Helper function to format file size
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };

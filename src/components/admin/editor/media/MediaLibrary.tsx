@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { ImageIcon, FileVideo } from 'lucide-react';
+import { ImageIcon, FileVideo, AlertCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useMediaLibrary } from './useMediaLibrary';
 import { FileUploader } from './FileUploader';
 import { SearchBar } from './SearchBar';
@@ -22,7 +23,8 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({ onChange }) => {
     setSelectedItem,
     uploading,
     handleFileUpload,
-    handleDeleteMedia
+    handleDeleteMedia,
+    error
   } = useMediaLibrary(onChange);
   
   return (
@@ -38,56 +40,69 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({ onChange }) => {
         </div>
       </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-gray-100">
-          <TabsTrigger value="images" className="flex items-center gap-1">
-            <ImageIcon className="h-4 w-4" />
-            Images
-          </TabsTrigger>
-          <TabsTrigger value="media" className="flex items-center gap-1">
-            <FileVideo className="h-4 w-4" />
-            All Media
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="images" className="pt-4">
-          <div className="flex gap-4 mb-6">
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search images..."
-            />
-          </div>
+      {error ? (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error}
+            <div className="mt-2">
+              <p className="text-sm">Please ensure you are logged in and have proper permissions to access the media library.</p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="bg-gray-100">
+            <TabsTrigger value="images" className="flex items-center gap-1">
+              <ImageIcon className="h-4 w-4" />
+              Images
+            </TabsTrigger>
+            <TabsTrigger value="media" className="flex items-center gap-1">
+              <FileVideo className="h-4 w-4" />
+              All Media
+            </TabsTrigger>
+          </TabsList>
           
-          <ImageGrid
-            isLoading={isLoading}
-            items={mediaItems}
-            searchQuery={searchQuery}
-            selectedItem={selectedItem}
-            onSelectItem={setSelectedItem}
-            onDeleteItem={handleDeleteMedia}
-            onClearSearch={() => setSearchQuery('')}
-          />
-        </TabsContent>
-        
-        <TabsContent value="media" className="pt-4">
-          <div className="flex gap-4 mb-6">
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search all media..."
+          <TabsContent value="images" className="pt-4">
+            <div className="flex gap-4 mb-6">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search images..."
+              />
+            </div>
+            
+            <ImageGrid
+              isLoading={isLoading}
+              items={mediaItems}
+              searchQuery={searchQuery}
+              selectedItem={selectedItem}
+              onSelectItem={setSelectedItem}
+              onDeleteItem={handleDeleteMedia}
+              onClearSearch={() => setSearchQuery('')}
             />
-          </div>
+          </TabsContent>
           
-          <MediaList
-            isLoading={isLoading}
-            items={mediaItems}
-            searchQuery={searchQuery}
-            onDeleteItem={handleDeleteMedia}
-            onClearSearch={() => setSearchQuery('')}
-          />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="media" className="pt-4">
+            <div className="flex gap-4 mb-6">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search all media..."
+              />
+            </div>
+            
+            <MediaList
+              isLoading={isLoading}
+              items={mediaItems}
+              searchQuery={searchQuery}
+              onDeleteItem={handleDeleteMedia}
+              onClearSearch={() => setSearchQuery('')}
+            />
+          </TabsContent>
+        </Tabs>
+      )}
       
       {selectedItem && (
         <MediaItemDetails item={selectedItem} onDelete={handleDeleteMedia} />

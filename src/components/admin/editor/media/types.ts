@@ -1,8 +1,8 @@
 
 export interface MediaItem {
   id: string;
-  publicUrl: string;
   name: string;
+  publicUrl: string;
   size: number;
   type: string;
   created_at: string;

@@ -11,6 +11,7 @@ export const useMediaLibrary = (onChange: () => void) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('images');
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   // Get the appropriate bucket based on active tab
   const bucketName = activeTab === 'images' 
@@ -28,11 +29,40 @@ export const useMediaLibrary = (onChange: () => void) => {
   const loadMedia = async () => {
     try {
       setIsLoading(true);
+      setError(null);
+      
+      // Check auth status before attempting to list files
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        setError('Authentication required to access media library');
+        setMediaItems([]);
+        return;
+      }
       
       // List files from the Supabase storage
-      const { data: files = [] } = await supabase.storage
+      const { data: files, error: listError } = await supabase.storage
         .from(bucketName)
         .list();
+      
+      if (listError) {
+        console.error('Error listing files:', listError);
+        
+        // Check if this is a permissions error
+        if (listError.message.includes('security policy') || listError.status === 400) {
+          setError('You do not have permission to access this media library');
+        } else {
+          setError(`Failed to load media: ${listError.message}`);
+        }
+        
+        setMediaItems([]);
+        return;
+      }
+      
+      // Handle case where files is null
+      if (!files) {
+        setMediaItems([]);
+        return;
+      }
       
       // Filter out folders, only include files
       const fileItems = files.filter(item => !item.id.endsWith('/')).map(file => {
@@ -51,9 +81,10 @@ export const useMediaLibrary = (onChange: () => void) => {
       });
       
       setMediaItems(fileItems);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading media:', error);
-      toast.error('Failed to load media items');
+      setError('Failed to load media items');
+      setMediaItems([]);
     } finally {
       setIsLoading(false);
     }
@@ -118,6 +149,7 @@ export const useMediaLibrary = (onChange: () => void) => {
     setSelectedItem,
     uploading,
     handleFileUpload,
-    handleDeleteMedia
+    handleDeleteMedia,
+    error
   };
 };
