@@ -21,11 +21,12 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
   title = 'Image Manager',
   allowMultiple = false,
 }) => {
-  const { uploadImage, deleteImage, listImages, uploading, error } = useImageUpload(bucketName);
+  const { uploadImage, deleteImage, listImages, uploading } = useImageUpload(bucketName);
   const [images, setImages] = useState<Array<{ name: string; publicUrl: string }>>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   // Load images when component mounts or refreshKey changes
   useEffect(() => {
@@ -33,12 +34,24 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     
     const loadImages = async () => {
       setLoading(true);
-      const imagesList = await listImages();
+      setError(null);
       
-      // Only update state if the component is still mounted
-      if (isMounted) {
-        setImages(imagesList);
-        setLoading(false);
+      try {
+        const imagesList = await listImages();
+        
+        // Only update state if the component is still mounted
+        if (isMounted) {
+          setImages(imagesList);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError("Failed to load images");
+          console.error("Error loading images:", err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -55,19 +68,24 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     if (!files || files.length === 0) return;
 
     const file = files[0];
-    const url = await uploadImage(file);
-    
-    if (url) {
-      // Refresh the image list
-      setRefreshKey(prev => prev + 1);
+    try {
+      const url = await uploadImage(file);
       
-      // Select the newly uploaded image
-      setSelectedImage(url);
-      
-      // Call the onImageSelect callback if provided
-      if (onImageSelect) {
-        onImageSelect(url);
+      if (url) {
+        // Refresh the image list
+        setRefreshKey(prev => prev + 1);
+        
+        // Select the newly uploaded image
+        setSelectedImage(url);
+        
+        // Call the onImageSelect callback if provided
+        if (onImageSelect) {
+          onImageSelect(url);
+        }
       }
+    } catch (err) {
+      setError("Failed to upload image");
+      console.error("Upload error:", err);
     }
     
     // Reset the input
@@ -85,15 +103,20 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     const confirmed = window.confirm('Are you sure you want to delete this image?');
     if (!confirmed) return;
 
-    const success = await deleteImage(name);
-    if (success) {
-      // Refresh the image list
-      setRefreshKey(prev => prev + 1);
-      
-      // Clear selection if the deleted image was selected
-      if (selectedImage && images.find(img => img.publicUrl === selectedImage)?.name === name) {
-        setSelectedImage(null);
+    try {
+      const success = await deleteImage(name);
+      if (success) {
+        // Refresh the image list
+        setRefreshKey(prev => prev + 1);
+        
+        // Clear selection if the deleted image was selected
+        if (selectedImage && images.find(img => img.publicUrl === selectedImage)?.name === name) {
+          setSelectedImage(null);
+        }
       }
+    } catch (err) {
+      setError("Failed to delete image");
+      console.error("Delete error:", err);
     }
   }, [deleteImage, selectedImage, images]);
 
@@ -144,7 +167,7 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
               )}
               {error && (
                 <p className="mt-4 text-sm text-red-500">
-                  Error: {error.message}
+                  Error: {error}
                 </p>
               )}
             </div>
@@ -155,6 +178,10 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
               <div className="flex justify-center items-center h-40">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
+            ) : error ? (
+              <p className="text-center py-8 text-red-500">
+                {error}
+              </p>
             ) : images.length === 0 ? (
               <p className="text-center py-8 text-gray-500">
                 No images found. Upload some images to get started.

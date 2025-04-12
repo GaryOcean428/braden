@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { useUploadFile } from './storage/useUploadFile';
 import { useDeleteFile } from './storage/useDeleteFile';
@@ -12,15 +12,46 @@ export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
   
   const [error, setError] = useState<Error | null>(null);
   
-  // Consolidate errors
+  // Create memoized versions of functions to prevent infinite renders
+  const uploadImage = useCallback(async (file: File) => {
+    try {
+      setError(null);
+      return await uploadFile(file);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Upload failed'));
+      throw err;
+    }
+  }, [uploadFile]);
+  
+  const deleteImage = useCallback(async (name: string) => {
+    try {
+      setError(null);
+      return await deleteFile(name);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Delete failed'));
+      throw err;
+    }
+  }, [deleteFile]);
+  
+  const listImages = useCallback(async () => {
+    try {
+      setError(null);
+      return await listFiles();
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to list images'));
+      throw err;
+    }
+  }, [listFiles]);
+  
+  // Check for errors from the hooks
   if (uploadError) setError(uploadError);
   if (deleteError) setError(deleteError);
   if (listError) setError(listError);
   
   return {
-    uploadImage: uploadFile,
-    deleteImage: deleteFile,
-    listImages: listFiles,
+    uploadImage,
+    deleteImage,
+    listImages,
     uploading,
     error,
     uploadedUrl
