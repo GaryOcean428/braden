@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -28,17 +29,28 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
 
   // Load images when component mounts or refreshKey changes
   useEffect(() => {
+    let isMounted = true;
+    
     const loadImages = async () => {
       setLoading(true);
       const imagesList = await listImages();
-      setImages(imagesList);
-      setLoading(false);
+      
+      // Only update state if the component is still mounted
+      if (isMounted) {
+        setImages(imagesList);
+        setLoading(false);
+      }
     };
 
     loadImages();
-  }, [refreshKey]);
+    
+    // Cleanup function to prevent state updates on unmounted component
+    return () => {
+      isMounted = false;
+    };
+  }, [refreshKey, listImages]); // Add listImages as a dependency
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -60,16 +72,16 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     
     // Reset the input
     e.target.value = '';
-  };
+  }, [uploadImage, onImageSelect]);
 
-  const handleImageSelect = (url: string) => {
+  const handleImageSelect = useCallback((url: string) => {
     setSelectedImage(url);
     if (onImageSelect) {
       onImageSelect(url);
     }
-  };
+  }, [onImageSelect]);
 
-  const handleDeleteImage = async (name: string) => {
+  const handleDeleteImage = useCallback(async (name: string) => {
     const confirmed = window.confirm('Are you sure you want to delete this image?');
     if (!confirmed) return;
 
@@ -83,11 +95,11 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
         setSelectedImage(null);
       }
     }
-  };
+  }, [deleteImage, selectedImage, images]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
-  };
+  }, []);
 
   return (
     <Card className="w-full">
