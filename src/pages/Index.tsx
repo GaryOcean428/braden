@@ -51,6 +51,7 @@ const Index = () => {
         </div>
       </ErrorBoundary>
       
+      {/* MediaManager is only shown to admin users */}
       {isAdmin && (
         <ErrorBoundary>
           <MediaManager />

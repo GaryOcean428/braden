@@ -1,11 +1,14 @@
+
 import React, { useState } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageManager } from '@/components/admin/ImageManager';
 import { initializeStorageBuckets } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ShieldAlert } from 'lucide-react';
 
 interface HeroImageManagerProps {
   currentHeroImage?: string;
@@ -20,13 +23,17 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const { user } = useAuth();
+  
+  // Check if the user is an admin (developer)
+  const isAdmin = user?.email === 'braden.lang77@gmail.com';
 
   const handleImageSelect = (url: string) => {
     setSelectedImage(url);
   };
 
   const handleUpdateHero = async () => {
-    if (!selectedImage) return;
+    if (!selectedImage || !isAdmin) return;
     
     try {
       setIsUpdating(true);
@@ -52,6 +59,18 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
       setIsUpdating(false);
     }
   };
+
+  // If the user is not an admin, show an access denied message
+  if (!isAdmin) {
+    return (
+      <Alert variant="destructive" className="w-full">
+        <ShieldAlert className="h-4 w-4" />
+        <AlertDescription>
+          Only developers can access the Hero Image Manager.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <Card className="w-full">
