@@ -21,55 +21,34 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
         setIsLoading(true);
         setImageError(false);
         
-        // Set the fallback image immediately to ensure we always have something to show
-        setHeroImage(fallbackImage);
+        // Set the new uploaded image as the primary hero image
+        const newHeroImage = '/lovable-uploads/a37e9f48-2fcd-4c98-bab5-8d60a6e41f27.png';
+        setHeroImage(newHeroImage);
         
+        // Also try to load images from Supabase as a fallback
         try {
-          // Try to load an image from the public folder as a reliable fallback
-          const publicImagePath = '/hero-image.jpg';
-          
-          // Create an image element to test if the public image is available
-          const publicImg = new Image();
-          publicImg.onload = () => {
-            setHeroImage(publicImagePath);
-            setIsLoading(false);
-          };
-          
-          // Start loading the public image
-          publicImg.src = publicImagePath;
-          
-          // We still attempt to fetch from Supabase if possible
           const { data: files, error: listError } = await supabase.storage
             .from(STORAGE_BUCKETS.HERO_IMAGES)
             .list();
             
           if (listError) {
             console.log('Could not list hero images from Supabase:', listError);
-            // We'll continue with the public image or fallback
+            // We'll continue with the uploaded image
           } else if (files && files.length > 0) {
+            // Keep as backup if the primary image fails
             const { data } = supabase.storage
               .from(STORAGE_BUCKETS.HERO_IMAGES)
               .getPublicUrl(files[0].name);
               
-            if (data?.publicUrl) {
-              // Preload the Supabase image
-              const img = new Image();
-              img.onload = () => {
-                setHeroImage(data.publicUrl);
-                setIsLoading(false);
-              };
-              img.onerror = () => {
-                // Keep using the public image or fallback
-                console.log('Could not load image from Supabase');
-              };
-              img.src = data.publicUrl;
-            }
+            // We already have our primary image set, this is just backup
+            console.log('Found Supabase hero image as backup:', data?.publicUrl);
           }
         } catch (supabaseError) {
           console.error('Error with Supabase operations:', supabaseError);
-          // We already have the fallback image set
-          setIsLoading(false);
+          // We already have the uploaded image set
         }
+        
+        setIsLoading(false);
       } catch (error) {
         console.error('Error in loadHeroImage function:', error);
         setImageError(true);
@@ -89,7 +68,7 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
     }, 3000);
     
     return () => clearTimeout(safetyTimeout);
-  }, [onError, fallbackImage]);
+  }, [onError]);
 
   if (isLoading) {
     return (
@@ -114,7 +93,7 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
         alt="Braden Group - People. Employment. Progress."
         className="w-full h-full object-cover"
         onError={() => {
-          // If image fails to load, ensure we're using the fallback
+          console.log('Error loading hero image, falling back to default');
           setHeroImage(fallbackImage);
         }}
       />
