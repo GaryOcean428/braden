@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase, STORAGE_BUCKETS } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,8 +22,8 @@ export const HeroImage = ({ onError = () => {} }: HeroImageProps) => {
         setIsLoading(true);
         setImageError(false);
         
-        // Set the new uploaded image as the primary hero image
-        const newHeroImage = '/lovable-uploads/a37e9f48-2fcd-4c98-bab5-8d60a6e41f27.png';
+        // Use the newly uploaded image - the one you just uploaded
+        const newHeroImage = '/lovable-uploads/88216c30-3e8e-4a9d-989a-22ca18433c52.jpg';
         setHeroImage(newHeroImage);
         
         // Also try to load images from Supabase as a fallback
