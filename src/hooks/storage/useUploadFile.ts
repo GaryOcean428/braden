@@ -39,9 +39,11 @@ export const useUploadFile = (bucketName: string) => {
       if (uploadError) {
         console.error('Upload error details:', uploadError);
         
-        if (uploadError.message.includes('row level security')) {
-          // Attempt to sign in as admin for this upload
-          console.log('Attempting admin sign in for upload...');
+        if (uploadError.message.includes('row level security') || 
+            uploadError.message.includes('permission denied') ||
+            uploadError.message.includes('access control')) {
+          // Attempt to ensure guest access for this upload
+          console.log('Attempting to ensure guest access for upload...');
           const adminResult = await ensureGuestAccess(bucketName);
           
           if (adminResult) {
@@ -59,7 +61,7 @@ export const useUploadFile = (bucketName: string) => {
             }
             
             uploadData = retryResult.data;
-            console.log('Upload succeeded after admin sign in');
+            console.log('Upload succeeded after ensuring guest access');
           } else {
             throw uploadError;
           }
