@@ -1,119 +1,136 @@
 
-// This edge function allows creating and managing storage buckets without requiring authentication
-// It uses the service role key to bypass RLS policies
+import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.42.0'
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.23.0"
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+type RequestBody = {
+  bucket: string;
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: corsHeaders,
-      status: 204,
-    })
+  // Create a Supabase client with the admin key
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  
+  if (!supabaseUrl || !supabaseKey) {
+    return new Response(
+      JSON.stringify({
+        error: 'Missing environment variables',
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
   }
   
+  const supabase = createClient(supabaseUrl, supabaseKey)
+  
   try {
-    // Get the request body
-    const { bucket } = await req.json()
+    // Get the bucket name from the request
+    const { bucket } = await req.json() as RequestBody
     
     if (!bucket) {
       return new Response(
-        JSON.stringify({ error: "Bucket name is required" }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400 
-        }
+        JSON.stringify({ error: 'Bucket name is required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
     
-    // Create a Supabase client with the service role key
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        }
-      }
-    )
+    console.log(`Ensuring bucket ${bucket} exists and has proper policies`)
     
-    // Check if the bucket exists
-    const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets()
+    // First, check if bucket exists
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
     
-    if (listError) {
-      console.error('Error listing buckets:', listError)
+    if (bucketsError) {
+      console.error('Error listing buckets:', bucketsError)
       return new Response(
-        JSON.stringify({ error: "Failed to list buckets", details: listError }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500 
-        }
+        JSON.stringify({ error: 'Failed to list buckets', details: bucketsError }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       )
     }
     
-    // Create the bucket if it doesn't exist
-    if (!buckets?.find(b => b.name === bucket)) {
-      const { error: createError } = await supabaseAdmin.storage.createBucket(bucket, {
+    // Create bucket if it doesn't exist
+    const bucketExists = buckets.some(b => b.name === bucket)
+    if (!bucketExists) {
+      console.log(`Creating bucket: ${bucket}`)
+      const { data, error } = await supabase.storage.createBucket(bucket, {
         public: true,
-        fileSizeLimit: 10485760, // 10MB
+        fileSizeLimit: 5242880, // 5MB
       })
       
-      if (createError) {
-        console.error(`Error creating bucket ${bucket}:`, createError)
+      if (error) {
+        console.error('Error creating bucket:', error)
         return new Response(
-          JSON.stringify({ error: `Failed to create bucket ${bucket}`, details: createError }),
-          { 
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 500 
-          }
+          JSON.stringify({ error: 'Failed to create bucket', details: error }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
         )
       }
       
       console.log(`Created bucket: ${bucket}`)
+    } else {
+      console.log(`Bucket ${bucket} already exists`)
     }
     
-    // Run the setup_storage_policies function for this bucket
-    const { error: policyError } = await supabaseAdmin.rpc('setup_storage_policies', {
-      bucket_name: bucket
+    // Update bucket to be public if needed
+    const { error: updateError } = await supabase.storage.updateBucket(bucket, {
+      public: true,
     })
     
-    if (policyError) {
-      console.error(`Error setting up policies for bucket ${bucket}:`, policyError)
+    if (updateError) {
+      console.error('Error updating bucket visibility:', updateError)
       return new Response(
-        JSON.stringify({ 
-          error: `Created bucket ${bucket} but failed to set up policies`, 
-          details: policyError 
-        }),
-        { 
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500 
-        }
+        JSON.stringify({ error: 'Failed to update bucket visibility', details: updateError }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+    
+    // Create SQL for policy setup
+    const sqlQuery = `
+    -- Create policy for public read access
+    CREATE POLICY IF NOT EXISTS "Public Read Access for ${bucket}" 
+    ON storage.objects 
+    FOR SELECT 
+    USING (bucket_id = '${bucket}');
+    
+    -- Create policy for authenticated users insert
+    CREATE POLICY IF NOT EXISTS "Auth Insert Access for ${bucket}" 
+    ON storage.objects 
+    FOR INSERT TO authenticated 
+    WITH CHECK (bucket_id = '${bucket}');
+    
+    -- Create policy for authenticated users update
+    CREATE POLICY IF NOT EXISTS "Auth Update Access for ${bucket}" 
+    ON storage.objects 
+    FOR UPDATE TO authenticated 
+    USING (bucket_id = '${bucket}') 
+    WITH CHECK (bucket_id = '${bucket}');
+    
+    -- Create policy for authenticated users delete 
+    CREATE POLICY IF NOT EXISTS "Auth Delete Access for ${bucket}" 
+    ON storage.objects 
+    FOR DELETE TO authenticated 
+    USING (bucket_id = '${bucket}');
+    `
+    
+    const { error: sqlError } = await supabase.rpc('exec_sql', { query: sqlQuery })
+    
+    if (sqlError) {
+      console.error('Error creating policies:', sqlError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to create policies', details: sqlError }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       )
     }
     
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Successfully set up bucket ${bucket} with public access policies` 
+        message: `Successfully ensured "${bucket}" bucket exists with appropriate policies` 
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
     )
   } catch (error) {
     console.error('Unexpected error:', error)
     return new Response(
-      JSON.stringify({ error: "Internal server error", details: error.message }),
-      { 
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500 
-      }
+      JSON.stringify({ error: 'Unexpected error occurred', details: error.message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }
 })
