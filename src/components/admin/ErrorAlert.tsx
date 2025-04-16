@@ -10,10 +10,10 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
   if (!error) return null;
 
   // Determine if this is a permission error
-  const isPermissionError = error.includes("permission") || 
-                           error.includes("restrictions") || 
-                           error.includes("role") || 
-                           error.includes("admin");
+  const isPermissionError = error.toLowerCase().includes("permission") || 
+                           error.toLowerCase().includes("restrictions") || 
+                           error.toLowerCase().includes("role") || 
+                           error.toLowerCase().includes("admin");
   
   return (
     <Alert className={`mb-6 border-${isPermissionError ? '[#cbb26a]' : '[#ab233a]'} ${isPermissionError ? 'bg-amber-50' : 'bg-red-50'}`}>
