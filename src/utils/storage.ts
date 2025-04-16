@@ -1,11 +1,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { StorageBucketName } from '@/integrations/supabase/storage';
 
 /**
  * Ensures guest access for storage bucket operations
  */
-export const ensureGuestAccess = async (bucketName: string) => {
+export const ensureGuestAccess = async (bucketName: StorageBucketName) => {
   try {
     console.log(`Ensuring guest access for bucket: ${bucketName}`);
     
@@ -46,7 +47,7 @@ export const ensureGuestAccess = async (bucketName: string) => {
 /**
  * Gets a public URL for a file in storage
  */
-export const getPublicUrl = (bucketName: string, path: string): string => {
+export const getPublicUrl = (bucketName: StorageBucketName, path: string): string => {
   const { data } = supabase.storage
     .from(bucketName)
     .getPublicUrl(path);

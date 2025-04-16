@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ensureGuestAccess, generateUniqueFileName, getPublicUrl } from '@/utils/storage';
+import { StorageBucketName } from '@/integrations/supabase/storage';
 
-export const useUploadFile = (bucketName: string) => {
+export const useUploadFile = (bucketName: StorageBucketName) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);

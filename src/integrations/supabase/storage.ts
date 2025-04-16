@@ -16,6 +16,9 @@ export const STORAGE_BUCKETS = {
   MEDIA: 'media',
 } as const;
 
+// Define bucket name type for better type safety
+export type StorageBucketName = typeof STORAGE_BUCKETS[keyof typeof STORAGE_BUCKETS];
+
 // Define the return types for better type safety
 export type StorageBucketResult = {
   success: boolean;

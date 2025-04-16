@@ -1,11 +1,11 @@
 
 import { useState, useCallback } from 'react';
-import { STORAGE_BUCKETS } from '@/integrations/supabase/client';
+import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 import { useUploadFile } from './storage/useUploadFile';
 import { useDeleteFile } from './storage/useDeleteFile';
 import { useListFiles } from './storage/useListFiles';
 
-export const useImageUpload = (bucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
+export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.CONTENT_IMAGES) => {
   const { uploadFile, uploading, error: uploadError, uploadedUrl } = useUploadFile(bucketName);
   const { deleteFile, error: deleteError } = useDeleteFile(bucketName);
   const { listFiles, loading, error: listError } = useListFiles(bucketName);

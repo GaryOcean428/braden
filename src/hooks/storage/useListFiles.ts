@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getPublicUrl } from '@/utils/storage';
+import { StorageBucketName } from '@/integrations/supabase/storage';
 
 export interface FileWithUrl {
   id: string;
@@ -13,7 +14,7 @@ export interface FileWithUrl {
   created_at: string;
 }
 
-export const useListFiles = (bucketName: string) => {
+export const useListFiles = (bucketName: StorageBucketName) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 

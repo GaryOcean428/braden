@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { StorageBucketName } from '@/integrations/supabase/storage';
 
-export const useDeleteFile = (bucketName: string) => {
+export const useDeleteFile = (bucketName: StorageBucketName) => {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
