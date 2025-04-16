@@ -68,8 +68,15 @@ export const STORAGE_BUCKETS = {
   MEDIA: 'media',
 };
 
+// Define the return types for better type safety
+type StorageBucketResult = {
+  success: boolean;
+  details?: Record<string, { success: boolean; error?: any }>;
+  error?: any;
+};
+
 // Helper function to initialize storage buckets
-export const initializeStorageBuckets = async () => {
+export const initializeStorageBuckets = async (): Promise<StorageBucketResult> => {
   try {
     // Check if we have an active session
     const { data: { session } } = await supabase.auth.getSession();
@@ -116,7 +123,7 @@ export const initializeStorageBuckets = async () => {
 };
 
 // Fallback function to create buckets via edge function
-const createBucketsViaEdgeFunction = async () => {
+const createBucketsViaEdgeFunction = async (): Promise<StorageBucketResult> => {
   try {
     console.log('Attempting to create buckets via edge function...');
     
@@ -137,7 +144,6 @@ const createBucketsViaEdgeFunction = async () => {
       }
     }
     
-    // Fix the return type to include the success and details properties
     return { 
       success: true, 
       details: result 
