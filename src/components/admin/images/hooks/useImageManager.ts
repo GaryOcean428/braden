@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 
@@ -15,6 +15,28 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
   const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [images, setImages] = useState<Array<{ name: string; publicUrl: string }>>([]);
+
+  // Fetch images when the component mounts or refreshKey changes
+  useEffect(() => {
+    const fetchImages = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const imagesList = await listImages();
+        setImages(imagesList);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load images';
+        setError(errorMessage);
+        console.error("List error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchImages();
+  }, [listImages, refreshKey, bucketName]);
 
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -60,7 +82,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
       if (success) {
         setRefreshKey(prev => prev + 1);
         
-        if (selectedImage && name === selectedImage) {
+        if (selectedImage && selectedImage.includes(name)) {
           setSelectedImage(null);
         }
       }
@@ -75,11 +97,12 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
     setRefreshKey(prev => prev + 1);
   }, []);
 
-  const handlePageChange = (pageNumber: number) => {
+  const handlePageChange = useCallback((pageNumber: number) => {
     setCurrentPage(pageNumber);
-  };
+  }, []);
 
   return {
+    images,
     selectedImage,
     loading,
     error,

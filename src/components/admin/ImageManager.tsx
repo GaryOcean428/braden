@@ -25,14 +25,13 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
   title = 'Image Manager',
   allowMultiple = false,
 }) => {
-  const [images, setImages] = useState<Array<{ name: string; publicUrl: string }>>([]);
   const {
+    images,
     selectedImage,
     loading,
     error,
     uploading,
     currentPage,
-    refreshKey,
     handleFileChange,
     handleImageSelect,
     handleDeleteImage,
@@ -41,10 +40,10 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
   } = useImageManager({ bucketName, onImageSelect });
 
   // Calculate pagination values
-  const totalPages = Math.ceil(images.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil((images?.length || 0) / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedImages = images.slice(startIndex, endIndex);
+  const paginatedImages = images?.slice(startIndex, endIndex) || [];
 
   return (
     <Card className="w-full">
