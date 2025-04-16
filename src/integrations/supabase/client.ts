@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import { StorageClient } from '@supabase/storage-js';
 import type { Database } from './types';
@@ -121,7 +120,7 @@ const createBucketsViaEdgeFunction = async () => {
     console.log('Attempting to create buckets via edge function...');
     
     // Call edge function to set up storage buckets and policies
-    const result = {};
+    const result: Record<string, { success: boolean; error?: any }> = {};
     
     for (const bucketName of Object.values(STORAGE_BUCKETS)) {
       const { data, error } = await supabase.functions.invoke('ensure-guest-storage-access', {
