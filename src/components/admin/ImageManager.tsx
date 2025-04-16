@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
-import { STORAGE_BUCKETS } from '@/integrations/supabase/client';
+import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,7 +18,7 @@ import {
 } from "@/components/ui/pagination";
 
 interface ImageManagerProps {
-  bucketName?: string;
+  bucketName?: StorageBucketName;
   onImageSelect?: (url: string) => void;
   title?: string;
   allowMultiple?: boolean;
@@ -233,4 +232,3 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     </Card>
   );
 };
-
