@@ -34,6 +34,8 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     let isMounted = true;
     
     const loadImages = async () => {
+      if (!isMounted) return;
+      
       setLoading(true);
       setError(null);
       
@@ -62,6 +64,7 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     };
   }, [refreshKey, listImages]);
 
+  // Memoize handlers to prevent recreating them on every render
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -83,6 +86,7 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
       console.error("Upload error:", err);
     }
     
+    // Clear the input value to allow selecting the same file again
     e.target.value = '';
   }, [uploadImage, onImageSelect]);
 

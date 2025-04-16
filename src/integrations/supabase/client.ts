@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import { StorageClient } from '@supabase/storage-js';
 import type { Database } from './types';
@@ -136,10 +137,17 @@ const createBucketsViaEdgeFunction = async () => {
       }
     }
     
-    return { success: true, details: result };
+    // Fix the return type to include the success and details properties
+    return { 
+      success: true, 
+      details: result 
+    };
   } catch (error) {
     console.error('Edge function bucket creation failed:', error);
-    return { success: false, error };
+    return { 
+      success: false, 
+      error 
+    };
   }
 };
 
