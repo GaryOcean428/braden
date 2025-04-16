@@ -2,6 +2,7 @@
 import React from 'react';
 import { ImageGallery } from '@/components/admin/images/ImageGallery';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface GalleryTabProps {
   images: Array<{ name: string; publicUrl: string }>;
@@ -27,7 +28,7 @@ export const GalleryTab: React.FC<GalleryTabProps> = ({
   onPageChange,
 }) => {
   return (
-    <>
+    <ErrorBoundary>
       <ImageGallery 
         images={images}
         selectedImage={selectedImage}
@@ -72,6 +73,6 @@ export const GalleryTab: React.FC<GalleryTabProps> = ({
           </PaginationContent>
         </Pagination>
       )}
-    </>
+    </ErrorBoundary>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
@@ -9,6 +8,7 @@ import { initializeStorageBuckets } from '@/integrations/supabase/storage';
 import { useAuth } from '@/hooks/useAuth';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface HeroImageManagerProps {
   currentHeroImage?: string;
@@ -73,68 +73,70 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Hero Image Manager</CardTitle>
-        <CardDescription>
-          Update the hero image displayed on the homepage
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-medium mb-2">Current Hero Image</h3>
-            <div className="border rounded-lg overflow-hidden">
-              <img 
-                src={currentHeroImage} 
-                alt="Current hero image" 
-                className="w-full h-48 object-cover"
-              />
-            </div>
-          </div>
-          
-          {selectedImage && (
+    <ErrorBoundary>
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>Hero Image Manager</CardTitle>
+          <CardDescription>
+            Update the hero image displayed on the homepage
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-2">Selected New Image</h3>
+              <h3 className="text-lg font-medium mb-2">Current Hero Image</h3>
               <div className="border rounded-lg overflow-hidden">
                 <img 
-                  src={selectedImage} 
-                  alt="Selected hero image" 
+                  src={currentHeroImage} 
+                  alt="Current hero image" 
                   className="w-full h-48 object-cover"
                 />
               </div>
             </div>
+            
+            {selectedImage && (
+              <div>
+                <h3 className="text-lg font-medium mb-2">Selected New Image</h3>
+                <div className="border rounded-lg overflow-hidden">
+                  <img 
+                    src={selectedImage} 
+                    alt="Selected hero image" 
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <ImageManager 
+            bucketName={STORAGE_BUCKETS.HERO_IMAGES}
+            onImageSelect={handleImageSelect}
+            title="Select Hero Image"
+          />
+          
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleUpdateHero} 
+              disabled={!selectedImage || isUpdating}
+              className="w-full md:w-auto"
+            >
+              {isUpdating ? 'Updating...' : 'Update Hero Image'}
+            </Button>
+          </div>
+          
+          {updateSuccess && (
+            <p className="text-green-600 text-sm">
+              Hero image updated successfully!
+            </p>
           )}
-        </div>
-        
-        <ImageManager 
-          bucketName={STORAGE_BUCKETS.HERO_IMAGES}
-          onImageSelect={handleImageSelect}
-          title="Select Hero Image"
-        />
-        
-        <div className="flex justify-end">
-          <Button 
-            onClick={handleUpdateHero} 
-            disabled={!selectedImage || isUpdating}
-            className="w-full md:w-auto"
-          >
-            {isUpdating ? 'Updating...' : 'Update Hero Image'}
-          </Button>
-        </div>
-        
-        {updateSuccess && (
-          <p className="text-green-600 text-sm">
-            Hero image updated successfully!
-          </p>
-        )}
-        
-        {updateError && (
-          <p className="text-red-600 text-sm">
-            {updateError}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+          
+          {updateError && (
+            <p className="text-red-600 text-sm">
+              {updateError}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </ErrorBoundary>
   );
 };
