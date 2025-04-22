@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
@@ -85,7 +85,8 @@ const Navigation = () => {
       <nav className={`bg-[#811a2c] ${isScrolled ? 'shadow-md' : ''}`}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity" onClick={handleHomeClick}>
+            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center gap-2" onClick={handleHomeClick}>
+              <Home size={20} />
               braden
             </a>
             
