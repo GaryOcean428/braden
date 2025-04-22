@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 interface DesktopMenuProps {
@@ -20,7 +19,6 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
         });
       } else {
         toast.success("Logged out successfully");
-        // Use window.location for navigation instead of useNavigate
         window.location.href = '/admin/auth?logout=true';
       }
     } catch (error) {
@@ -53,20 +51,12 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
       </button>
       
       {isAdmin && (
-        <>
-          <Link
-            to="/admin"
-            className="hover:opacity-80 transition-opacity"
-          >
-            Admin
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="bg-[#ab233a] text-white px-3 py-1 rounded hover:bg-[#811a2c] transition-colors"
-          >
-            Logout
-          </button>
-        </>
+        <button
+          onClick={handleLogout}
+          className="bg-[#ab233a] text-white px-3 py-1 rounded hover:bg-[#811a2c] transition-colors"
+        >
+          Logout
+        </button>
       )}
     </div>
   );
