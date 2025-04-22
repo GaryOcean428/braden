@@ -7,6 +7,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Define schema outside the hook to avoid recreating it on each render
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -29,6 +30,7 @@ const formSchema = z.object({
 });
 
 export const useContactForm = () => {
+  // Explicitly declare React as a dependency
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<ContactFormValues>({
@@ -46,6 +48,7 @@ export const useContactForm = () => {
   const handleFormSubmit: SubmitHandler<ContactFormValues> = async (values) => {
     try {
       setIsSubmitting(true);
+      console.log("Submitting form with values:", values);
       
       // Create a new lead
       const { error: leadError } = await supabase
@@ -59,7 +62,10 @@ export const useContactForm = () => {
           message: values.message,
         });
 
-      if (leadError) throw leadError;
+      if (leadError) {
+        console.error('Lead insert error:', leadError);
+        throw leadError;
+      }
 
       // Create a new client
       const { error: clientError } = await supabase
@@ -71,7 +77,10 @@ export const useContactForm = () => {
           service_type: values.serviceType,
         });
 
-      if (clientError) throw clientError;
+      if (clientError) {
+        console.error('Client insert error:', clientError);
+        throw clientError;
+      }
 
       toast.success("Thank you for your message. We'll be in touch soon!");
       form.reset();

@@ -9,12 +9,19 @@ type ThemeContextType = {
   applyTheme: (theme: ThemeSettings) => void;
 };
 
+// Create context with default values
 const ThemeContext = createContext<ThemeContextType>({
   theme: defaultTheme,
   applyTheme: () => {}
 });
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<ThemeSettings>(defaultTheme);
@@ -35,6 +42,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           if (error.code !== 'PGRST116') { // Not found error
             console.error('Error loading theme:', error);
           }
+          // Use default theme if no theme is found
+          applyThemeToCss(defaultTheme);
           return;
         }
         
@@ -42,9 +51,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const loadedTheme = data.settings as ThemeSettings;
           setTheme(loadedTheme);
           applyThemeToCss(loadedTheme);
+        } else {
+          // Use default theme if settings are empty
+          applyThemeToCss(defaultTheme);
         }
       } catch (error) {
         console.error('Error loading theme settings:', error);
+        // Fall back to default theme on error
+        applyThemeToCss(defaultTheme);
       } finally {
         setIsLoading(false);
       }

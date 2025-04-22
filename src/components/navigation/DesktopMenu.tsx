@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 interface DesktopMenuProps {
@@ -9,8 +9,6 @@ interface DesktopMenuProps {
 }
 
 const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
-  const navigate = useNavigate();
-
   const handleLogout = async () => {
     try {
       console.log("Logging out...");
@@ -22,8 +20,8 @@ const DesktopMenu = ({ isAdmin, scrollToSection }: DesktopMenuProps) => {
         });
       } else {
         toast.success("Logged out successfully");
-        // Navigate to auth page with logout parameter
-        navigate('/admin/auth?logout=true', { replace: true });
+        // Use window.location for navigation instead of useNavigate
+        window.location.href = '/admin/auth?logout=true';
       }
     } catch (error) {
       console.error("Logout error:", error);

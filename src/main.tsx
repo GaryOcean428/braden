@@ -7,17 +7,38 @@ import { initializeStorageBuckets } from './integrations/supabase/client.ts';
 
 // Initialize storage buckets before rendering the app
 initializeStorageBuckets().then(() => {
-  ReactDOM.createRoot(document.getElementById('root')!).render(
+  // Use the createRoot API correctly
+  const rootElement = document.getElementById('root');
+  
+  if (!rootElement) {
+    console.error('Failed to find the root element');
+    return;
+  }
+  
+  // Create the root and render with React.StrictMode
+  const root = ReactDOM.createRoot(rootElement);
+  
+  root.render(
     <React.StrictMode>
       <App />
-    </React.StrictMode>,
+    </React.StrictMode>
   );
 }).catch(error => {
   console.error('Failed to initialize storage buckets:', error);
-  // Continue rendering the app even if bucket initialization fails
-  ReactDOM.createRoot(document.getElementById('root')!).render(
+  
+  // Even if bucket initialization fails, still render the app
+  const rootElement = document.getElementById('root');
+  
+  if (!rootElement) {
+    console.error('Failed to find the root element');
+    return;
+  }
+  
+  const root = ReactDOM.createRoot(rootElement);
+  
+  root.render(
     <React.StrictMode>
       <App />
-    </React.StrictMode>,
+    </React.StrictMode>
   );
 });
