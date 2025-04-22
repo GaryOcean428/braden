@@ -2090,7 +2090,7 @@ export type Database = {
         Returns: string
       }
       get_llm_api_key: {
-        Args: { provider_name: string } | Record<PropertyKey, never>
+        Args: Record<PropertyKey, never> | { provider_name: string }
         Returns: string
       }
       get_my_user_info: {
@@ -2102,7 +2102,7 @@ export type Database = {
         Returns: boolean
       }
       has_role_access: {
-        Args: { required_role: string } | Record<PropertyKey, never>
+        Args: Record<PropertyKey, never> | { required_role: string }
         Returns: boolean
       }
       is_admin: {

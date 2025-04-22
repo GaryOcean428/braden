@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 
@@ -15,27 +16,52 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [images, setImages] = useState<Array<{ name: string; publicUrl: string }>>([]);
-
+  
+  // Use a ref to track if the component is mounted
+  const isMounted = useRef(true);
+  
   // Fetch images when the component mounts or refreshKey changes
   useEffect(() => {
     const fetchImages = async () => {
+      if (!isMounted.current) return;
+      
       setLoading(true);
       setError(null);
       
       try {
         const imagesList = await listImages();
-        setImages(imagesList);
+        
+        if (isMounted.current) {
+          setImages(imagesList || []);
+        }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load images';
-        setError(errorMessage);
-        console.error("List error:", err);
+        if (isMounted.current) {
+          const errorMessage = err instanceof Error ? err.message : 'Failed to load images';
+          setError(errorMessage);
+          console.error("List error:", err);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted.current) {
+          setLoading(false);
+        }
       }
     };
     
     fetchImages();
+    
+    // Cleanup function
+    return () => {
+      isMounted.current = false;
+    };
   }, [listImages, refreshKey, bucketName]);
+  
+  // Reset isMounted on mount
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -47,7 +73,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
     try {
       const url = await uploadImage(file);
       
-      if (url) {
+      if (url && isMounted.current) {
         setRefreshKey(prev => prev + 1);
         setSelectedImage(url);
         
@@ -56,12 +82,17 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to upload image';
-      setError(errorMessage);
-      console.error("Upload error:", err);
+      if (isMounted.current) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to upload image';
+        setError(errorMessage);
+        console.error("Upload error:", err);
+      }
     }
     
-    e.target.value = '';
+    // Reset input value
+    if (e.target) {
+      e.target.value = '';
+    }
   }, [uploadImage, onImageSelect]);
 
   const handleImageSelect = useCallback((url: string) => {
@@ -78,7 +109,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
     setError(null);
     try {
       const success = await deleteImage(name);
-      if (success) {
+      if (success && isMounted.current) {
         setRefreshKey(prev => prev + 1);
         
         if (selectedImage && selectedImage.includes(name)) {
@@ -86,9 +117,11 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete image';
-      setError(errorMessage);
-      console.error("Delete error:", err);
+      if (isMounted.current) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to delete image';
+        setError(errorMessage);
+        console.error("Delete error:", err);
+      }
     }
   }, [deleteImage, selectedImage]);
 
@@ -99,13 +132,6 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
   const handlePageChange = useCallback((pageNumber: number) => {
     setCurrentPage(pageNumber);
   }, []);
-
-  const paginatedImages = useMemo(() => {
-    const ITEMS_PER_PAGE = 12;
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return images.slice(startIndex, endIndex);
-  }, [images, currentPage]);
 
   return {
     images,
@@ -120,6 +146,5 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
     handleDeleteImage,
     handleRefresh,
     handlePageChange,
-    paginatedImages,
   };
 };
