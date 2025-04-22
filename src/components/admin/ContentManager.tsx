@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -31,6 +30,8 @@ export const ContentManager: React.FC = () => {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   // Load content items when component mounts
   useEffect(() => {
@@ -165,6 +166,60 @@ export const ContentManager: React.FC = () => {
     setFormData(prev => ({ ...prev, image_url: url }));
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredItems = items.filter(item =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSelectItem = (id: string) => {
+    setSelectedItems(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === filteredItems.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(filteredItems.map(item => item.id));
+    }
+  };
+
+  const handleBulkAction = async (action: 'publish' | 'unpublish' | 'delete') => {
+    const confirmed = window.confirm(`Are you sure you want to ${action} selected items?`);
+    if (!confirmed) return;
+
+    try {
+      setError(null);
+
+      if (action === 'delete') {
+        const { error } = await supabase
+          .from('content' as any)
+          .delete()
+          .in('id', selectedItems) as { error: any };
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('content' as any)
+          .update({ is_published: action === 'publish' })
+          .in('id', selectedItems) as { error: any };
+
+        if (error) throw error;
+      }
+
+      // Refresh the list
+      fetchContentItems();
+      setSelectedItems([]);
+    } catch (err: any) {
+      console.error(`Error performing bulk action (${action}):`, err);
+      setError(`Failed to ${action} selected items`);
+    }
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -232,7 +287,13 @@ export const ContentManager: React.FC = () => {
           </form>
         ) : (
           <>
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-between mb-4">
+              <Input
+                placeholder="Search content..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="max-w-xs"
+              />
               <Button onClick={handleCreateNew} className="flex items-center">
                 <Plus className="h-4 w-4 mr-2" />
                 Add New Content
@@ -243,7 +304,7 @@ export const ContentManager: React.FC = () => {
               <div className="flex justify-center items-center h-40">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
-            ) : items.length === 0 ? (
+            ) : filteredItems.length === 0 ? (
               <p className="text-center py-8 text-gray-500">
                 No content items found. Create some content to get started.
               </p>
@@ -252,6 +313,13 @@ export const ContentManager: React.FC = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.length === filteredItems.length}
+                          onChange={handleSelectAll}
+                        />
+                      </TableHead>
                       <TableHead>Title</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead>Updated</TableHead>
@@ -259,8 +327,15 @@ export const ContentManager: React.FC = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {items.map((item) => (
+                    {filteredItems.map((item) => (
                       <TableRow key={item.id}>
+                        <TableCell>
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.includes(item.id)}
+                            onChange={() => handleSelectItem(item.id)}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">{item.title}</TableCell>
                         <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
                         <TableCell>{new Date(item.updated_at).toLocaleDateString()}</TableCell>
@@ -286,6 +361,20 @@ export const ContentManager: React.FC = () => {
                     ))}
                   </TableBody>
                 </Table>
+              </div>
+            )}
+
+            {selectedItems.length > 0 && (
+              <div className="flex justify-end space-x-2 mt-4">
+                <Button onClick={() => handleBulkAction('publish')}>
+                  Publish
+                </Button>
+                <Button onClick={() => handleBulkAction('unpublish')}>
+                  Unpublish
+                </Button>
+                <Button variant="destructive" onClick={() => handleBulkAction('delete')}>
+                  Delete
+                </Button>
               </div>
             )}
             

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -24,6 +23,10 @@ interface SiteSettings {
   social_twitter?: string;
   social_instagram?: string;
   social_linkedin?: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  analytics_code?: string;
   updated_at?: string;
 }
 
@@ -41,6 +44,10 @@ export const SiteSettingsManager: React.FC = () => {
     social_twitter: '',
     social_instagram: '',
     social_linkedin: '',
+    meta_title: '',
+    meta_description: '',
+    meta_keywords: '',
+    analytics_code: '',
   });
   
   const [loading, setLoading] = useState(true);
@@ -104,6 +111,10 @@ export const SiteSettingsManager: React.FC = () => {
         logo_url: '',
         primary_color: '#ab233a',
         secondary_color: '#cbb26a',
+        meta_title: '',
+        meta_description: '',
+        meta_keywords: '',
+        analytics_code: '',
         updated_at: new Date().toISOString(),
       };
       
@@ -225,6 +236,8 @@ export const SiteSettingsManager: React.FC = () => {
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="contact">Contact</TabsTrigger>
                 <TabsTrigger value="appearance">Appearance</TabsTrigger>
+                <TabsTrigger value="seo">SEO</TabsTrigger>
+                <TabsTrigger value="analytics">Analytics</TabsTrigger>
               </TabsList>
               
               <TabsContent value="general" className="space-y-4 pt-4">
@@ -407,6 +420,60 @@ export const SiteSettingsManager: React.FC = () => {
                       onChange={handleInputChange}
                     />
                   </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="seo" className="space-y-4 pt-4">
+                <div>
+                  <label htmlFor="meta_title" className="block text-sm font-medium mb-1">
+                    Meta Title
+                  </label>
+                  <Input
+                    id="meta_title"
+                    name="meta_title"
+                    value={settings.meta_title}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="meta_description" className="block text-sm font-medium mb-1">
+                    Meta Description
+                  </label>
+                  <Textarea
+                    id="meta_description"
+                    name="meta_description"
+                    value={settings.meta_description}
+                    onChange={handleInputChange}
+                    rows={3}
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="meta_keywords" className="block text-sm font-medium mb-1">
+                    Meta Keywords
+                  </label>
+                  <Input
+                    id="meta_keywords"
+                    name="meta_keywords"
+                    value={settings.meta_keywords}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="analytics" className="space-y-4 pt-4">
+                <div>
+                  <label htmlFor="analytics_code" className="block text-sm font-medium mb-1">
+                    Analytics Tracking Code
+                  </label>
+                  <Textarea
+                    id="analytics_code"
+                    name="analytics_code"
+                    value={settings.analytics_code}
+                    onChange={handleInputChange}
+                    rows={6}
+                  />
                 </div>
               </TabsContent>
             </Tabs>
