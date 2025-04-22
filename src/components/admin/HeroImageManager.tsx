@@ -3,7 +3,7 @@ import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ImageManager } from '@/components/admin/ImageManager';
+import ImageManager from '@/components/admin/ImageManager';
 import { initializeStorageBuckets } from '@/integrations/supabase/storage';
 import { useAuth } from '@/hooks/useAuth';
 import { Alert, AlertDescription } from '@/components/ui/alert';

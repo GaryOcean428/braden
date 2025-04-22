@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,7 +18,7 @@ interface ImageManagerProps {
   allowMultiple?: boolean;
 }
 
-export const ImageManager: React.FC<ImageManagerProps> = ({
+const ImageManager: React.FC<ImageManagerProps> = ({
   bucketName = STORAGE_BUCKETS.CONTENT_IMAGES,
   onImageSelect,
   title = 'Image Manager',
@@ -43,7 +42,7 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
   const totalPages = Math.ceil((images?.length || 0) / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedImages = images?.slice(startIndex, endIndex) || [];
+  const paginatedImages = useMemo(() => images?.slice(startIndex, endIndex) || [], [images, startIndex, endIndex]);
 
   return (
     <Card className="w-full">
@@ -95,3 +94,5 @@ export const ImageManager: React.FC<ImageManagerProps> = ({
     </Card>
   );
 };
+
+export default React.memo(ImageManager);

@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ImageManager } from '@/components/admin/ImageManager';
+import ImageManager from '@/components/admin/ImageManager';
 import { Loader2, Plus, Pencil, Trash2 } from 'lucide-react';
 
 interface ContentItem {

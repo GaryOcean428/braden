@@ -1,5 +1,4 @@
-
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 
@@ -101,6 +100,13 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
     setCurrentPage(pageNumber);
   }, []);
 
+  const paginatedImages = useMemo(() => {
+    const ITEMS_PER_PAGE = 12;
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return images.slice(startIndex, endIndex);
+  }, [images, currentPage]);
+
   return {
     images,
     selectedImage,
@@ -114,5 +120,6 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
     handleDeleteImage,
     handleRefresh,
     handlePageChange,
+    paginatedImages,
   };
 };
