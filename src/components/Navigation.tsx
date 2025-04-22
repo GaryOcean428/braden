@@ -85,8 +85,8 @@ const Navigation = () => {
       <nav className={`bg-[#811a2c] ${isScrolled ? 'shadow-md' : ''}`}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center gap-2" onClick={handleHomeClick}>
-              <Home size={20} />
+            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center" onClick={handleHomeClick}>
+              <Home size={20} className="mr-2" />
               braden
             </a>
             
