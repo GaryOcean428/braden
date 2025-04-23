@@ -1,17 +1,26 @@
+
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+}
 
 const Clients = () => {
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [newClient, setNewClient] = useState({ name: '', email: '', company: '' });
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClients();
@@ -22,9 +31,10 @@ const Clients = () => {
     try {
       const { data, error } = await supabase.from('clients').select('*');
       if (error) throw error;
-      setClients(data);
+      setClients(data || []);
     } catch (error) {
       console.error('Error fetching clients:', error);
+      toast.error('Failed to fetch clients');
     } finally {
       setLoading(false);
     }
@@ -32,22 +42,28 @@ const Clients = () => {
 
   const handleAddClient = async () => {
     try {
-      const { data, error } = await supabase.from('clients').insert([newClient]);
+      const { data, error } = await supabase.from('clients').insert([newClient]).select();
       if (error) throw error;
-      setClients([...clients, data[0]]);
-      setNewClient({ name: '', email: '', company: '' });
+      if (data && data.length > 0) {
+        setClients([...clients, data[0] as Client]);
+        setNewClient({ name: '', email: '', company: '' });
+        toast.success('Client added successfully');
+      }
     } catch (error) {
       console.error('Error adding client:', error);
+      toast.error('Failed to add client');
     }
   };
 
-  const handleDeleteClient = async (id) => {
+  const handleDeleteClient = async (id: string) => {
     try {
       const { error } = await supabase.from('clients').delete().eq('id', id);
       if (error) throw error;
       setClients(clients.filter(client => client.id !== id));
+      toast.success('Client deleted successfully');
     } catch (error) {
       console.error('Error deleting client:', error);
+      toast.error('Failed to delete client');
     }
   };
 
@@ -55,7 +71,7 @@ const Clients = () => {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-[#ab233a]">Manage Clients</h1>
-        <Button onClick={() => router.push('/admin/dashboard')}>Back to Dashboard</Button>
+        <Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
       </div>
 
       <Card>

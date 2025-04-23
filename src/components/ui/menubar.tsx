@@ -1,6 +1,6 @@
+
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
-import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -21,8 +21,7 @@ const Menubar = React.forwardRef<
   <MenubarPrimitive.Root
     ref={ref}
     className={cn(
-      "flex h-10 items-center space-x-1 rounded-md border bg-background p-1",
-      "bg-braden-light-gold text-braden-navy", // Custom menubar styles for Braden's branding
+      "flex h-10 items-center space-x-1 rounded-md border border-input bg-background p-1",
       className
     )}
     {...props}
@@ -38,7 +37,6 @@ const MenubarTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "flex cursor-default select-none items-center rounded-sm px-3 py-1.5 text-sm font-medium outline-none focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
-      "hover:bg-braden-gold hover:text-braden-dark-red", // Custom menubar trigger styles for Braden's branding
       className
     )}
     {...props}
@@ -57,13 +55,11 @@ const MenubarSubTrigger = React.forwardRef<
     className={cn(
       "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
       inset && "pl-8",
-      "hover:bg-braden-gold hover:text-braden-dark-red", // Custom menubar sub-trigger styles for Braden's branding
       className
     )}
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto h-4 w-4" />
   </MenubarPrimitive.SubTrigger>
 ))
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
@@ -76,7 +72,6 @@ const MenubarSubContent = React.forwardRef<
     ref={ref}
     className={cn(
       "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      "bg-braden-light-gold text-braden-navy", // Custom menubar sub-content styles for Braden's branding
       className
     )}
     {...props}
@@ -100,7 +95,6 @@ const MenubarContent = React.forwardRef<
         sideOffset={sideOffset}
         className={cn(
           "z-50 min-w-[12rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-          "bg-braden-light-gold text-braden-navy", // Custom menubar content styles for Braden's branding
           className
         )}
         {...props}
@@ -121,7 +115,6 @@ const MenubarItem = React.forwardRef<
     className={cn(
       "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
-      "hover:bg-braden-gold hover:text-braden-dark-red", // Custom menubar item styles for Braden's branding
       className
     )}
     {...props}
@@ -137,7 +130,6 @@ const MenubarCheckboxItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "hover:bg-braden-gold hover:text-braden-dark-red", // Custom menubar checkbox item styles for Braden's branding
       className
     )}
     checked={checked}
@@ -145,7 +137,7 @@ const MenubarCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
+        {/* Checkmark icon here */}
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}
@@ -161,14 +153,13 @@ const MenubarRadioItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "hover:bg-braden-gold hover:text-braden-dark-red", // Custom menubar radio item styles for Braden's branding
       className
     )}
     {...props}
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
+        {/* Radio icon here */}
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}
@@ -187,7 +178,6 @@ const MenubarLabel = React.forwardRef<
     className={cn(
       "px-2 py-1.5 text-sm font-semibold",
       inset && "pl-8",
-      "text-braden-navy", // Custom menubar label styles for Braden's branding
       className
     )}
     {...props}
@@ -201,11 +191,11 @@ const MenubarSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <MenubarPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-muted", "bg-braden-bronze", className)} // Custom menubar separator styles for Braden's branding
+    className={cn("-mx-1 my-1 h-px bg-muted", className)}
     {...props}
   />
 ))
-MenubarSeparator.displayName = MenubarPrimitive.Separator.displayname
+MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName
 
 const MenubarShortcut = ({
   className,
@@ -215,14 +205,13 @@ const MenubarShortcut = ({
     <span
       className={cn(
         "ml-auto text-xs tracking-widest text-muted-foreground",
-        "text-braden-slate", // Custom menubar shortcut styles for Braden's branding
         className
       )}
       {...props}
     />
   )
 }
-MenubarShortcut.displayname = "MenubarShortcut"
+MenubarShortcut.displayName = "MenubarShortcut"
 
 export {
   Menubar,

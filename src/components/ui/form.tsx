@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
@@ -12,8 +13,44 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import { cva, type VariantProps } from "class-variance-authority"
 
 const Form = FormProvider
+
+const formVariants = cva("", {
+  variants: {
+    size: {
+      default: "space-y-4",
+      lg: "space-y-6",
+      xl: "space-y-8",
+    },
+    color: {
+      default: "",
+      primary: "text-braden-navy",
+      secondary: "text-braden-slate",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+    color: "default",
+  },
+})
+
+interface FormProps extends React.HTMLAttributes<HTMLDivElement>, 
+  VariantProps<typeof formVariants> {}
+
+const FormElement = React.forwardRef<HTMLDivElement, FormProps>(
+  ({ className, size, color, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(formVariants({ size, color }), className)}
+        {...props}
+      />
+    )
+  }
+)
+FormElement.displayName = "FormElement"
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -164,35 +201,6 @@ const FormMessage = React.forwardRef<
 })
 FormMessage.displayName = "FormMessage"
 
-// Custom Fields and Interfaces
-const CustomTextField = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, ...props }, ref) => {
-  return (
-    <input
-      ref={ref}
-      className={cn("border p-2 rounded", className)}
-      {...props}
-    />
-  )
-})
-CustomTextField.displayName = "CustomTextField"
-
-const CustomTextareaField = React.forwardRef<
-  HTMLTextAreaElement,
-  React.TextareaHTMLAttributes<HTMLTextAreaElement>
->(({ className, ...props }, ref) => {
-  return (
-    <textarea
-      ref={ref}
-      className={cn("border p-2 rounded", className)}
-      {...props}
-    />
-  )
-})
-CustomTextareaField.displayName = "CustomTextareaField"
-
 export {
   useFormField,
   Form,
@@ -202,6 +210,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-  CustomTextField,
-  CustomTextareaField,
+  FormElement,
 }
