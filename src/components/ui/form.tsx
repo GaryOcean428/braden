@@ -36,10 +36,10 @@ const formVariants = cva("", {
   },
 })
 
-interface FormProps extends React.HTMLAttributes<HTMLDivElement>, 
-  VariantProps<typeof formVariants> {}
+type FormElementProps = React.HTMLAttributes<HTMLDivElement> & 
+  VariantProps<typeof formVariants>
 
-const FormElement = React.forwardRef<HTMLDivElement, FormProps>(
+const FormElement = React.forwardRef<HTMLDivElement, FormElementProps>(
   ({ className, size, color, ...props }, ref) => {
     return (
       <div

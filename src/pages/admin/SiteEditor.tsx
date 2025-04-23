@@ -11,35 +11,35 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Define interfaces for the data types
-interface Lead {
+export interface Lead {
   id: string;
   name: string;
   email: string;
   service: string;
 }
 
-interface Client {
+export interface Client {
   id: string;
   name: string;
   email: string;
   company: string;
 }
 
-interface Staff {
+export interface Staff {
   id: string;
   name: string;
   email: string;
   position: string;
 }
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   description: string;
   status: string;
 }
 
-interface Email {
+export interface Email {
   id: string;
   subject: string;
   recipient: string;
@@ -80,8 +80,22 @@ const SiteEditor: React.FC = () => {
         { id: '2', subject: 'Follow-up', recipient: 'prospect@example.com', status: 'Draft' }
       ];
 
-      setLeads(leadsData || []);
-      setClients(clientsData || []);
+      // Map the database data to the correct format for our interfaces
+      // or use mock data if the tables don't exist
+      setLeads(leadsData ? leadsData.map((lead: any) => ({
+        id: lead.id,
+        name: lead.name,
+        email: lead.email,
+        service: lead.service_type || 'General'
+      })) : []);
+      
+      setClients(clientsData ? clientsData.map((client: any) => ({
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        company: client.company || 'Unknown'
+      })) : []);
+      
       setStaff(staffData);
       setTasks(tasksData);
       setEmails(emailsData);
@@ -95,10 +109,16 @@ const SiteEditor: React.FC = () => {
 
   const handleAddLead = async () => {
     try {
-      const { data, error } = await supabase.from('leads').insert([{ name: 'New Lead', email: 'new@lead.com', service: 'Service' }]).select();
+      const { data, error } = await supabase.from('leads').insert([{ name: 'New Lead', email: 'new@lead.com', service_type: 'Service' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
-        setLeads([...leads, data[0] as Lead]);
+        const newLead: Lead = {
+          id: data[0].id,
+          name: data[0].name,
+          email: data[0].email,
+          service: data[0].service_type || 'General'
+        };
+        setLeads([...leads, newLead]);
         toast.success('Lead added successfully');
       }
     } catch (error) {
@@ -112,7 +132,13 @@ const SiteEditor: React.FC = () => {
       const { data, error } = await supabase.from('clients').insert([{ name: 'New Client', email: 'new@client.com', company: 'Company' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
-        setClients([...clients, data[0] as Client]);
+        const newClient: Client = {
+          id: data[0].id,
+          name: data[0].name,
+          email: data[0].email,
+          company: data[0].company || 'Unknown'
+        };
+        setClients([...clients, newClient]);
         toast.success('Client added successfully');
       }
     } catch (error) {

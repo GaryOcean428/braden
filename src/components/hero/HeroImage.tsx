@@ -6,23 +6,33 @@ interface HeroImageProps {
   src?: string;
   alt?: string;
   className?: string;
+  onError?: (error: Error) => void;
 }
 
 // Create a StorageBucketName type to use
-type StorageBucketName = 'content_images' | 'avatars' | 'hero_images';
+export type StorageBucketName = 'content_images' | 'avatars' | 'hero_images';
 
 const HeroImage: React.FC<HeroImageProps> = ({ 
   src = '/hero-image.jpg',  // Default to static hero image
   alt = 'Braden Group Hero Image',
-  className = ''
+  className = '',
+  onError
 }) => {
   // Helper function to get a public URL
   const getPublicUrl = (bucketName: StorageBucketName, path: string): string => {
-    const { data } = supabase.storage
-      .from(bucketName)
-      .getPublicUrl(path);
-    
-    return data.publicUrl;
+    try {
+      const { data } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(path);
+      
+      return data.publicUrl;
+    } catch (error) {
+      console.info("Error loading hero image, falling back to default");
+      if (onError && error instanceof Error) {
+        onError(error);
+      }
+      return src;
+    }
   };
 
   // Check if the src is a Supabase storage path

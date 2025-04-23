@@ -1,13 +1,9 @@
-
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 interface Client {
   id: string;
@@ -19,7 +15,6 @@ interface Client {
 const Clients = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newClient, setNewClient] = useState({ name: '', email: '', company: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,10 +26,20 @@ const Clients = () => {
     try {
       const { data, error } = await supabase.from('clients').select('*');
       if (error) throw error;
-      setClients(data || []);
+      
+      if (data) {
+        // Transform the data to match the Client interface
+        const transformedData: Client[] = data.map((client: any) => ({
+          id: client.id,
+          name: client.name,
+          email: client.email,
+          company: client.company || 'Unknown'
+        }));
+        
+        setClients(transformedData);
+      }
     } catch (error) {
       console.error('Error fetching clients:', error);
-      toast.error('Failed to fetch clients');
     } finally {
       setLoading(false);
     }
@@ -42,90 +47,64 @@ const Clients = () => {
 
   const handleAddClient = async () => {
     try {
-      const { data, error } = await supabase.from('clients').insert([newClient]).select();
+      const { data, error } = await supabase.from('clients').insert([
+        { name: 'New Client', email: 'new@client.com', company: 'New Company' }
+      ]).select();
+      
       if (error) throw error;
+      
       if (data && data.length > 0) {
-        setClients([...clients, data[0] as Client]);
-        setNewClient({ name: '', email: '', company: '' });
-        toast.success('Client added successfully');
+        const newClient: Client = {
+          id: data[0].id,
+          name: data[0].name,
+          email: data[0].email,
+          company: data[0].company || 'Unknown'
+        };
+        
+        setClients([...clients, newClient]);
       }
     } catch (error) {
       console.error('Error adding client:', error);
-      toast.error('Failed to add client');
-    }
-  };
-
-  const handleDeleteClient = async (id: string) => {
-    try {
-      const { error } = await supabase.from('clients').delete().eq('id', id);
-      if (error) throw error;
-      setClients(clients.filter(client => client.id !== id));
-      toast.success('Client deleted successfully');
-    } catch (error) {
-      console.error('Error deleting client:', error);
-      toast.error('Failed to delete client');
     }
   };
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-[#ab233a]">Manage Clients</h1>
+        <h1 className="text-3xl font-bold text-[#ab233a]">Clients</h1>
         <Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Clients</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Company</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableCell colSpan={3} className="text-center">Loading...</TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clients.map(client => (
+            ) : clients.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">No clients found.</TableCell>
+              </TableRow>
+            ) : (
+              clients.map((client) => (
                 <TableRow key={client.id}>
                   <TableCell>{client.name}</TableCell>
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.company}</TableCell>
-                  <TableCell>
-                    <Button variant="destructive" onClick={() => handleDeleteClient(client.id)}>Delete</Button>
-                  </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={newClient.name}
-              onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-              className="mb-2"
-            />
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              value={newClient.email}
-              onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-              className="mb-2"
-            />
-            <Label htmlFor="company">Company</Label>
-            <Input
-              id="company"
-              value={newClient.company}
-              onChange={(e) => setNewClient({ ...newClient, company: e.target.value })}
-              className="mb-2"
-            />
-            <Button onClick={handleAddClient}>Add Client</Button>
-          </div>
-        </CardContent>
+              ))
+            )}
+          </TableBody>
+        </Table>
+        <Button onClick={handleAddClient}>Add Client</Button>
       </Card>
     </div>
   );

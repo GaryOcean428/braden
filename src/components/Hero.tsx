@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { HeroImage } from "./hero/HeroImage";
+import HeroImage from "./hero/HeroImage";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 const Hero = () => {
