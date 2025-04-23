@@ -82,7 +82,7 @@ export const useSiteEditorData = () => {
         email: lead.email,
         service: lead.service_type || 'General'
       })) : []);
-      setClients(clientsData ? clientsData.map((client: any) => ({
+      setClients(clientsData ? clientsData.map((client: ClientData) => ({
         id: client.id,
         name: client.name,
         email: client.email,

@@ -10,7 +10,7 @@ interface Client {
   id: string;
   name: string;
   email: string;
-  company?: string; // Make company optional
+  company?: string;
 }
 
 // Define the actual data structure we get from the database
@@ -22,7 +22,7 @@ interface ClientData {
   service_type?: string;
   created_at: string;
   updated_at: string;
-  company?: string; // Add the company field as optional
+  company?: string;
 }
 
 const Clients = () => {
@@ -72,7 +72,6 @@ const Clients = () => {
           id: data[0].id,
           name: data[0].name,
           email: data[0].email,
-          // Only add company if it exists in the database record
           ...(data[0].company && { company: data[0].company })
         };
         
