@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,6 @@ export const FormLabel = React.forwardRef<
       ref={ref}
       className={cn(error && "text-destructive", className)}
       htmlFor={formItemId}
-      color={color}
       {...props}
     />
   );

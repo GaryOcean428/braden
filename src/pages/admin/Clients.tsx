@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ interface ClientData {
   service_type?: string;
   created_at: string;
   updated_at: string;
-  company?: string; // Add company as optional property
+  company?: string; // Added company as optional property
 }
 
 const Clients = () => {

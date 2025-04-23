@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -8,12 +9,14 @@ export interface Lead {
   email: string;
   service: string;
 }
+
 export interface Client {
   id: string;
   name: string;
   email: string;
   company?: string;
 }
+
 interface ClientData {
   id: string;
   name: string;
@@ -22,20 +25,23 @@ interface ClientData {
   service_type?: string;
   created_at: string;
   updated_at: string;
-  company?: string; // Add company as optional
+  company?: string;
 }
+
 export interface Staff {
   id: string;
   name: string;
   email: string;
   position: string;
 }
+
 export interface Task {
   id: string;
   title: string;
   description: string;
   status: string;
 }
+
 export interface Email {
   id: string;
   subject: string;
