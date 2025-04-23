@@ -8,9 +8,9 @@ import { useFormField } from "./useFormField";
 export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & {
-    color?: "default" | "primary" | "secondary";
+    // Remove the color prop that causes TypeScript error
   }
->(({ className, color = "default", ...props }, ref) => {
+>(({ className, ...props }, ref) => {
   const { error, formItemId } = useFormField();
 
   return (

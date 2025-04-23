@@ -42,7 +42,7 @@ const Clients = () => {
       
       if (data) {
         // Transform the data to match the Client interface
-        const transformedData: Client[] = data.map((client: ClientData) => ({
+        const transformedData: Client[] = data.map((client: any) => ({
           id: client.id,
           name: client.name,
           email: client.email,
@@ -72,6 +72,7 @@ const Clients = () => {
           id: data[0].id,
           name: data[0].name,
           email: data[0].email,
+          // Only add company if it exists in the response
           ...(data[0].company !== undefined && { company: data[0].company })
         };
         

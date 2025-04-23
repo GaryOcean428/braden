@@ -88,10 +88,11 @@ export const useSiteEditorData = () => {
         service: lead.service_type || 'General'
       })) : []);
       
-      setClients(clientsData ? clientsData.map((client: ClientData) => ({
+      setClients(clientsData ? clientsData.map((client: any) => ({
         id: client.id,
         name: client.name,
         email: client.email,
+        // Only add company property if it exists in the response
         ...(client.company !== undefined && { company: client.company })
       })) : []);
       
@@ -131,11 +132,13 @@ export const useSiteEditorData = () => {
       const { data, error } = await supabase.from('clients').insert([{ name: 'New Client', email: 'new@client.com' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
+        // Create a new client object safely without assuming company exists
         const newClient: Client = {
           id: data[0].id,
           name: data[0].name,
           email: data[0].email,
-          ...(data[0].company && { company: data[0].company })
+          // Only add company if it exists in the response
+          ...(data[0].company !== undefined && { company: data[0].company })
         };
         setClients((prev) => [...prev, newClient]);
         toast.success('Client added successfully');
