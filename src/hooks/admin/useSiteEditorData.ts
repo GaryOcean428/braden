@@ -82,11 +82,11 @@ export const useSiteEditorData = () => {
         email: lead.email,
         service: lead.service_type || 'General'
       })) : []);
-      setClients(clientsData ? clientsData.map((client: ClientData) => ({
+      setClients(clientsData ? clientsData.map((client: any) => ({
         id: client.id,
         name: client.name,
         email: client.email,
-        ...(client.company && { company: client.company }),
+        ...(client.company && { company: client.company })
       })) : []);
       setStaff(staffData);
       setTasks(tasksData);

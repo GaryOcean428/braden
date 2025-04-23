@@ -42,7 +42,7 @@ const Clients = () => {
       
       if (data) {
         // Transform the data to match the Client interface
-        const transformedData: Client[] = data.map((client: ClientData) => ({
+        const transformedData: Client[] = data.map((client: any) => ({
           id: client.id,
           name: client.name,
           email: client.email,
