@@ -8,7 +8,7 @@ interface Client {
   id: string;
   name: string;
   email: string;
-  company: string;
+  company?: string; // Make company optional
 }
 
 interface ClientsCardProps {
@@ -35,7 +35,7 @@ const ClientsCard: React.FC<ClientsCardProps> = ({ clients, onAddClient }) => (
             <TableRow key={client.id}>
               <TableCell>{client.name}</TableCell>
               <TableCell>{client.email}</TableCell>
-              <TableCell>{client.company}</TableCell>
+              <TableCell>{client.company || 'Unknown'}</TableCell>
             </TableRow>
           ))}
         </TableBody>

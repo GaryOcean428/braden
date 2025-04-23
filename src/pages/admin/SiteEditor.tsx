@@ -22,7 +22,7 @@ export interface Client {
   id: string;
   name: string;
   email: string;
-  company: string;
+  company?: string; // Make company optional
 }
 
 export interface Staff {
@@ -93,7 +93,8 @@ const SiteEditor: React.FC = () => {
         id: client.id,
         name: client.name,
         email: client.email,
-        company: client.company || 'Unknown'
+        // Only add company if it exists in the database record
+        ...(client.company && { company: client.company })
       })) : []);
       
       setStaff(staffData);
@@ -129,14 +130,15 @@ const SiteEditor: React.FC = () => {
 
   const handleAddClient = async () => {
     try {
-      const { data, error } = await supabase.from('clients').insert([{ name: 'New Client', email: 'new@client.com', company: 'Company' }]).select();
+      const { data, error } = await supabase.from('clients').insert([{ name: 'New Client', email: 'new@client.com' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
         const newClient: Client = {
           id: data[0].id,
           name: data[0].name,
           email: data[0].email,
-          company: data[0].company || 'Unknown'
+          // Only add company if it exists in the database record
+          ...(data[0].company && { company: data[0].company })
         };
         setClients([...clients, newClient]);
         toast.success('Client added successfully');
