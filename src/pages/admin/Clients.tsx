@@ -22,7 +22,7 @@ interface ClientData {
   service_type?: string;
   created_at: string;
   updated_at: string;
-  company?: string;
+  company?: string; // Add company as optional property
 }
 
 const Clients = () => {
@@ -42,12 +42,12 @@ const Clients = () => {
       
       if (data) {
         // Transform the data to match the Client interface
-        const transformedData: Client[] = data.map((client: any) => ({
+        const transformedData: Client[] = data.map((client: ClientData) => ({
           id: client.id,
           name: client.name,
           email: client.email,
           // Only add company if it exists in the database record
-          ...(client.company && { company: client.company })
+          ...(client.company !== undefined && { company: client.company })
         }));
         
         setClients(transformedData);
@@ -72,7 +72,7 @@ const Clients = () => {
           id: data[0].id,
           name: data[0].name,
           email: data[0].email,
-          ...(data[0].company && { company: data[0].company })
+          ...(data[0].company !== undefined && { company: data[0].company })
         };
         
         setClients([...clients, newClient]);

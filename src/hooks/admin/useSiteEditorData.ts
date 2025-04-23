@@ -23,7 +23,7 @@ interface ClientData {
   service_type?: string;
   created_at: string;
   updated_at: string;
-  company?: string;
+  company?: string; // Add company as optional
 }
 export interface Staff {
   id: string;
@@ -82,12 +82,14 @@ export const useSiteEditorData = () => {
         email: lead.email,
         service: lead.service_type || 'General'
       })) : []);
-      setClients(clientsData ? clientsData.map((client: any) => ({
+      
+      setClients(clientsData ? clientsData.map((client: ClientData) => ({
         id: client.id,
         name: client.name,
         email: client.email,
-        ...(client.company && { company: client.company })
+        ...(client.company !== undefined && { company: client.company })
       })) : []);
+      
       setStaff(staffData);
       setTasks(tasksData);
       setEmails(emailsData);
