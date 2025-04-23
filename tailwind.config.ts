@@ -25,6 +25,8 @@ export default {
         lato: ["Lato", "sans-serif"],
         heading: ["Montserrat", "sans-serif"],
         body: ["Inter", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
       },
       colors: {
         "braden-red": "#ab233a",

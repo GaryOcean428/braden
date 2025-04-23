@@ -12,6 +12,7 @@ const InputOTP = React.forwardRef<
     ref={ref}
     containerClassName={cn(
       "flex items-center gap-2 has-[:disabled]:opacity-50",
+      "bg-braden-light-gold", // Custom input-otp container styles for Braden's branding
       containerClassName
     )}
     className={cn("disabled:cursor-not-allowed", className)}
@@ -41,6 +42,7 @@ const InputOTPSlot = React.forwardRef<
       className={cn(
         "relative flex h-10 w-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
         isActive && "z-10 ring-2 ring-ring ring-offset-background",
+        "bg-braden-light-gold text-braden-navy", // Custom input-otp slot styles for Braden's branding
         className
       )}
       {...props}

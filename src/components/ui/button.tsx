@@ -18,6 +18,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        bradenPrimary: "bg-braden-red text-white hover:bg-braden-dark-red",
+        bradenSecondary: "bg-braden-gold text-white hover:bg-braden-light-gold",
       },
       size: {
         default: "h-10 px-4 py-2",

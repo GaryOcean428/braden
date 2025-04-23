@@ -11,6 +11,7 @@ const Avatar = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+      "bg-braden-light-gold border-2 border-braden-navy", // Custom avatar styles for Braden's branding
       className
     )}
     {...props}
@@ -38,6 +39,7 @@ const AvatarFallback = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      "bg-braden-slate text-braden-navy", // Custom avatar fallback styles for Braden's branding
       className
     )}
     {...props}

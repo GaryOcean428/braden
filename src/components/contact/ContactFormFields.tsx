@@ -1,4 +1,3 @@
-
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,11 +22,11 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-montserrat">Name</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">Name</FormLabel>
             <FormControl>
-              <Input placeholder="Your name" {...field} className="bg-gray-50 font-inter" />
+              <Input placeholder="Your name" {...field} className="bg-braden-light-gold font-body" />
             </FormControl>
-            <FormMessage className="font-inter" />
+            <FormMessage className="font-body" />
           </FormItem>
         )}
       />
@@ -36,11 +35,11 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-montserrat">Email</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">Email</FormLabel>
             <FormControl>
-              <Input placeholder="your.email@example.com" type="email" {...field} className="bg-gray-50 font-inter" />
+              <Input placeholder="your.email@example.com" type="email" {...field} className="bg-braden-light-gold font-body" />
             </FormControl>
-            <FormMessage className="font-inter" />
+            <FormMessage className="font-body" />
           </FormItem>
         )}
       />
@@ -49,11 +48,11 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-montserrat">Phone</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">Phone</FormLabel>
             <FormControl>
-              <Input placeholder="Your phone number" type="tel" {...field} className="bg-gray-50 font-inter" />
+              <Input placeholder="Your phone number" type="tel" {...field} className="bg-braden-light-gold font-body" />
             </FormControl>
-            <FormMessage className="font-inter" />
+            <FormMessage className="font-body" />
           </FormItem>
         )}
       />
@@ -62,11 +61,11 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="company"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-montserrat">Company</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">Company</FormLabel>
             <FormControl>
-              <Input placeholder="Your company name" {...field} className="bg-gray-50 font-inter" />
+              <Input placeholder="Your company name" {...field} className="bg-braden-light-gold font-body" />
             </FormControl>
-            <FormMessage className="font-inter" />
+            <FormMessage className="font-body" />
           </FormItem>
         )}
       />
@@ -75,14 +74,14 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="serviceType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-montserrat">Service Interest</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">Service Interest</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className="bg-gray-50 font-inter">
+                <SelectTrigger className="bg-braden-light-gold font-body">
                   <SelectValue placeholder="Select a service you're interested in" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent className="font-inter">
+              <SelectContent className="font-body">
                 <SelectItem value="apprenticeship">Apprenticeship</SelectItem>
                 <SelectItem value="traineeship">Traineeship</SelectItem>
                 <SelectItem value="recruitment">Recruitment</SelectItem>
@@ -92,7 +91,7 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
                 <SelectItem value="future_services">Future Services</SelectItem>
               </SelectContent>
             </Select>
-            <FormMessage className="font-inter" />
+            <FormMessage className="font-body" />
           </FormItem>
         )}
       />
@@ -101,15 +100,15 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="message"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-gray-700 font-montserrat">Message</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">Message</FormLabel>
             <FormControl>
               <Textarea 
                 placeholder="Tell us about your specific needs and requirements"
-                className="min-h-[120px] bg-gray-50 font-inter"
+                className="min-h-[120px] bg-braden-light-gold font-body"
                 {...field}
               />
             </FormControl>
-            <FormMessage className="font-inter" />
+            <FormMessage className="font-body" />
           </FormItem>
         )}
       />

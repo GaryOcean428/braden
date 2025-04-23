@@ -59,6 +59,7 @@ const TableRow = React.forwardRef<
     ref={ref}
     className={cn(
       "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      "hover:bg-braden-light-gold data-[state=selected]:bg-braden-gold", // Custom table row styles for Braden's branding
       className
     )}
     {...props}
@@ -74,6 +75,7 @@ const TableHead = React.forwardRef<
     ref={ref}
     className={cn(
       "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      "text-braden-navy", // Custom table head styles for Braden's branding
       className
     )}
     {...props}

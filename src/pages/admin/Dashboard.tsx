@@ -106,6 +106,46 @@ const AdminDashboard: React.FC = () => {
                   <Palette className="mr-2 h-4 w-4" />
                   Visual Site Editor
                 </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start mt-4" 
+                  onClick={() => navigate('/admin/leads')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Manage Leads
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start mt-4" 
+                  onClick={() => navigate('/admin/clients')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Manage Clients
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start mt-4" 
+                  onClick={() => navigate('/admin/staff')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Manage Staff
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start mt-4" 
+                  onClick={() => navigate('/admin/tasks')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Manage Tasks
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start mt-4" 
+                  onClick={() => navigate('/admin/emails')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Manage Emails
+                </Button>
               </nav>
             </CardContent>
           </Card>

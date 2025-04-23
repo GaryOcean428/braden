@@ -27,6 +27,7 @@ const AccordionTrigger = React.forwardRef<
       ref={ref}
       className={cn(
         "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
+        "text-braden-navy", // Custom accordion trigger styles for Braden's branding
         className
       )}
       {...props}

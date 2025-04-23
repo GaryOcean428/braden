@@ -15,6 +15,7 @@ const Progress = React.forwardRef<
     ref={ref}
     className={cn(
       "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
+      "bg-braden-light-gold", // Custom progress styles for Braden's branding
       className
     )}
     {...props}

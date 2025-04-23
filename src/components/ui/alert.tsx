@@ -11,6 +11,8 @@ const alertVariants = cva(
         default: "bg-background text-foreground",
         destructive:
           "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+        bradenPrimary: "bg-braden-red text-white border-braden-dark-red",
+        bradenSecondary: "bg-braden-gold text-white border-braden-light-gold",
       },
     },
     defaultVariants: {
