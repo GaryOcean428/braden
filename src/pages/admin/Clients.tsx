@@ -13,6 +13,18 @@ interface Client {
   company?: string; // Make company optional
 }
 
+// Define the actual data structure we get from the database
+interface ClientData {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  service_type?: string;
+  created_at: string;
+  updated_at: string;
+  company?: string; // Add the company field as optional
+}
+
 const Clients = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +42,7 @@ const Clients = () => {
       
       if (data) {
         // Transform the data to match the Client interface
-        const transformedData: Client[] = data.map((client: any) => ({
+        const transformedData: Client[] = data.map((client: ClientData) => ({
           id: client.id,
           name: client.name,
           email: client.email,

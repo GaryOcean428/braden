@@ -25,6 +25,18 @@ export interface Client {
   company?: string; // Make company optional
 }
 
+// Define the actual data structure we get from the database for clients
+interface ClientData {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  service_type?: string;
+  created_at: string;
+  updated_at: string;
+  company?: string; // Add the company field as optional
+}
+
 export interface Staff {
   id: string;
   name: string;
@@ -89,7 +101,7 @@ const SiteEditor: React.FC = () => {
         service: lead.service_type || 'General'
       })) : []);
       
-      setClients(clientsData ? clientsData.map((client: any) => ({
+      setClients(clientsData ? clientsData.map((client: ClientData) => ({
         id: client.id,
         name: client.name,
         email: client.email,
