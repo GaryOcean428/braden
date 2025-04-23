@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
@@ -31,7 +30,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 // NotFound component
-const NotFound = () => (
+const NotFound: React.FC = () => (
   <Layout showBreadcrumb={false}>
     <div className="flex flex-col items-center justify-center py-20">
       <h1 className="text-4xl font-bold mb-4 text-braden-navy">404</h1>
