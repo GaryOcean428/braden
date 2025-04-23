@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -14,7 +15,7 @@ const SiteEditor: React.FC = () => {
   const [tasks, setTasks] = useState([]);
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -95,7 +96,7 @@ const SiteEditor: React.FC = () => {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-[#ab233a]">Site Editor</h1>
-        <Button onClick={() => router.push('/admin/dashboard')}>Back to Dashboard</Button>
+        <Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
