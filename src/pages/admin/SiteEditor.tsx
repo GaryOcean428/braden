@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import LeadsCard from '@/components/admin/SiteEditor/LeadsCard';
+import ClientsCard from '@/components/admin/SiteEditor/ClientsCard';
+import StaffCard from '@/components/admin/SiteEditor/StaffCard';
+import TasksCard from '@/components/admin/SiteEditor/TasksCard';
+import EmailsCard from '@/components/admin/SiteEditor/EmailsCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -63,23 +64,17 @@ const SiteEditor: React.FC = () => {
     try {
       const { data: leadsData } = await supabase.from('leads').select('*');
       const { data: clientsData } = await supabase.from('clients').select('*');
-      
+
       // For tables that don't exist in the database, we'll use mock data
       // instead of querying non-existent tables
-      
-      // Mock data for staff
       const staffData = [
         { id: '1', name: 'John Doe', email: 'john@example.com', position: 'Manager' },
         { id: '2', name: 'Jane Smith', email: 'jane@example.com', position: 'Developer' }
       ];
-      
-      // Mock data for tasks
       const tasksData = [
         { id: '1', title: 'Complete Project', description: 'Finish the project by Friday', status: 'In Progress' },
         { id: '2', title: 'Client Meeting', description: 'Meet with client to discuss requirements', status: 'Completed' }
       ];
-      
-      // Mock data for emails
       const emailsData = [
         { id: '1', subject: 'Welcome Email', recipient: 'customer@example.com', status: 'Sent' },
         { id: '2', subject: 'Follow-up', recipient: 'prospect@example.com', status: 'Draft' }
@@ -98,9 +93,9 @@ const SiteEditor: React.FC = () => {
     }
   };
 
-  const handleAddLead = async (lead: Omit<Lead, 'id'>) => {
+  const handleAddLead = async () => {
     try {
-      const { data, error } = await supabase.from('leads').insert([lead]).select();
+      const { data, error } = await supabase.from('leads').insert([{ name: 'New Lead', email: 'new@lead.com', service: 'Service' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
         setLeads([...leads, data[0] as Lead]);
@@ -112,9 +107,9 @@ const SiteEditor: React.FC = () => {
     }
   };
 
-  const handleAddClient = async (client: Omit<Client, 'id'>) => {
+  const handleAddClient = async () => {
     try {
-      const { data, error } = await supabase.from('clients').insert([client]).select();
+      const { data, error } = await supabase.from('clients').insert([{ name: 'New Client', email: 'new@client.com', company: 'Company' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
         setClients([...clients, data[0] as Client]);
@@ -127,28 +122,34 @@ const SiteEditor: React.FC = () => {
   };
 
   // For the mock data, we'll just add to the state directly
-  const handleAddStaff = (staffMember: Omit<Staff, 'id'>) => {
+  const handleAddStaff = () => {
     const newStaff = {
       id: `${staff.length + 1}`,
-      ...staffMember
+      name: 'New Staff',
+      email: 'new@staff.com',
+      position: 'Position'
     };
     setStaff([...staff, newStaff]);
     toast.success('Staff member added successfully');
   };
 
-  const handleAddTask = (task: Omit<Task, 'id'>) => {
+  const handleAddTask = () => {
     const newTask = {
       id: `${tasks.length + 1}`,
-      ...task
+      title: 'New Task',
+      description: 'Task Description',
+      status: 'Pending'
     };
     setTasks([...tasks, newTask]);
     toast.success('Task added successfully');
   };
 
-  const handleAddEmail = (email: Omit<Email, 'id'>) => {
+  const handleAddEmail = () => {
     const newEmail = {
       id: `${emails.length + 1}`,
-      ...email
+      subject: 'New Email',
+      recipient: 'recipient@domain.com',
+      status: 'Draft'
     };
     setEmails([...emails, newEmail]);
     toast.success('Email added successfully');
@@ -162,150 +163,11 @@ const SiteEditor: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Leads</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Service</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell>{lead.name}</TableCell>
-                    <TableCell>{lead.email}</TableCell>
-                    <TableCell>{lead.service}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button onClick={() => handleAddLead({ name: 'New Lead', email: 'new@lead.com', service: 'Service' })}>
-              Add Lead
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Clients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Company</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clients.map((client) => (
-                  <TableRow key={client.id}>
-                    <TableCell>{client.name}</TableCell>
-                    <TableCell>{client.email}</TableCell>
-                    <TableCell>{client.company}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button onClick={() => handleAddClient({ name: 'New Client', email: 'new@client.com', company: 'Company' })}>
-              Add Client
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Staff</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Position</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {staff.map((staffMember) => (
-                  <TableRow key={staffMember.id}>
-                    <TableCell>{staffMember.name}</TableCell>
-                    <TableCell>{staffMember.email}</TableCell>
-                    <TableCell>{staffMember.position}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button onClick={() => handleAddStaff({ name: 'New Staff', email: 'new@staff.com', position: 'Position' })}>
-              Add Staff
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tasks</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tasks.map((task) => (
-                  <TableRow key={task.id}>
-                    <TableCell>{task.title}</TableCell>
-                    <TableCell>{task.description}</TableCell>
-                    <TableCell>{task.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button onClick={() => handleAddTask({ title: 'New Task', description: 'Task Description', status: 'Pending' })}>
-              Add Task
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Emails</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Recipient</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {emails.map((email) => (
-                  <TableRow key={email.id}>
-                    <TableCell>{email.subject}</TableCell>
-                    <TableCell>{email.recipient}</TableCell>
-                    <TableCell>{email.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button onClick={() => handleAddEmail({ subject: 'New Email', recipient: 'recipient@domain.com', status: 'Draft' })}>
-              Add Email
-            </Button>
-          </CardContent>
-        </Card>
+        <LeadsCard leads={leads} onAddLead={handleAddLead} />
+        <ClientsCard clients={clients} onAddClient={handleAddClient} />
+        <StaffCard staff={staff} onAddStaff={handleAddStaff} />
+        <TasksCard tasks={tasks} onAddTask={handleAddTask} />
+        <EmailsCard emails={emails} onAddEmail={handleAddEmail} />
       </div>
     </div>
   );
