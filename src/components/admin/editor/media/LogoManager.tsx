@@ -1,0 +1,120 @@
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { MediaLibrary } from './MediaLibrary';
+import { LogoFile, MediaItem } from './types';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Image as ImageIcon, Upload } from 'lucide-react';
+
+interface LogoManagerProps {
+  onLogoUpdate?: (logoUrl: string) => void;
+  currentLogo?: string;
+  title?: string;
+  description?: string;
+  bucketName?: string;
+}
+
+export const LogoManager: React.FC<LogoManagerProps> = ({ 
+  onLogoUpdate,
+  currentLogo, 
+  title = "Logo Manager",
+  description = "Update your site logo",
+  bucketName = "logos"
+}) => {
+  const [selectedLogo, setSelectedLogo] = useState<MediaItem | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  
+  const handleSelectItem = (item: MediaItem) => {
+    setSelectedLogo(item);
+  };
+  
+  const handleMediaChange = () => {
+    // This will be called when media library changes
+    console.log('Media library changed');
+  };
+  
+  const handleUpdateLogo = async () => {
+    if (!selectedLogo) return;
+    
+    try {
+      setIsUpdating(true);
+      
+      // Here you would typically update site settings in the database
+      // For now we'll just simulate the update
+      if (onLogoUpdate) {
+        onLogoUpdate(selectedLogo.publicUrl);
+      }
+      
+      toast.success(`${title} updated successfully!`);
+    } catch (error) {
+      console.error('Error updating logo:', error);
+      toast.error(`Failed to update ${title.toLowerCase()}`);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-[#2c3e50] text-white">
+        <CardTitle className="flex items-center gap-2">
+          <ImageIcon className="h-5 w-5" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      
+      <CardContent className="p-6">
+        <p className="text-sm text-gray-600 mb-6">{description}</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {currentLogo && (
+            <div>
+              <h3 className="text-sm font-medium mb-2">Current Logo</h3>
+              <div className="border rounded-md p-4 bg-gray-50 flex justify-center">
+                <img 
+                  src={currentLogo} 
+                  alt="Current logo" 
+                  className="max-h-32 object-contain"
+                />
+              </div>
+            </div>
+          )}
+          
+          {selectedLogo && (
+            <div>
+              <h3 className="text-sm font-medium mb-2">Selected Logo</h3>
+              <div className="border rounded-md p-4 bg-gray-50 flex justify-center">
+                <img 
+                  src={selectedLogo.publicUrl} 
+                  alt="Selected logo" 
+                  className="max-h-32 object-contain"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <MediaLibrary 
+          onChange={handleMediaChange}
+          onSelectItem={handleSelectItem}
+          selectedItem={selectedLogo}
+          bucketName={bucketName}
+          title="Select Logo"
+        />
+        
+        <div className="flex justify-end mt-6">
+          <Button 
+            onClick={handleUpdateLogo} 
+            disabled={!selectedLogo || isUpdating}
+            className="bg-[#ab233a] hover:bg-[#811a2c]"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            {isUpdating ? 'Updating...' : `Update ${title}`}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

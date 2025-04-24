@@ -1,3 +1,4 @@
+
 export interface MediaItem {
   id: string;
   name: string;
@@ -9,22 +10,12 @@ export interface MediaItem {
 
 export interface MediaLibraryProps {
   onChange: () => void;
+  selectedItem?: MediaItem | null;
+  onSelectItem?: (item: MediaItem) => void;
+  bucketName?: string;
+  title?: string;
 }
 
-export interface LogoFile {
-  id: string;
-  name: string;
-  publicUrl: string;
-  size: number;
-  type: string;
-  created_at: string;
-}
+export interface LogoFile extends MediaItem {}
 
-export interface FaviconFile {
-  id: string;
-  name: string;
-  publicUrl: string;
-  size: number;
-  type: string;
-  created_at: string;
-}
+export interface FaviconFile extends MediaItem {}

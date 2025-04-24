@@ -2117,6 +2117,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_developer_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       version: {
         Args: Record<PropertyKey, never>
         Returns: string

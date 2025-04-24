@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { supabase } from '@/integrations/supabase/client';
-import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
+import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
 import { toast } from 'sonner';
-import { MediaItem, LogoFile, FaviconFile } from './types';
+import { MediaItem } from './types';
 
-export const useMediaLibrary = (onChange: () => void) => {
+export const useMediaLibrary = (onChange: () => void, bucketName: string = 'media') => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,37 +14,27 @@ export const useMediaLibrary = (onChange: () => void) => {
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   
-  // Get the appropriate bucket based on active tab
-  const bucketName: StorageBucketName = activeTab === 'images' 
-    ? STORAGE_BUCKETS.CONTENT_IMAGES
-    : activeTab === 'logos'
-    ? STORAGE_BUCKETS.LOGOS
-    : activeTab === 'favicons'
-    ? STORAGE_BUCKETS.FAVICONS
-    : STORAGE_BUCKETS.MEDIA;
-  
-  const { uploadImage, uploading, deleteImage } = useImageUpload(bucketName);
+  // Use the appropriate bucket based on parameters
+  const { uploadImage, uploading, deleteImage } = useImageUpload(bucketName as any);
 
-  // Load media when tab changes
-  useEffect(() => {
-    loadMedia();
-  }, [activeTab]);
-
-  // Load media from Supabase
-  const loadMedia = async () => {
+  // Function to load media from Supabase
+  const loadMedia = useCallback(async () => {
     try {
+      console.log(`Loading media from bucket: ${bucketName}`);
       setIsLoading(true);
       setError(null);
       
       // Check auth status before attempting to list files
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
+        console.warn('No auth session found when loading media');
         setError('Authentication required to access media library');
         setMediaItems([]);
         return;
       }
       
       // List files from the Supabase storage
+      console.log(`Listing files from bucket: ${bucketName}`);
       const { data: files, error: listError } = await supabase.storage
         .from(bucketName)
         .list();
@@ -51,8 +42,6 @@ export const useMediaLibrary = (onChange: () => void) => {
       if (listError) {
         console.error('Error listing files:', listError);
         
-        // Check if this is a permissions error - we need to check the message content
-        // since StorageError doesn't have a status property
         if (listError.message.includes('security policy') || listError.message.includes('permission')) {
           setError('You do not have permission to access this media library');
         } else {
@@ -65,26 +54,32 @@ export const useMediaLibrary = (onChange: () => void) => {
       
       // Handle case where files is null
       if (!files) {
+        console.log('No files returned from storage');
         setMediaItems([]);
         return;
       }
       
-      // Filter out folders, only include files
-      const fileItems = files.filter(item => !item.id.endsWith('/')).map(file => {
-        const { data } = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(file.name);
-        
-        return {
-          id: file.id,
-          name: file.name,
-          publicUrl: data.publicUrl,
-          size: file.metadata?.size || 0,
-          type: file.metadata?.mimetype || 'unknown',
-          created_at: file.created_at || new Date().toISOString()
-        };
-      });
+      console.log(`Found ${files.length} files in bucket ${bucketName}`);
       
+      // Filter out folders, only include files
+      const fileItems = files
+        .filter(item => !item.id.endsWith('/'))
+        .map(file => {
+          const { data } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(file.name);
+          
+          return {
+            id: file.id,
+            name: file.name,
+            publicUrl: data.publicUrl,
+            size: file.metadata?.size || 0,
+            type: file.metadata?.mimetype || 'unknown',
+            created_at: file.created_at || new Date().toISOString()
+          };
+        });
+      
+      console.log(`Processed ${fileItems.length} media items`);
       setMediaItems(fileItems);
     } catch (error: any) {
       console.error('Error loading media:', error);
@@ -93,7 +88,12 @@ export const useMediaLibrary = (onChange: () => void) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [bucketName]);
+  
+  // Load media when the component mounts or bucket changes
+  useEffect(() => {
+    loadMedia();
+  }, []);
   
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +101,7 @@ export const useMediaLibrary = (onChange: () => void) => {
     if (!file) return;
     
     try {
+      console.log(`Uploading file to bucket: ${bucketName}`);
       // Upload the file
       const result = await uploadImage(file);
       
@@ -121,6 +122,7 @@ export const useMediaLibrary = (onChange: () => void) => {
     if (!confirmed) return;
     
     try {
+      console.log(`Deleting file from bucket: ${bucketName}`);
       const result = await deleteImage(item.name);
       
       if (result) {
@@ -155,6 +157,7 @@ export const useMediaLibrary = (onChange: () => void) => {
     uploading,
     handleFileUpload,
     handleDeleteMedia,
+    loadMedia,
     error
   };
 };
