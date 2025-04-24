@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 import { useUploadFile } from './storage/useUploadFile';
 import { useDeleteFile } from './storage/useDeleteFile';
@@ -12,14 +12,22 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
   
   const [error, setError] = useState<Error | null>(null);
   
+  // Handle error state updates in useEffect to prevent infinite loops
+  useEffect(() => {
+    if (uploadError) setError(uploadError);
+    if (deleteError) setError(deleteError);
+    if (listError) setError(listError);
+  }, [uploadError, deleteError, listError]);
+  
   // Create memoized versions of functions to prevent infinite renders
   const uploadImage = useCallback(async (file: File) => {
     try {
       setError(null);
       return await uploadFile(file);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Upload failed'));
-      throw err;
+      const error = err instanceof Error ? err : new Error('Upload failed');
+      setError(error);
+      throw error;
     }
   }, [uploadFile]);
   
@@ -28,8 +36,9 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
       setError(null);
       return await deleteFile(name);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Delete failed'));
-      throw err;
+      const error = err instanceof Error ? err : new Error('Delete failed');
+      setError(error);
+      throw error;
     }
   }, [deleteFile]);
   
@@ -38,15 +47,11 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
       setError(null);
       return await listFiles();
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to list images'));
-      throw err;
+      const error = err instanceof Error ? err : new Error('Failed to list images');
+      setError(error);
+      throw error;
     }
   }, [listFiles]);
-  
-  // Check for errors from the hooks
-  if (uploadError) setError(uploadError);
-  if (deleteError) setError(deleteError);
-  if (listError) setError(listError);
   
   return {
     uploadImage,
