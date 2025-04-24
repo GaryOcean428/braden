@@ -77,37 +77,41 @@ export const useAdminUsers = () => {
     try {
       // First, get the user by email using a custom SQL query rather than RPC function
       const { data: userData, error: userFetchError } = await supabase
-        .from('auth.users')
+        .from('admin_users')
         .select('id, email')
         .eq('email', email)
         .single();
 
       if (userFetchError || !userData) {
-        toast.error('User Not Found', {
-          description: 'No user found with this email. They must register first.'
+        // If user not found as admin, try to add them directly
+        // We'll check if they exist on the server side with RLS policies
+        const { error: insertError } = await supabase
+          .from('admin_users')
+          .insert({ 
+            email: email 
+          });
+
+        if (insertError) {
+          toast.error('Add Admin Failed', {
+            description: insertError.message
+          });
+          return false;
+        }
+
+        toast.success('Admin Added', {
+          description: `${email} has been granted admin access`
+        });
+
+        // Refresh the admin users list
+        await checkAdminAndLoadUsers();
+        return true;
+      } else {
+        // User already exists as admin
+        toast.error('User Already Admin', {
+          description: 'This email is already registered as an admin user'
         });
         return false;
       }
-
-      // Then add the user to admin_users table
-      const { error: insertError } = await supabase
-        .from('admin_users')
-        .insert({ 
-          user_id: userData.id, 
-          email: email 
-        });
-
-      if (insertError) {
-        throw insertError;
-      }
-
-      toast.success('Admin Added', {
-        description: `${email} has been granted admin access`
-      });
-
-      // Refresh the admin users list
-      await checkAdminAndLoadUsers();
-      return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to add admin';
       toast.error('Add Admin Failed', {
