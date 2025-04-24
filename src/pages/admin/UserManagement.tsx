@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -10,25 +10,47 @@ import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { AdminUsersTable } from "@/components/admin/AdminUsersTable";
 import { AdminStatusAlert } from "@/components/admin/AdminStatusAlert";
 import { ErrorAlert } from "@/components/admin/ErrorAlert";
+import { AddAdminDialog } from "@/components/admin/AddAdminDialog";
 
 export default function UserManagement() {
-  const { adminUsers, isLoading, error, isAdmin, checkAdminAndLoadUsers } = useAdminUsers();
+  const { 
+    adminUsers, 
+    isLoading, 
+    error, 
+    isAdmin, 
+    checkAdminAndLoadUsers, 
+    addAdminUser,
+    configurePermissions 
+  } = useAdminUsers();
   const navigate = useNavigate();
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     checkAdminAndLoadUsers();
   }, []);
 
   const handleAddAdmin = () => {
-    toast.info("Feature Coming Soon", {
-      description: "Admin user creation will be available in a future update"
-    });
+    setAddDialogOpen(true);
   };
 
-  const handleDBSettings = () => {
-    toast.info("Database Configuration Required", {
-      description: "Contact your database administrator to grant the necessary permissions"
-    });
+  const handleDBSettings = async () => {
+    const isLoading = toast.loading("Configuring database permissions...");
+    
+    try {
+      const success = await configurePermissions();
+      toast.dismiss(isLoading);
+      
+      if (success) {
+        toast.success("Permissions Updated", {
+          description: "Database access has been properly configured"
+        });
+      }
+    } catch (error) {
+      toast.dismiss(isLoading);
+      toast.error("Configuration Failed", {
+        description: "There was an error configuring database permissions"
+      });
+    }
   };
 
   if (isLoading) {
@@ -63,16 +85,14 @@ export default function UserManagement() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-[#811a2c]">Admin Users</h2>
           <div className="flex gap-2">
-            {error && (
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2 border-[#95a5a6] text-[#2c3e50] hover:bg-gray-100"
-                onClick={handleDBSettings}
-              >
-                <Settings className="h-4 w-4" />
-                Permissions
-              </Button>
-            )}
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 border-[#95a5a6] text-[#2c3e50] hover:bg-gray-100"
+              onClick={handleDBSettings}
+            >
+              <Settings className="h-4 w-4" />
+              Permissions
+            </Button>
             <Button 
               variant="outline" 
               className="flex items-center gap-2 border-[#cbb26a] text-[#2c3e50] hover:bg-[#d8c690] hover:text-[#2c3e50]"
@@ -92,6 +112,13 @@ export default function UserManagement() {
         
         <AdminUsersTable adminUsers={adminUsers} />
       </Card>
+
+      <AddAdminDialog 
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        onAddAdmin={addAdminUser}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

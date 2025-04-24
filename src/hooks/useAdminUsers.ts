@@ -33,19 +33,24 @@ export function useAdminUsers() {
         return;
       }
       
-      // Check if user is developer by email
-      const userEmail = sessionData.session.user.email;
+      // Check if user is developer by email or function
+      const { data: isDeveloper, error: devError } = await supabase.rpc('is_developer');
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
-        toast.error("Access Denied", {
-          description: "Only the developer can access admin functions"
-        });
+      if (devError) {
+        console.error("Developer check error:", devError);
         setIsLoading(false);
         return;
       }
       
-      setIsAdmin(true);
-      loadAdminUsers();
+      if (isDeveloper) {
+        setIsAdmin(true);
+        loadAdminUsers();
+      } else {
+        toast.error("Access Denied", {
+          description: "Only the developer can access admin functions"
+        });
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error("Auth check error:", error);
       toast.error("Authentication Error", {
@@ -107,11 +112,118 @@ export function useAdminUsers() {
     }
   };
 
+  // Add a new admin user
+  const addAdminUser = async (email: string) => {
+    try {
+      setIsLoading(true);
+      
+      // First, check if the user exists in auth.users
+      const { data: userData, error: userError } = await supabase
+        .rpc('get_user_by_email', { email_input: email });
+      
+      if (userError || !userData) {
+        toast.error("User Not Found", {
+          description: "No user found with that email address"
+        });
+        return false;
+      }
+      
+      // Check if user is already an admin
+      const { data: existingAdmin, error: checkError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', userData.id)
+        .single();
+      
+      if (existingAdmin) {
+        toast.info("Already Admin", {
+          description: "This user is already an admin"
+        });
+        return false;
+      }
+      
+      // Add the user to admin_users table
+      const { data, error: insertError } = await supabase
+        .from('admin_users')
+        .insert([
+          { user_id: userData.id, email: email }
+        ])
+        .select();
+      
+      if (insertError) {
+        console.error("Error adding admin user:", insertError);
+        toast.error("Error", {
+          description: "Failed to add admin user"
+        });
+        return false;
+      }
+      
+      toast.success("Admin Added", {
+        description: `${email} has been added as an admin`
+      });
+      
+      // Also add admin role to user_roles
+      await supabase
+        .from('user_roles')
+        .insert([
+          { user_id: userData.id, role: 'admin' }
+        ]);
+      
+      // Refresh the admin users list
+      loadAdminUsers();
+      return true;
+    } catch (error: any) {
+      console.error("Error in addAdminUser:", error);
+      toast.error("Error", {
+        description: error.message || "Failed to add admin user"
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Configure permission settings
+  const configurePermissions = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Create a function to bypass RLS for admin operations
+      const { data, error } = await supabase.rpc('fix_user_access');
+      
+      if (error) {
+        console.error("Error configuring permissions:", error);
+        toast.error("Permission Error", {
+          description: "Failed to configure database permissions"
+        });
+        return false;
+      }
+      
+      toast.success("Permissions Updated", {
+        description: "Database permissions have been configured"
+      });
+      
+      // Reload admin users to verify changes
+      loadAdminUsers();
+      return true;
+    } catch (error: any) {
+      console.error("Error configuring permissions:", error);
+      toast.error("Error", {
+        description: error.message || "Failed to configure permissions"
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     adminUsers,
     isLoading,
     error,
     isAdmin,
-    checkAdminAndLoadUsers
+    checkAdminAndLoadUsers,
+    addAdminUser,
+    configurePermissions
   };
 }
