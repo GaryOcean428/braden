@@ -2124,6 +2124,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      has_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       has_admin_role: {
         Args: { input_id?: string }
         Returns: boolean
@@ -2141,6 +2145,10 @@ export type Database = {
         Returns: boolean
       }
       is_braden_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_developer: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }

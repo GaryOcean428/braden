@@ -21,6 +21,8 @@ export function useAdminAuth() {
   const checkExistingSession = async () => {
     try {
       setError(null);
+      setIsCheckingAuth(true);
+      
       const { data, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -30,20 +32,42 @@ export function useAdminAuth() {
       }
       
       if (data.session) {
-        const userEmail = data.session.user.email;
+        // Call RPC function to check developer status
+        const { data: isDevData, error: devError } = await supabase
+          .rpc('is_developer');
+          
+        if (devError) {
+          console.error('Developer check error:', devError);
+          return;
+        }
         
-        if (userEmail === 'braden.lang77@gmail.com') {
-          console.log("Primary developer confirmed");
-          toast.success('Primary Developer Access Confirmed', {
+        if (isDevData) {
+          console.log("Developer access confirmed");
+          toast.success('Developer Access Confirmed', {
             description: 'You have full system privileges'
           });
           setIsAdmin(true);
           setIsDeveloper(true);
           navigate('/admin');
         } else {
-          console.log("Standard user access detected");
-          setIsAdmin(false);
-          setIsDeveloper(false);
+          // Check regular admin access as fallback
+          const { data: adminData, error: adminError } = await supabase
+            .rpc('has_admin_access');
+            
+          if (adminError) {
+            console.error('Admin check error:', adminError);
+            return;
+          }
+          
+          if (adminData) {
+            console.log("Admin access confirmed");
+            toast.success('Admin Access Confirmed');
+            setIsAdmin(true);
+          } else {
+            console.log("Standard user access detected");
+            setIsAdmin(false);
+            setIsDeveloper(false);
+          }
         }
       }
     } catch (error) {
@@ -65,7 +89,6 @@ export function useAdminAuth() {
     setIsLoading(true);
     
     try {
-      // Step 1: Authenticate the user
       const { data, error: loginError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim()
@@ -87,20 +110,28 @@ export function useAdminAuth() {
         return;
       }
       
-      // Step 2: Check if the email matches developer's email
-      if (data.user.email === 'braden.lang77@gmail.com') {
-        // Success path - user is authenticated and is the developer
+      // After successful login, check developer/admin status
+      const { data: isDevData } = await supabase.rpc('is_developer');
+      
+      if (isDevData) {
         toast.success('Developer access confirmed');
         setIsAdmin(true);
+        setIsDeveloper(true);
         navigate('/admin');
       } else {
-        // User is authenticated but not the developer
-        setError('You do not have developer access');
-        toast.error('Access Denied', {
-          description: 'You do not have developer privileges'
-        });
-        // Sign out since they don't have admin access
-        await supabase.auth.signOut();
+        const { data: adminData } = await supabase.rpc('has_admin_access');
+        
+        if (adminData) {
+          toast.success('Admin access confirmed');
+          setIsAdmin(true);
+          navigate('/admin');
+        } else {
+          setError('You do not have admin access');
+          toast.error('Access Denied', {
+            description: 'You do not have admin privileges'
+          });
+          await supabase.auth.signOut();
+        }
       }
     } catch (error: any) {
       console.error('Login process error:', error);
