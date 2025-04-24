@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ImageManager from '@/components/admin/ImageManager';
 import { Loader2, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ContentItem {
   id: string;
@@ -32,6 +33,7 @@ export const ContentManager: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const { toast } = useToast();
 
   // Load content items when component mounts
   useEffect(() => {
@@ -55,6 +57,11 @@ export const ContentManager: React.FC = () => {
     } catch (err: any) {
       console.error('Error fetching content:', err);
       setError('Failed to load content items');
+      toast({
+        title: "Error",
+        description: "Failed to load content items",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -102,9 +109,20 @@ export const ContentManager: React.FC = () => {
         setSelectedItem(null);
         setIsEditing(false);
       }
+
+      toast({
+        title: "Success",
+        description: "Content item deleted successfully",
+        variant: "success",
+      });
     } catch (err: any) {
       console.error('Error deleting content:', err);
       setError('Failed to delete content item');
+      toast({
+        title: "Error",
+        description: "Failed to delete content item",
+        variant: "destructive",
+      });
     }
   };
 
@@ -149,9 +167,20 @@ export const ContentManager: React.FC = () => {
       // Reset form
       setIsEditing(false);
       setSelectedItem(null);
+
+      toast({
+        title: "Success",
+        description: `Content item ${selectedItem ? 'updated' : 'created'} successfully`,
+        variant: "success",
+      });
     } catch (err: any) {
       console.error('Error saving content:', err);
       setError('Failed to save content item');
+      toast({
+        title: "Error",
+        description: "Failed to save content item",
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
@@ -214,9 +243,20 @@ export const ContentManager: React.FC = () => {
       // Refresh the list
       fetchContentItems();
       setSelectedItems([]);
+
+      toast({
+        title: "Success",
+        description: `Selected items ${action}ed successfully`,
+        variant: "success",
+      });
     } catch (err: any) {
       console.error(`Error performing bulk action (${action}):`, err);
       setError(`Failed to ${action} selected items`);
+      toast({
+        title: "Error",
+        description: `Failed to ${action} selected items`,
+        variant: "destructive",
+      });
     }
   };
 
