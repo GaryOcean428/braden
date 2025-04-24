@@ -10,6 +10,7 @@ export function useAdminAuth() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -28,22 +29,21 @@ export function useAdminAuth() {
       }
       
       if (data.session) {
-        // Session exists, verify if the user is Braden (the developer)
         const userEmail = data.session.user.email;
         
         if (userEmail === 'braden.lang77@gmail.com') {
-          // User is confirmed as admin by email
-          console.log("User confirmed as developer by email");
-          toast.success('Developer access confirmed');
+          console.log("Primary developer confirmed");
+          toast.success('Primary Developer Access Confirmed', {
+            description: 'You have full system privileges'
+          });
           setIsAdmin(true);
+          setIsDeveloper(true);
           navigate('/admin');
         } else {
-          console.log("User is logged in but not a developer");
-          // Sign out if user is not the developer
-          await supabase.auth.signOut();
+          console.log("Standard user access detected");
+          setIsAdmin(false);
+          setIsDeveloper(false);
         }
-      } else {
-        console.log("No active session found");
       }
     } catch (error) {
       console.error('Session check error:', error);
@@ -121,6 +121,7 @@ export function useAdminAuth() {
     isCheckingAuth,
     handleLogin,
     error,
-    isAdmin
+    isAdmin,
+    isDeveloper
   };
 }
