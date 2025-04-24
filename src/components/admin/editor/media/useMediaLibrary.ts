@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
 import { toast } from 'sonner';
-import { MediaItem } from './types';
+import { MediaItem, LogoFile, FaviconFile } from './types';
 
 export const useMediaLibrary = (onChange: () => void) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -17,6 +16,10 @@ export const useMediaLibrary = (onChange: () => void) => {
   // Get the appropriate bucket based on active tab
   const bucketName: StorageBucketName = activeTab === 'images' 
     ? STORAGE_BUCKETS.CONTENT_IMAGES
+    : activeTab === 'logos'
+    ? STORAGE_BUCKETS.LOGOS
+    : activeTab === 'favicons'
+    ? STORAGE_BUCKETS.FAVICONS
     : STORAGE_BUCKETS.MEDIA;
   
   const { uploadImage, uploading, deleteImage } = useImageUpload(bucketName);

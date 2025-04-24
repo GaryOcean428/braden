@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { ImageIcon, FileVideo, AlertCircle } from 'lucide-react';
+import { ImageIcon, FileVideo, AlertCircle, File } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useMediaLibrary } from './useMediaLibrary';
@@ -62,6 +61,14 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({ onChange }) => {
               <FileVideo className="h-4 w-4" />
               All Media
             </TabsTrigger>
+            <TabsTrigger value="logos" className="flex items-center gap-1">
+              <File className="h-4 w-4" />
+              Logos
+            </TabsTrigger>
+            <TabsTrigger value="favicons" className="flex items-center gap-1">
+              <File className="h-4 w-4" />
+              Favicons
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="images" className="pt-4">
@@ -97,6 +104,46 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({ onChange }) => {
               isLoading={isLoading}
               items={mediaItems}
               searchQuery={searchQuery}
+              onDeleteItem={handleDeleteMedia}
+              onClearSearch={() => setSearchQuery('')}
+            />
+          </TabsContent>
+
+          <TabsContent value="logos" className="pt-4">
+            <div className="flex gap-4 mb-6">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search logos..."
+              />
+            </div>
+            
+            <ImageGrid
+              isLoading={isLoading}
+              items={mediaItems}
+              searchQuery={searchQuery}
+              selectedItem={selectedItem}
+              onSelectItem={setSelectedItem}
+              onDeleteItem={handleDeleteMedia}
+              onClearSearch={() => setSearchQuery('')}
+            />
+          </TabsContent>
+
+          <TabsContent value="favicons" className="pt-4">
+            <div className="flex gap-4 mb-6">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search favicons..."
+              />
+            </div>
+            
+            <ImageGrid
+              isLoading={isLoading}
+              items={mediaItems}
+              searchQuery={searchQuery}
+              selectedItem={selectedItem}
+              onSelectItem={setSelectedItem}
               onDeleteItem={handleDeleteMedia}
               onClearSearch={() => setSearchQuery('')}
             />

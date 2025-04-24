@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Pfd6e */
+.logo {
+  height: 40px;
+  width: auto;
+  padding: 0;
+  margin-right: 10px;
+  vertical-align: middle;
+}

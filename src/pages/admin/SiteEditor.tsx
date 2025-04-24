@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import StaffCard from '@/components/admin/SiteEditor/StaffCard';
 import TasksCard from '@/components/admin/SiteEditor/TasksCard';
 import EmailsCard from '@/components/admin/SiteEditor/EmailsCard';
 import { useSiteEditorData } from '@/hooks/admin/useSiteEditorData';
+import { FileUploader } from '@/components/admin/editor/media/FileUploader';
 
 const SiteEditor: React.FC = () => {
   const navigate = useNavigate();
@@ -25,6 +25,14 @@ const SiteEditor: React.FC = () => {
     handleAddEmail,
   } = useSiteEditorData();
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Logic to handle logo upload
+  };
+
+  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Logic to handle favicon upload
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
@@ -38,7 +46,13 @@ const SiteEditor: React.FC = () => {
         <TasksCard tasks={tasks} onAddTask={handleAddTask} />
         <EmailsCard emails={emails} onAddEmail={handleAddEmail} />
       </div>
-      {/* Optionally, handle loading state with a loader/spinner or overlay */}
+      <div className="mt-6">
+        <h2 className="text-2xl font-semibold mb-4">Upload Logo and Favicon</h2>
+        <div className="flex gap-4">
+          <FileUploader uploading={false} onChange={handleLogoUpload} accept="image/*" />
+          <FileUploader uploading={false} onChange={handleFaviconUpload} accept="image/x-icon" />
+        </div>
+      </div>
       {loading && (
         <div className="absolute inset-0 bg-white/40 flex items-center justify-center z-10">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ab233a]" />
