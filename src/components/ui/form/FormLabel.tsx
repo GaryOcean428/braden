@@ -7,13 +7,16 @@ import { useFormField } from "./useFormField";
 
 export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & {
+    color?: "default" | "primary" | "secondary";
+  }
+>(({ className, color, ...props }, ref) => {
   const { error, formItemId } = useFormField();
 
   return (
     <Label
       ref={ref}
+      color={color || "default"}
       className={cn(error && "text-destructive", className)}
       htmlFor={formItemId}
       {...props}
@@ -21,3 +24,4 @@ export const FormLabel = React.forwardRef<
   );
 });
 FormLabel.displayName = "FormLabel";
+
