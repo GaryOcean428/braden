@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
@@ -54,46 +55,52 @@ const PageWithLayout = ({ component: Component }: { component: React.ComponentTy
   </Layout>
 );
 
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<PageWithLayout component={Index} />} />
+      <Route path="/contact" element={<PageWithLayout component={Contact} />} />
+      <Route path="/apprenticeships" element={<PageWithLayout component={Apprenticeships} />} />
+      <Route path="/traineeships" element={<PageWithLayout component={Traineeships} />} />
+      <Route path="/recruitment" element={<PageWithLayout component={Recruitment} />} />
+      
+      {/* Service routes */}
+      <Route path="/compliance" element={<Service />} />
+      <Route path="/mentoring" element={<Service />} />
+      <Route path="/technology" element={<Service />} />
+      <Route path="/future-services" element={<Service />} />
+      <Route path="/service/:serviceId" element={<Service />} />
+      
+      {/* Admin routes */}
+      <Route path="/admin/auth" element={<AdminAuth />} />
+      <Route 
+        path="/admin/dashboard" 
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/site-editor" 
+        element={
+          <ProtectedRoute>
+            <SiteEditor />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* 404 route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <Routes>
-          <Route path="/" element={<PageWithLayout component={Index} />} />
-          <Route path="/contact" element={<PageWithLayout component={Contact} />} />
-          <Route path="/apprenticeships" element={<PageWithLayout component={Apprenticeships} />} />
-          <Route path="/traineeships" element={<PageWithLayout component={Traineeships} />} />
-          <Route path="/recruitment" element={<PageWithLayout component={Recruitment} />} />
-          
-          {/* Service routes */}
-          <Route path="/compliance" element={<Service />} />
-          <Route path="/mentoring" element={<Service />} />
-          <Route path="/technology" element={<Service />} />
-          <Route path="/future-services" element={<Service />} />
-          <Route path="/service/:serviceId" element={<Service />} />
-          
-          {/* Admin routes */}
-          <Route path="/admin/auth" element={<AdminAuth />} />
-          <Route 
-            path="/admin/dashboard" 
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/site-editor" 
-            element={
-              <ProtectedRoute>
-                <SiteEditor />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* 404 route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppRoutes />
         <Toaster />
       </Router>
     </ErrorBoundary>

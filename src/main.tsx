@@ -19,8 +19,16 @@ initializeStorageBuckets()
     console.error('Failed to initialize storage buckets:', error);
   });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+// Make sure React DOM creates a root properly
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  console.error('Failed to find the root element');
+} else {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}

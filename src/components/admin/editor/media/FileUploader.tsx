@@ -1,68 +1,60 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Upload } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 
 interface FileUploaderProps {
   uploading: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   accept?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  multiple?: boolean;
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({ 
   uploading, 
-  accept = 'image/*',
-  onChange 
+  onChange, 
+  accept = 'image/*', 
+  multiple = false 
 }) => {
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const totalFiles = files.length;
-    let uploadedFiles = 0;
-
-    for (const file of Array.from(files)) {
-      await onChange({ target: { files: [file] } } as React.ChangeEvent<HTMLInputElement>);
-      uploadedFiles += 1;
-      setUploadProgress((uploadedFiles / totalFiles) * 100);
-    }
-
-    setUploadProgress(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  const handleClick = () => {
+    fileInputRef.current?.click();
   };
 
+  // Create a proper React.ChangeEvent<HTMLInputElement> handler
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e);
+  };
+  
   return (
-    <Button
-      variant="outline" 
-      className="relative"
-      disabled={uploading}
-    >
-      {uploading ? (
-        <>
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          Uploading...
-          {uploadProgress !== null && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
-              <div
-                className="h-full bg-blue-500"
-                style={{ width: `${uploadProgress}%` }}
-              />
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <Upload className="h-4 w-4 mr-2" />
-          Upload Files
-          <input
-            type="file"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            onChange={handleFileChange}
-            accept={accept}
-            multiple
-          />
-        </>
-      )}
-    </Button>
+    <div>
+      <Button 
+        onClick={handleClick}
+        variant="outline"
+        className="flex items-center gap-2"
+        disabled={uploading}
+      >
+        {uploading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Uploading...</span>
+          </>
+        ) : (
+          <>
+            <Upload className="h-4 w-4" />
+            <span>Upload</span>
+          </>
+        )}
+      </Button>
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept={accept}
+        multiple={multiple}
+        onChange={handleFileChange}
+      />
+    </div>
   );
 };
