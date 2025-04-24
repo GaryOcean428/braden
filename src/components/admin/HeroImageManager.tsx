@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
@@ -16,7 +17,7 @@ interface HeroImageManagerProps {
 }
 
 export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
-  currentHeroImage = '/hero-image.jpg',
+  currentHeroImage = 'https://lh3.googleusercontent.com/gps-cs-s/AB5caB_4-M4Ztd7dnkISNbA9YI26OrkyCqv3kce_4tVhCDHOtO43YLbyhEqva1ipphv3ImbIijtOkIfjkqYSzAAZNUQGAX1XYt4TRBpwyb7sLa4H-iQhAoUV-rATbTbNKFxphZA7pbtH=w540-h312-n-k-no',
   onImageUpdate
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

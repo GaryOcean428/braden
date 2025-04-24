@@ -9,11 +9,10 @@ interface HeroImageProps {
   onError?: (error: Error) => void;
 }
 
-// Create a StorageBucketName type to use
 export type StorageBucketName = 'content_images' | 'avatars' | 'hero_images';
 
 const HeroImage: React.FC<HeroImageProps> = ({ 
-  src = '/hero-image.jpg',  // Default to static hero image
+  src = 'https://lh3.googleusercontent.com/gps-cs-s/AB5caB_4-M4Ztd7dnkISNbA9YI26OrkyCqv3kce_4tVhCDHOtO43YLbyhEqva1ipphv3ImbIijtOkIfjkqYSzAAZNUQGAX1XYt4TRBpwyb7sLa4H-iQhAoUV-rATbTbNKFxphZA7pbtH=w540-h312-n-k-no',  
   alt = 'Braden Group Hero Image',
   className = '',
   onError
