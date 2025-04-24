@@ -10,7 +10,7 @@ interface Client {
   id: string;
   name: string;
   email: string;
-  company?: string;
+  company?: string; // Mark as optional
 }
 
 // Define the actual data structure we get from the database
@@ -42,7 +42,7 @@ const Clients = () => {
       
       if (data) {
         // Transform the data to match the Client interface
-        const transformedData: Client[] = data.map((client: any) => ({
+        const transformedData: Client[] = data.map((client: ClientData) => ({
           id: client.id,
           name: client.name,
           email: client.email,
@@ -68,12 +68,13 @@ const Clients = () => {
       if (error) throw error;
       
       if (data && data.length > 0) {
+        const clientData = data[0] as ClientData;
         const newClient: Client = {
-          id: data[0].id,
-          name: data[0].name,
-          email: data[0].email,
+          id: clientData.id,
+          name: clientData.name,
+          email: clientData.email,
           // Only add company if it exists in the response
-          ...(data[0].company !== undefined && { company: data[0].company })
+          ...(clientData.company !== undefined && { company: clientData.company })
         };
         
         setClients([...clients, newClient]);

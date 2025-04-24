@@ -14,9 +14,10 @@ export interface Client {
   id: string;
   name: string;
   email: string;
-  company?: string;
+  company?: string; // Mark as optional
 }
 
+// Define a more accurate interface for the data we get from Supabase
 interface ClientData {
   id: string;
   name: string;
@@ -25,7 +26,7 @@ interface ClientData {
   service_type?: string;
   created_at: string;
   updated_at: string;
-  company?: string;
+  company?: string; // Define company as optional in actual data
 }
 
 export interface Staff {
@@ -88,11 +89,10 @@ export const useSiteEditorData = () => {
         service: lead.service_type || 'General'
       })) : []);
       
-      setClients(clientsData ? clientsData.map((client: any) => ({
+      setClients(clientsData ? clientsData.map((client: ClientData) => ({
         id: client.id,
         name: client.name,
         email: client.email,
-        // Only add company property if it exists in the response
         ...(client.company !== undefined && { company: client.company })
       })) : []);
       
@@ -132,13 +132,13 @@ export const useSiteEditorData = () => {
       const { data, error } = await supabase.from('clients').insert([{ name: 'New Client', email: 'new@client.com' }]).select();
       if (error) throw error;
       if (data && data.length > 0) {
-        // Create a new client object safely without assuming company exists
+        // Safely handle the data and properly type it
+        const clientData = data[0] as ClientData;
         const newClient: Client = {
-          id: data[0].id,
-          name: data[0].name,
-          email: data[0].email,
-          // Only add company if it exists in the response
-          ...(data[0].company !== undefined && { company: data[0].company })
+          id: clientData.id,
+          name: clientData.name,
+          email: clientData.email,
+          ...(clientData.company !== undefined && { company: clientData.company })
         };
         setClients((prev) => [...prev, newClient]);
         toast.success('Client added successfully');
