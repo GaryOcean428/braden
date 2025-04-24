@@ -1,221 +1,138 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Json } from '@/types'; // Import Json type for safer type handling
 
-export type AdminUser = {
-  id: string;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
+interface UserData {
+  id?: string;
   email?: string;
-  created_at_user?: string;
-};
+}
 
-export function useAdminUsers() {
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+export const useAdminUsers = () => {
+  const [adminUsers, setAdminUsers] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Check admin status and load users
-  const checkAdminAndLoadUsers = async () => {
-    try {
-      // Check if user is authenticated
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !sessionData.session) {
-        console.error("Session check error:", sessionError);
-        toast.error("Authentication Error", {
-          description: "You must be logged in to access this page"
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      // Check if user is developer by email or function
-      const { data: isDeveloper, error: devError } = await supabase.rpc('is_developer');
-      
-      if (devError) {
-        console.error("Developer check error:", devError);
-        setIsLoading(false);
-        return;
-      }
-      
-      if (isDeveloper) {
-        setIsAdmin(true);
-        loadAdminUsers();
-      } else {
-        toast.error("Access Denied", {
-          description: "Only the developer can access admin functions"
-        });
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Auth check error:", error);
-      toast.error("Authentication Error", {
-        description: "Failed to verify authentication"
-      });
-      setIsLoading(false);
-    }
-  };
-
-  // Load admin users
-  const loadAdminUsers = async () => {
+  const checkAdminAndLoadUsers = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
+
+      // Check if the current user is an admin
+      const { data: { session } } = await supabase.auth.getSession();
       
-      // Fetch directly from the admin_users table
-      const { data: adminData, error: fetchError } = await supabase
-        .from('admin_users')
-        .select('*');
-      
-      if (!fetchError && adminData) {
-        // Attempt to enrich with user data
-        try {
-          const { data: userData, error: profilesError } = await supabase
-            .from('user_profiles')
-            .select('*');
-          
-          if (!profilesError && userData) {
-            const enrichedAdmins = adminData.map(admin => {
-              const matchingUser = userData.find(user => user.id === admin.user_id);
-              return {
-                ...admin,
-                email: matchingUser?.email || 'Unknown',
-                created_at_user: matchingUser?.created_at || null
-              };
-            });
-            
-            setAdminUsers(enrichedAdmins);
-          } else {
-            setAdminUsers(adminData);
-          }
-        } catch (error) {
-          console.error("Error fetching user profiles:", error);
-          setAdminUsers(adminData);
-        }
-      } else {
-        console.warn("Could not fetch admin users:", fetchError);
-        setError("The admin users list cannot be displayed due to permission restrictions, but your admin access is confirmed.");
-        setAdminUsers([]);
+      if (!session) {
+        throw new Error('No active session');
       }
-    } catch (error: any) {
-      console.error('Error loading admin users:', error);
-      setError(error.message || "Failed to load admin users");
-      toast.error("Error", {
-        description: "Failed to load admin users"
+
+      // Check developer status using Supabase function
+      const { data, error: adminCheckError } = await supabase.rpc('is_developer_admin');
+      
+      if (adminCheckError) {
+        throw adminCheckError;
+      }
+
+      setIsAdmin(data === true);
+
+      // If not an admin, don't load users
+      if (!data) {
+        setAdminUsers([]);
+        return;
+      }
+
+      // Fetch admin users
+      const { data: adminUsersData, error: fetchError } = await supabase
+        .from('admin_users')
+        .select('*, user_id(email)');
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      // Transform the data to ensure correct typing
+      const formattedAdminUsers = adminUsersData.map(user => ({
+        id: user.user_id?.id,
+        email: user.user_id?.email
+      }));
+
+      setAdminUsers(formattedAdminUsers);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(errorMessage);
+      toast.error('Admin Access Error', {
+        description: errorMessage
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Add a new admin user
-  const addAdminUser = async (email: string) => {
+  const addAdminUser = useCallback(async (email: string): Promise<boolean> => {
     try {
-      setIsLoading(true);
-      
-      // First, check if the user exists in auth.users
-      const { data: userData, error: userError } = await supabase
+      // First, get the user by email using the custom function
+      const { data, error: userFetchError } = await supabase
         .rpc('get_user_by_email', { email_input: email });
-      
-      if (userError || !userData) {
-        toast.error("User Not Found", {
-          description: "No user found with that email address"
+
+      if (userFetchError || !data) {
+        toast.error('User Not Found', {
+          description: 'No user found with this email. They must register first.'
         });
         return false;
       }
-      
-      // Check if user is already an admin
-      const { data: existingAdmin, error: checkError } = await supabase
+
+      // Then add the user to admin_users table
+      const { error: insertError } = await supabase
         .from('admin_users')
-        .select('*')
-        .eq('user_id', userData.id)
-        .single();
-      
-      if (existingAdmin) {
-        toast.info("Already Admin", {
-          description: "This user is already an admin"
-        });
-        return false;
-      }
-      
-      // Add the user to admin_users table
-      const { data, error: insertError } = await supabase
-        .from('admin_users')
-        .insert([
-          { user_id: userData.id, email: email }
-        ])
-        .select();
-      
+        .insert({ user_id: data.id, email });
+
       if (insertError) {
-        console.error("Error adding admin user:", insertError);
-        toast.error("Error", {
-          description: "Failed to add admin user"
-        });
-        return false;
+        throw insertError;
       }
-      
-      toast.success("Admin Added", {
-        description: `${email} has been added as an admin`
+
+      toast.success('Admin Added', {
+        description: `${email} has been granted admin access`
       });
-      
-      // Also add admin role to user_roles
-      await supabase
-        .from('user_roles')
-        .insert([
-          { user_id: userData.id, role: 'admin' }
-        ]);
-      
+
       // Refresh the admin users list
-      loadAdminUsers();
+      await checkAdminAndLoadUsers();
       return true;
-    } catch (error: any) {
-      console.error("Error in addAdminUser:", error);
-      toast.error("Error", {
-        description: error.message || "Failed to add admin user"
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add admin';
+      toast.error('Add Admin Failed', {
+        description: errorMessage
       });
       return false;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [checkAdminAndLoadUsers]);
 
-  // Configure permission settings
-  const configurePermissions = async () => {
+  const configurePermissions = useCallback(async () => {
     try {
-      setIsLoading(true);
-      
-      // Create a function to bypass RLS for admin operations
-      const { data, error } = await supabase.rpc('fix_user_access');
+      // Call a function to set up database permissions
+      const { data, error } = await supabase.rpc('admin_bypass');
       
       if (error) {
-        console.error("Error configuring permissions:", error);
-        toast.error("Permission Error", {
-          description: "Failed to configure database permissions"
-        });
-        return false;
+        throw error;
       }
-      
-      toast.success("Permissions Updated", {
-        description: "Database permissions have been configured"
+
+      toast.success('Permissions Configured', {
+        description: 'Database access has been properly set up'
       });
-      
-      // Reload admin users to verify changes
-      loadAdminUsers();
+
       return true;
-    } catch (error: any) {
-      console.error("Error configuring permissions:", error);
-      toast.error("Error", {
-        description: error.message || "Failed to configure permissions"
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Permission configuration failed';
+      toast.error('Permissions Error', {
+        description: errorMessage
       });
       return false;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkAdminAndLoadUsers();
+  }, [checkAdminAndLoadUsers]);
 
   return {
     adminUsers,
@@ -226,4 +143,4 @@ export function useAdminUsers() {
     addAdminUser,
     configurePermissions
   };
-}
+};
