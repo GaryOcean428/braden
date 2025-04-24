@@ -15,8 +15,9 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
   // Handle error state updates in useEffect to prevent infinite loops
   useEffect(() => {
     if (uploadError) setError(uploadError);
-    if (deleteError) setError(deleteError);
-    if (listError) setError(listError);
+    else if (deleteError) setError(deleteError);
+    else if (listError) setError(listError);
+    else setError(null);
   }, [uploadError, deleteError, listError]);
   
   // Create memoized versions of functions to prevent infinite renders
@@ -26,8 +27,8 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
       return await uploadFile(file);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Upload failed');
-      setError(error);
-      throw error;
+      console.error('Upload error in useImageUpload:', error);
+      return null;
     }
   }, [uploadFile]);
   
@@ -37,8 +38,8 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
       return await deleteFile(name);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Delete failed');
-      setError(error);
-      throw error;
+      console.error('Delete error in useImageUpload:', error);
+      return false;
     }
   }, [deleteFile]);
   
@@ -48,8 +49,8 @@ export const useImageUpload = (bucketName: StorageBucketName = STORAGE_BUCKETS.C
       return await listFiles();
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to list images');
-      setError(error);
-      throw error;
+      console.error('List error in useImageUpload:', error);
+      return [];
     }
   }, [listFiles]);
   

@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ImageUploaderProps {
   uploading: boolean;
-  error: string | null;
+  error: Error | null;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -34,9 +35,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </div>
       )}
       {error && (
-        <p className="mt-4 text-sm text-red-500">
-          Error: {error}
-        </p>
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error.message || 'An error occurred during upload'}
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

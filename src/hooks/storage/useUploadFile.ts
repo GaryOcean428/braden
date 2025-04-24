@@ -16,6 +16,7 @@ export const useUploadFile = (bucketName: StorageBucketName) => {
     try {
       setUploading(true);
       setError(null);
+      setUploadedUrl(null);
       
       // Create a unique file name
       const { filePath } = generateUniqueFileName(file.name, path);
@@ -83,7 +84,8 @@ export const useUploadFile = (bucketName: StorageBucketName) => {
       return publicUrl;
     } catch (err) {
       console.error('Upload error:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error during upload'));
+      const errorObj = err instanceof Error ? err : new Error('Unknown error during upload');
+      setError(errorObj);
       toast.error("Upload failed: " + (err instanceof Error ? err.message : "Unknown error"));
       return null;
     } finally {
