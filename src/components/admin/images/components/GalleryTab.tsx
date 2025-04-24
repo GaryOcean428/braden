@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ImageGrid } from '../ImageGrid';
+import { ImageGallery } from '../../images/ImageGallery';
 
 interface GalleryTabProps {
   images: Array<{ name: string; publicUrl: string }>;
