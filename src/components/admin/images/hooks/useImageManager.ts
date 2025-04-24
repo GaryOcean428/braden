@@ -13,7 +13,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [images, setImages] = useState<Array<{ name: string; publicUrl: string }>>([]);
   
@@ -37,7 +37,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
       } catch (err) {
         if (isMounted.current) {
           const errorMessage = err instanceof Error ? err.message : 'Failed to load images';
-          setError(errorMessage);
+          setError(err instanceof Error ? err : errorMessage);
           console.error("List error:", err);
         }
       } finally {
@@ -83,8 +83,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
       }
     } catch (err) {
       if (isMounted.current) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to upload image';
-        setError(errorMessage);
+        setError(err instanceof Error ? err : String(err));
         console.error("Upload error:", err);
       }
     }
@@ -118,8 +117,7 @@ export const useImageManager = ({ bucketName, onImageSelect }: UseImageManagerPr
       }
     } catch (err) {
       if (isMounted.current) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to delete image';
-        setError(errorMessage);
+        setError(err instanceof Error ? err : String(err));
         console.error("Delete error:", err);
       }
     }

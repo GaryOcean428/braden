@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ImageUploaderProps {
   uploading: boolean;
-  error: Error | null;
+  error: Error | string | null;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -38,7 +38,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         <Alert variant="destructive" className="mt-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            {error.message || 'An error occurred during upload'}
+            {error instanceof Error ? error.message : error}
           </AlertDescription>
         </Alert>
       )}

@@ -44,6 +44,9 @@ const ImageManager: React.FC<ImageManagerProps> = ({
   const endIndex = startIndex + 12;
   const paginatedImages = useMemo(() => images?.slice(startIndex, endIndex) || [], [images, startIndex, endIndex]);
 
+  // Convert string error to Error object if needed
+  const errorObject = error ? (error instanceof Error ? error : new Error(error)) : null;
+
   return (
     <ErrorBoundary>
       <Card className="w-full">
@@ -72,7 +75,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
             <TabsContent value="upload" className="space-y-4">
               <ImageUploader 
                 uploading={uploading}
-                error={error}
+                error={errorObject}
                 onFileChange={handleFileChange}
               />
             </TabsContent>
