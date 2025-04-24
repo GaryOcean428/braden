@@ -2,15 +2,17 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Json } from '@/types'; // Import Json type for safer type handling
 
-interface UserData {
+// Define the AdminUser type instead of importing it
+export interface AdminUser {
   id?: string;
+  user_id?: string;
   email?: string;
+  created_at?: string;
 }
 
 export const useAdminUsers = () => {
-  const [adminUsers, setAdminUsers] = useState<UserData[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -45,7 +47,7 @@ export const useAdminUsers = () => {
       // Fetch admin users
       const { data: adminUsersData, error: fetchError } = await supabase
         .from('admin_users')
-        .select('*, user_id(email)');
+        .select('*');
 
       if (fetchError) {
         throw fetchError;
@@ -53,8 +55,10 @@ export const useAdminUsers = () => {
 
       // Transform the data to ensure correct typing
       const formattedAdminUsers = adminUsersData.map(user => ({
-        id: user.user_id?.id,
-        email: user.user_id?.email
+        id: user.id,
+        user_id: user.user_id,
+        email: user.email,
+        created_at: user.created_at
       }));
 
       setAdminUsers(formattedAdminUsers);
@@ -71,11 +75,14 @@ export const useAdminUsers = () => {
 
   const addAdminUser = useCallback(async (email: string): Promise<boolean> => {
     try {
-      // First, get the user by email using the custom function
-      const { data, error: userFetchError } = await supabase
-        .rpc('get_user_by_email', { email_input: email });
+      // First, get the user by email using a custom SQL query rather than RPC function
+      const { data: userData, error: userFetchError } = await supabase
+        .from('auth.users')
+        .select('id, email')
+        .eq('email', email)
+        .single();
 
-      if (userFetchError || !data) {
+      if (userFetchError || !userData) {
         toast.error('User Not Found', {
           description: 'No user found with this email. They must register first.'
         });
@@ -85,7 +92,10 @@ export const useAdminUsers = () => {
       // Then add the user to admin_users table
       const { error: insertError } = await supabase
         .from('admin_users')
-        .insert({ user_id: data.id, email });
+        .insert({ 
+          user_id: userData.id, 
+          email: email 
+        });
 
       if (insertError) {
         throw insertError;
