@@ -75,7 +75,7 @@ export const useAdminUsers = () => {
 
   const addAdminUser = useCallback(async (email: string): Promise<boolean> => {
     try {
-      // First, get the user by email using a custom SQL query rather than RPC function
+      // First, check if the email is already in admin_users
       const { data: userData, error: userFetchError } = await supabase
         .from('admin_users')
         .select('id, email')
@@ -83,17 +83,21 @@ export const useAdminUsers = () => {
         .single();
 
       if (userFetchError || !userData) {
-        // If user not found as admin, try to add them directly
-        // We'll check if they exist on the server side with RLS policies
-        const { error: insertError } = await supabase
-          .from('admin_users')
-          .insert({ 
-            email: email 
-          });
-
-        if (insertError) {
+        // Call the RPC function to add the admin user by email
+        // This function will handle finding the user ID and inserting the admin record
+        const { data: addedUserData, error: addError } = await supabase
+          .rpc('add_admin_user_by_email', { email_input: email });
+          
+        if (addError) {
           toast.error('Add Admin Failed', {
-            description: insertError.message
+            description: addError.message
+          });
+          return false;
+        }
+
+        if (!addedUserData) {
+          toast.error('User Not Found', {
+            description: 'No user with this email exists. They must register first.'
           });
           return false;
         }

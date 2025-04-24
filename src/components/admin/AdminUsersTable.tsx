@@ -57,7 +57,7 @@ export function AdminUsersTable({ adminUsers }: AdminUsersTableProps) {
               </Button>
             </TableCell>
           </TableRow>
-        ))}
+        )}
       </TableBody>
     </Table>
   );
