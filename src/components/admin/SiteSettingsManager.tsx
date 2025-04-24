@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ interface SiteSettings {
   contact_phone: string;
   address: string;
   logo_url: string;
+  favicon_url: string;
   primary_color: string;
   secondary_color: string;
   social_facebook?: string;
@@ -39,6 +39,7 @@ export const SiteSettingsManager: React.FC = () => {
     contact_phone: '',
     address: '',
     logo_url: '',
+    favicon_url: '',
     primary_color: '#ab233a',
     secondary_color: '#cbb26a',
     social_facebook: '',
@@ -110,6 +111,7 @@ export const SiteSettingsManager: React.FC = () => {
         contact_phone: '',
         address: '',
         logo_url: '',
+        favicon_url: '',
         primary_color: '#ab233a',
         secondary_color: '#cbb26a',
         meta_title: '',
@@ -198,6 +200,10 @@ export const SiteSettingsManager: React.FC = () => {
     setSettings(prev => ({ ...prev, logo_url: url }));
   };
 
+  const handleFaviconSelect = (url: string) => {
+    setSettings(prev => ({ ...prev, favicon_url: url }));
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setSettings(prev => ({ ...prev, [name]: value }));
@@ -284,6 +290,26 @@ export const SiteSettingsManager: React.FC = () => {
                   <ImageManager 
                     onImageSelect={handleLogoSelect}
                     title="Select Logo"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Favicon
+                  </label>
+                  {settings.favicon_url && (
+                    <div className="mb-4 border rounded-lg overflow-hidden p-4 bg-gray-50">
+                      <img 
+                        src={settings.favicon_url} 
+                        alt="Favicon" 
+                        className="max-h-24 object-contain"
+                      />
+                    </div>
+                  )}
+                  
+                  <ImageManager 
+                    onImageSelect={handleFaviconSelect}
+                    title="Select Favicon"
                   />
                 </div>
               </TabsContent>
