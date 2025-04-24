@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,8 +84,8 @@ const Navigation = () => {
       <nav className={`bg-[#811a2c] ${isScrolled ? 'shadow-md' : ''}`}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center" onClick={handleHomeClick}>
-              <Home size={20} className="mr-2" />
+            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center logo" onClick={handleHomeClick}>
+              <img src="/path/to/logo.png" alt="Logo" className="logo" />
               braden
             </a>
             
