@@ -47,17 +47,17 @@ const NotFound: React.FC = () => (
 
 // Page wrapper component to apply Layout to regular pages
 const PageWithLayout = ({ component: Component }: { component: React.ComponentType }) => (
-  <ErrorBoundary>
-    <Layout>
+  <Layout>
+    <ErrorBoundary>
       <Component />
-    </Layout>
-  </ErrorBoundary>
+    </ErrorBoundary>
+  </Layout>
 );
 
 function App() {
   return (
-    <Router>
-      <ErrorBoundary>
+    <ErrorBoundary>
+      <Router>
         <Routes>
           <Route path="/" element={<PageWithLayout component={Index} />} />
           <Route path="/contact" element={<PageWithLayout component={Contact} />} />
@@ -72,39 +72,31 @@ function App() {
           <Route path="/future-services" element={<Service />} />
           <Route path="/service/:serviceId" element={<Service />} />
           
-          {/* Admin routes - no Layout for these */}
-          <Route path="/admin/auth" element={
-            <ErrorBoundary>
-              <AdminAuth />
-            </ErrorBoundary>
-          } />
+          {/* Admin routes */}
+          <Route path="/admin/auth" element={<AdminAuth />} />
           <Route 
             path="/admin/dashboard" 
             element={
-              <ErrorBoundary>
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              </ErrorBoundary>
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
             } 
           />
           <Route 
             path="/admin/site-editor" 
             element={
-              <ErrorBoundary>
-                <ProtectedRoute>
-                  <SiteEditor />
-                </ProtectedRoute>
-              </ErrorBoundary>
+              <ProtectedRoute>
+                <SiteEditor />
+              </ProtectedRoute>
             } 
           />
           
           {/* 404 route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </ErrorBoundary>
-      <Toaster />
-    </Router>
+        <Toaster />
+      </Router>
+    </ErrorBoundary>
   );
 }
 
