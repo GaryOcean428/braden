@@ -83,19 +83,24 @@ export const useAdminUsers = () => {
         .single();
 
       if (userFetchError || !userData) {
-        // Call the RPC function to add the admin user by email
-        // This function will handle finding the user ID and inserting the admin record
-        const { data: addedUserData, error: addError } = await supabase
-          .rpc('add_admin_user_by_email', { email_input: email });
-          
-        if (addError) {
+        // Instead of using the RPC function that's not in the type definitions,
+        // let's use a direct query approach that accomplishes the same thing
+        
+        // Step 1: Find the user by email in the auth system
+        // We can't query auth.users directly, but we can use a more generic approach
+        // with the Supabase function API to call our function
+        const { data: addedUser, error: functionError } = await supabase.functions.invoke('add-admin-user', {
+          body: { email }
+        });
+        
+        if (functionError) {
           toast.error('Add Admin Failed', {
-            description: addError.message
+            description: functionError.message
           });
           return false;
         }
 
-        if (!addedUserData) {
+        if (!addedUser || addedUser.error) {
           toast.error('User Not Found', {
             description: 'No user with this email exists. They must register first.'
           });
