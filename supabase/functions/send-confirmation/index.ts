@@ -30,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to the user
     const userEmailResponse = await resend.emails.send({
-      from: "Braden Group <info@bradengroup.com.au>",
+      from: "Braden Group <no-reply@coms.braden.com.au>",
       to: [email],
       subject: "Thank you for contacting Braden Group",
       html: `
@@ -52,7 +52,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to staff
     const staffEmailResponse = await resend.emails.send({
-      from: "Braden Group Website <info@bradengroup.com.au>",
+      from: "Braden Group Website <notifications@coms.braden.com.au>",
       to: ["braden.lang@bradengroup.com.au"],
       subject: "New Contact Form Submission",
       html: `
