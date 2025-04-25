@@ -30,7 +30,6 @@ const formSchema = z.object({
 });
 
 export const useContactForm = () => {
-  // Explicitly declare React as a dependency
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<ContactFormValues>({
@@ -82,7 +81,17 @@ export const useContactForm = () => {
         throw clientError;
       }
 
-      toast.success("Thank you for your message. We'll be in touch soon!");
+      // Send confirmation emails
+      const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
+        body: values
+      });
+
+      if (emailError) {
+        console.error('Email sending error:', emailError);
+        throw emailError;
+      }
+
+      toast.success("Thank you for your message. We've sent you a confirmation email and we'll be in touch soon!");
       form.reset();
     } catch (error) {
       console.error('Error submitting form:', error);
