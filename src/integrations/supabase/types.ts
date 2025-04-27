@@ -431,30 +431,42 @@ export type Database = {
       }
       clients: {
         Row: {
+          contact_history: Json | null
           created_at: string
           email: string
           id: string
+          last_contact_date: string | null
           name: string
           phone: string | null
           service_type: string | null
+          source: string | null
+          status: string | null
           updated_at: string
         }
         Insert: {
+          contact_history?: Json | null
           created_at?: string
           email: string
           id?: string
+          last_contact_date?: string | null
           name: string
           phone?: string | null
           service_type?: string | null
+          source?: string | null
+          status?: string | null
           updated_at?: string
         }
         Update: {
+          contact_history?: Json | null
           created_at?: string
           email?: string
           id?: string
+          last_contact_date?: string | null
           name?: string
           phone?: string | null
           service_type?: string | null
+          source?: string | null
+          status?: string | null
           updated_at?: string
         }
         Relationships: []

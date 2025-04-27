@@ -49,7 +49,51 @@ export const useContactForm = () => {
       setIsSubmitting(true);
       console.log("Submitting form with values:", values);
       
-      // Create a new lead in database
+      // First check if client already exists
+      const { data: existingClient } = await supabase
+        .from('clients')
+        .select('id, status')
+        .eq('email', values.email)
+        .maybeSingle();
+
+      if (existingClient) {
+        // Update existing client with new contact
+        const { error: updateError } = await supabase
+          .from('clients')
+          .update({
+            name: values.name,
+            phone: values.phone,
+            company: values.company,
+            service_type: values.serviceType,
+            source: 'contact_form',
+          })
+          .eq('id', existingClient.id);
+
+        if (updateError) {
+          console.error('Client update error:', updateError);
+          throw updateError;
+        }
+      } else {
+        // Create a new client
+        const { error: clientError } = await supabase
+          .from('clients')
+          .insert({
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
+            company: values.company,
+            service_type: values.serviceType,
+            status: 'lead',
+            source: 'contact_form'
+          });
+
+        if (clientError) {
+          console.error('Client insert error:', clientError);
+          throw clientError;
+        }
+      }
+
+      // Create a new lead record regardless
       const { error: leadError } = await supabase
         .from('leads')
         .insert({
@@ -66,21 +110,6 @@ export const useContactForm = () => {
         throw leadError;
       }
 
-      // Create a new client
-      const { error: clientError } = await supabase
-        .from('clients')
-        .insert({
-          name: values.company,
-          email: values.email,
-          phone: values.phone,
-          service_type: values.serviceType,
-        });
-
-      if (clientError) {
-        console.error('Client insert error:', clientError);
-        throw clientError;
-      }
-
       // Send confirmation emails
       try {
         const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
@@ -89,11 +118,9 @@ export const useContactForm = () => {
 
         if (emailError) {
           console.error('Email sending error:', emailError);
-          // Don't throw here, we still want to show success toast for DB entry
         }
       } catch (emailErr) {
         console.error('Error invoking send-confirmation function:', emailErr);
-        // Continue anyway - DB entry is successful
       }
 
       toast.success("Thank you for your message. We've received your inquiry and will be in touch soon!");
