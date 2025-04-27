@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RefreshCw, Upload, AlertCircle } from "lucide-react";
 import { useMediaManagement } from "@/hooks/useMediaManagement";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const MediaManager = () => {
   const {
@@ -91,7 +91,11 @@ export const MediaManager = () => {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => deleteFile(file.id, file.file_path)}
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete ${file.title}?`)) {
+                        deleteFile(file.id, file.file_path);
+                      }
+                    }}
                     className="h-8 w-8"
                   >
                     <span className="sr-only">Delete</span>

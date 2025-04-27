@@ -1,10 +1,10 @@
-
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { MediaItem } from "./types";
 import { MediaItem as MediaItemComponent } from "./MediaItem";
+import { toast } from "sonner";
 
 interface MediaGalleryProps {
   loading: boolean;
@@ -35,13 +35,26 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
     );
   }
 
+  const handleDeleteImage = async (id: string, filePath: string) => {
+    const confirmed = window.confirm("Are you sure you want to delete this image?");
+    if (!confirmed) return;
+
+    try {
+      await onDeleteImage(id, filePath);
+      toast.success("Image deleted successfully");
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast.error("Failed to delete image. Please try again.");
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {images.map((image) => (
         <MediaItemComponent 
           key={image.id}
           image={image}
-          onDeleteImage={onDeleteImage}
+          onDeleteImage={handleDeleteImage}
         />
       ))}
     </div>
