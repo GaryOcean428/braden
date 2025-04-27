@@ -28,6 +28,8 @@ const handler = async (req: Request): Promise<Response> => {
     const formData: ContactEmailRequest = await req.json();
     const { name, email, phone, company, serviceType, message } = formData;
 
+    console.log("Received contact form submission:", { name, email, serviceType });
+
     // Send confirmation email to the user
     const userEmailResponse = await resend.emails.send({
       from: "Braden Group <no-reply@coms.braden.com.au>",

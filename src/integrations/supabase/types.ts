@@ -130,6 +130,30 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          id: string
+          key_name: string
+          key_value: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key_name: string
+          key_value: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key_name?: string
+          key_value?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       apprentice_profiles: {
         Row: {
           award_id: string | null
@@ -323,6 +347,35 @@ export type Database = {
         }
         Relationships: []
       }
+      classification_types: {
+        Row: {
+          classification_fixed_id: number | null
+          created_at: string | null
+          id: string
+          type_code: string
+        }
+        Insert: {
+          classification_fixed_id?: number | null
+          created_at?: string | null
+          id?: string
+          type_code: string
+        }
+        Update: {
+          classification_fixed_id?: number | null
+          created_at?: string | null
+          id?: string
+          type_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classification_types_classification_fixed_id_fkey"
+            columns: ["classification_fixed_id"]
+            isOneToOne: false
+            referencedRelation: "classifications"
+            referencedColumns: ["classification_fixed_id"]
+          },
+        ]
+      }
       classifications: {
         Row: {
           award_fixed_id: number | null
@@ -334,6 +387,7 @@ export type Database = {
           classification_fixed_id: number
           classification_level: number
           created_at: string | null
+          employee_rate_type_code: string | null
           operative_from: string
           operative_to: string | null
         }
@@ -347,6 +401,7 @@ export type Database = {
           classification_fixed_id?: number
           classification_level: number
           created_at?: string | null
+          employee_rate_type_code?: string | null
           operative_from: string
           operative_to?: string | null
         }
@@ -360,6 +415,7 @@ export type Database = {
           classification_fixed_id?: number
           classification_level?: number
           created_at?: string | null
+          employee_rate_type_code?: string | null
           operative_from?: string
           operative_to?: string | null
         }
@@ -1847,6 +1903,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_calculations: {
+        Row: {
+          billable_options: Json
+          cost_config: Json
+          created_at: string | null
+          id: string
+          name: string
+          pay_rate: number
+          result: Json
+          updated_at: string | null
+          user_id: string
+          work_config: Json
+        }
+        Insert: {
+          billable_options: Json
+          cost_config: Json
+          created_at?: string | null
+          id?: string
+          name: string
+          pay_rate: number
+          result: Json
+          updated_at?: string | null
+          user_id: string
+          work_config: Json
+        }
+        Update: {
+          billable_options?: Json
+          cost_config?: Json
+          created_at?: string | null
+          id?: string
+          name?: string
+          pay_rate?: number
+          result?: Json
+          updated_at?: string | null
+          user_id?: string
+          work_config?: Json
+        }
+        Relationships: []
       }
       user_organizations: {
         Row: {

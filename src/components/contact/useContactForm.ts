@@ -49,7 +49,7 @@ export const useContactForm = () => {
       setIsSubmitting(true);
       console.log("Submitting form with values:", values);
       
-      // Create a new lead
+      // Create a new lead in database
       const { error: leadError } = await supabase
         .from('leads')
         .insert({
@@ -82,16 +82,21 @@ export const useContactForm = () => {
       }
 
       // Send confirmation emails
-      const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
-        body: values
-      });
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
+          body: values
+        });
 
-      if (emailError) {
-        console.error('Email sending error:', emailError);
-        throw emailError;
+        if (emailError) {
+          console.error('Email sending error:', emailError);
+          // Don't throw here, we still want to show success toast for DB entry
+        }
+      } catch (emailErr) {
+        console.error('Error invoking send-confirmation function:', emailErr);
+        // Continue anyway - DB entry is successful
       }
 
-      toast.success("Thank you for your message. We've sent you a confirmation email and we'll be in touch soon!");
+      toast.success("Thank you for your message. We've received your inquiry and will be in touch soon!");
       form.reset();
     } catch (error) {
       console.error('Error submitting form:', error);

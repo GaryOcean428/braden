@@ -12,3 +12,4 @@ verify_jwt = true
 
 [functions.send-confirmation]
 verify_jwt = false
+

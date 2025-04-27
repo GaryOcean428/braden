@@ -40,6 +40,7 @@ export const useEnhancedContactForm = () => {
   const enhancedSubmit: SubmitHandler<ContactFormValues> = async (values) => {
     try {
       setIsSubmitting(true);
+      console.log("Enhanced submit with values:", values);
       
       // Create a new lead
       const { error: leadError } = await supabase
@@ -53,7 +54,10 @@ export const useEnhancedContactForm = () => {
           message: values.message,
         });
         
-      if (leadError) throw leadError;
+      if (leadError) {
+        console.error("Lead insert error:", leadError);
+        throw leadError;
+      }
         
       // Create a new client
       const { error: clientError } = await supabase
@@ -65,7 +69,25 @@ export const useEnhancedContactForm = () => {
           service_type: values.serviceType,
         });
       
-      if (clientError) throw clientError;
+      if (clientError) {
+        console.error("Client insert error:", clientError);
+        throw clientError;
+      }
+
+      // Try to send confirmation email
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
+          body: values
+        });
+
+        if (emailError) {
+          console.error('Email sending error:', emailError);
+          // Don't throw here, we still want to show success toast
+        }
+      } catch (emailErr) {
+        console.error('Error invoking send-confirmation function:', emailErr);
+        // Continue anyway - DB entry is successful
+      }
       
       // Notify the user that the message was sent
       toast.success("Thank you for your message. We'll be in touch soon!");
@@ -80,7 +102,7 @@ export const useEnhancedContactForm = () => {
   
   return {
     form: baseForm.form,
-    isSubmitting,
+    isSubmitting: isSubmitting || baseForm.isSubmitting,
     onSubmit: enhancedSubmit,
     isInitialized,
   };
