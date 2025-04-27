@@ -9,10 +9,11 @@ import { LayoutTab } from '@/components/admin/editor/tabs/LayoutTab';
 import { ComponentsTab } from '@/components/admin/editor/tabs/ComponentsTab';
 import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
 import { LogoTab } from '@/components/admin/editor/tabs/LogoTab';
+import { useAdminPermissions } from '@/hooks/useAdminPermissions';
+import { Navigate } from 'react-router-dom';
 
 interface SiteEditorLayoutProps {
   isLoading: boolean;
-  isAdmin: boolean;
   activeTab: string; 
   setActiveTab: (tab: string) => void;
   hasUnsavedChanges: boolean;
@@ -23,7 +24,6 @@ interface SiteEditorLayoutProps {
 
 export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
   isLoading,
-  isAdmin,
   activeTab,
   setActiveTab,
   hasUnsavedChanges,
@@ -31,20 +31,14 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
   handlePreview,
   handleChange
 }) => {
-  if (isLoading) {
+  const { isAdmin, loading: permissionLoading, error } = useAdminPermissions();
+
+  if (isLoading || permissionLoading) {
     return <SiteEditorLoading />;
   }
 
-  if (!isAdmin) {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="card">
-          <div className="card-content pt-6 text-center">
-            <p className="text-lg text-gray-500">Checking permissions...</p>
-          </div>
-        </div>
-      </div>
-    );
+  if (!isAdmin || error) {
+    return <Navigate to="/admin/auth" replace />;
   }
 
   return (

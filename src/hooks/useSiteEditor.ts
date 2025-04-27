@@ -43,7 +43,7 @@ export function useSiteEditor() {
         return;
       }
       
-      // Check if the user is an admin using the proper RPC function
+      // Use the proper RPC function to check admin status
       const { data: isAdminUser, error: adminError } = await supabase.rpc('is_developer_admin');
       
       if (adminError) {
@@ -76,10 +76,21 @@ export function useSiteEditor() {
   };
 
   const handlePublish = async () => {
-    toast.success("Changes Published", {
-      description: "Your changes are now live on the site"
-    });
-    setHasUnsavedChanges(false);
+    try {
+      // Check admin status again before publishing
+      const { data: isAdminUser, error: adminError } = await supabase.rpc('is_developer_admin');
+      
+      if (adminError || !isAdminUser) {
+        throw new Error("Permission denied");
+      }
+
+      // Your existing publish logic here
+      setHasUnsavedChanges(false);
+      return true;
+    } catch (error) {
+      console.error("Publish error:", error);
+      throw error;
+    }
   };
 
   const handlePreview = () => {

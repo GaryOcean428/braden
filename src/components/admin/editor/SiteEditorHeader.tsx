@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Eye, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface SiteEditorHeaderProps {
   hasUnsavedChanges: boolean;
@@ -27,6 +28,20 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
     navigate('/admin/dashboard');
   };
 
+  const handlePreview = () => {
+    onPreview();
+    toast.success("Opening preview in new tab");
+  };
+
+  const handlePublish = async () => {
+    try {
+      await onPublish();
+      toast.success("Changes published successfully");
+    } catch (error) {
+      toast.error("Failed to publish changes");
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div className="flex flex-col">
@@ -49,7 +64,7 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
       
       <div className="flex items-center gap-2">
         <Button 
-          onClick={onPreview} 
+          onClick={handlePreview} 
           variant="outline"
           className="flex items-center gap-1"
         >
@@ -58,7 +73,7 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
         </Button>
         
         <Button 
-          onClick={onPublish}
+          onClick={handlePublish}
           disabled={!hasUnsavedChanges}
           className="flex items-center gap-1 bg-[#ab233a] hover:bg-[#811a2c]"
         >
