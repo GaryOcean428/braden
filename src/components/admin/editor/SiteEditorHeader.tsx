@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Eye, Save, ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Eye, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface SiteEditorHeaderProps {
@@ -26,7 +26,7 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
     }
     navigate('/admin/dashboard');
   };
-  
+
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div className="flex flex-col">
@@ -43,7 +43,7 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
         </div>
         <h1 className="text-3xl font-bold text-[#ab233a]">Site Editor</h1>
         <p className="text-[#2c3e50] mt-1">
-          Visually customize your website appearance and content
+          Customize your website appearance and content
         </p>
       </div>
       
