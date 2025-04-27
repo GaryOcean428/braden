@@ -2,15 +2,14 @@
 import React from 'react';
 import { SiteEditorLayout } from '@/components/admin/editor/SiteEditorLayout';
 import { useSiteEditor } from '@/hooks/useSiteEditor';
-import { toast } from 'sonner';
 import { initializeStorageBuckets } from '@/integrations/supabase/storage';
+import { toast } from 'sonner';
 
 const SiteEditor: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
     isLoading,
-    isAdmin,
     hasUnsavedChanges,
     handlePublish,
     handlePreview,
@@ -34,11 +33,9 @@ const SiteEditor: React.FC = () => {
     init();
   }, []);
 
-  // Use the SiteEditorLayout component to display the editor
   return (
     <SiteEditorLayout
       isLoading={isLoading}
-      isAdmin={isAdmin}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       hasUnsavedChanges={hasUnsavedChanges}
