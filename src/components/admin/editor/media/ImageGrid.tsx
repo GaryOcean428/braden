@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+
+import React from 'react';
+import { Trash, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { MediaItem } from './types';
 
 interface ImageGridProps {
@@ -21,79 +23,40 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
   onDeleteItem,
   onClearSearch
 }) => {
-  const [dragging, setDragging] = useState(false);
-
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragging(false);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragging(false);
-
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      // Handle bulk upload
-      files.forEach(file => {
-        onSelectItem({ id: file.name, name: file.name, publicUrl: URL.createObjectURL(file), size: file.size, type: file.type, created_at: new Date().toISOString() });
-      });
-    }
-  };
-
+  // Filter for only image types
+  const imageItems = items.filter(item => 
+    item.type.startsWith('image/') || 
+    item.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|svg)$/)
+  );
+  
   // Loading state
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map(i => (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {[1, 2, 3, 4, 5, 6].map(i => (
           <div 
-            key={i} 
+            key={i}
             className="aspect-square bg-gray-200 rounded-md animate-pulse"
           />
         ))}
       </div>
     );
   }
-  
+
   // No items state
-  if (items.length === 0 && !searchQuery) {
+  if (imageItems.length === 0 && !searchQuery) {
     return (
-      <div 
-        className={`text-center py-16 border-2 border-dashed border-gray-300 rounded-md ${dragging ? 'bg-gray-100' : ''}`}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
+      <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-md">
         <p className="text-gray-500 mb-2">No images found</p>
-        <p className="text-sm text-gray-400">Upload images using the button above or drag and drop files here</p>
+        <p className="text-sm text-gray-400">Upload some images using the button above</p>
       </div>
     );
   }
   
   // No search results
-  if (items.length === 0 && searchQuery) {
+  if (imageItems.length === 0 && searchQuery) {
     return (
-      <div 
-        className={`text-center py-16 border-2 border-dashed border-gray-300 rounded-md ${dragging ? 'bg-gray-100' : ''}`}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
+      <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-md">
         <Search className="mx-auto h-8 w-8 text-gray-400 mb-2" />
         <p className="text-gray-500 mb-2">No images matching "{searchQuery}"</p>
         <button 
@@ -105,32 +68,43 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
       </div>
     );
   }
-  
-  // Display images
+
   return (
-    <div 
-      className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${dragging ? 'bg-gray-100' : ''}`}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
-      {items.map(item => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {imageItems.map((item) => (
         <div 
-          key={item.id}
-          onClick={() => onSelectItem(item)}
+          key={item.id} 
           className={`
-            aspect-square rounded-md overflow-hidden border cursor-pointer
-            hover:shadow-md transition-all
-            ${selectedItem?.id === item.id ? 'ring-2 ring-[#ab233a] ring-offset-2' : ''}
+            relative aspect-square rounded-md border overflow-hidden cursor-pointer group
+            ${selectedItem?.id === item.id ? 'ring-2 ring-[#ab233a]' : ''}
           `}
+          onClick={() => onSelectItem(item)}
         >
           <img 
             src={item.publicUrl} 
-            alt={item.name}
+            alt={item.name} 
             className="w-full h-full object-cover"
-            loading="lazy"
+            onError={(e) => {
+              // Handle image load errors
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Error';
+            }}
           />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-end p-2">
+            <p className="text-white text-xs truncate w-full opacity-0 group-hover:opacity-100 transition-opacity">
+              {item.name}
+            </p>
+            <Button
+              variant="destructive"
+              size="icon"
+              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 bg-red-500 hover:bg-red-600"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteItem(item);
+              }}
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       ))}
     </div>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { initializeStorageBuckets } from '@/integrations/supabase/storage';
 
 export function useSiteEditor() {
   const [activeTab, setActiveTab] = useState('theme');
@@ -12,8 +13,21 @@ export function useSiteEditor() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    initBuckets();
     checkAdminStatus();
   }, []);
+
+  const initBuckets = async () => {
+    try {
+      const result = await initializeStorageBuckets();
+      console.log('Storage buckets initialized:', result);
+    } catch (error) {
+      console.error('Error initializing storage buckets:', error);
+      toast.error("Storage configuration error", {
+        description: "There was an issue setting up media storage."
+      });
+    }
+  };
 
   const checkAdminStatus = async () => {
     try {
@@ -29,21 +43,45 @@ export function useSiteEditor() {
         return;
       }
       
-      // Check if the user is the developer by email
-      const userEmail = data.session.user.email;
+      // Check if the user is an admin using RPC function
+      const { data: adminCheck, error: adminError } = await supabase.rpc('is_developer_admin');
       
-      if (userEmail === 'braden.lang77@gmail.com') {
-        setIsAdmin(true);
-      } else {
-        toast.error("Access Denied", {
-          description: "You don't have developer permissions"
+      if (adminError) {
+        console.error("Admin check error:", adminError);
+        toast.error("Permission Check Failed", {
+          description: "Could not verify your admin status"
         });
         
-        // Redirect after a brief delay
-        setTimeout(() => {
-          navigate('/admin/auth');
-        }, 1500);
-        return;
+        // Use fallback method - check by email
+        const userEmail = data.session.user.email;
+        if (userEmail === 'braden.lang77@gmail.com') {
+          setIsAdmin(true);
+        } else {
+          toast.error("Access Denied", {
+            description: "You don't have developer permissions"
+          });
+          
+          // Redirect after a brief delay
+          setTimeout(() => {
+            navigate('/admin/auth');
+          }, 1500);
+          return;
+        }
+      } else {
+        // Set based on RPC result
+        setIsAdmin(adminCheck === true);
+        
+        if (!adminCheck) {
+          toast.error("Access Denied", {
+            description: "You don't have developer permissions"
+          });
+          
+          // Redirect after a brief delay
+          setTimeout(() => {
+            navigate('/admin/auth');
+          }, 1500);
+          return;
+        }
       }
     } catch (error) {
       console.error("Auth check error:", error);

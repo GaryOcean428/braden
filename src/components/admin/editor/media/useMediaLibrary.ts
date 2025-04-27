@@ -13,6 +13,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
   const [activeTab, setActiveTab] = useState('images');
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retries, setRetries] = useState(0);
   
   // Use the appropriate bucket based on parameters
   const { uploadImage, uploading, deleteImage } = useImageUpload(bucketName as any);
@@ -25,8 +26,8 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       setError(null);
       
       // Check auth status before attempting to list files
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
         console.warn('No auth session found when loading media');
         setError('Authentication required to access media library');
         setMediaItems([]);
@@ -37,7 +38,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       console.log(`Listing files from bucket: ${bucketName}`);
       const { data: files, error: listError } = await supabase.storage
         .from(bucketName)
-        .list();
+        .list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
       
       if (listError) {
         console.error('Error listing files:', listError);
@@ -63,7 +64,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       
       // Filter out folders, only include files
       const fileItems = files
-        .filter(item => !item.id.endsWith('/'))
+        .filter(item => !item.id.endsWith('/') && item.name)
         .map(file => {
           const { data } = supabase.storage
             .from(bucketName)
@@ -83,7 +84,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       setMediaItems(fileItems);
     } catch (error: any) {
       console.error('Error loading media:', error);
-      setError('Failed to load media items');
+      setError(error.message || 'Failed to load media items');
       setMediaItems([]);
     } finally {
       setIsLoading(false);
@@ -93,7 +94,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
   // Load media when the component mounts or bucket changes
   useEffect(() => {
     loadMedia();
-  }, []);
+  }, [loadMedia, retries]);
   
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,9 +111,9 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
         onChange();
         loadMedia();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload file');
+      toast.error(`Failed to upload file: ${error.message || 'Unknown error'}`);
     }
   };
   
@@ -134,10 +135,15 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
           setSelectedItem(null);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete error:', error);
-      toast.error('Failed to delete file');
+      toast.error(`Failed to delete file: ${error.message || 'Unknown error'}`);
     }
+  };
+
+  // Retry loading if there was an error
+  const handleRetry = () => {
+    setRetries(prev => prev + 1);
   };
 
   // Filter media items by search query
@@ -158,6 +164,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
     handleFileUpload,
     handleDeleteMedia,
     loadMedia,
+    handleRetry,
     error
   };
 };

@@ -1,8 +1,9 @@
 
 import React, { useEffect } from 'react';
-import { ImageIcon, FileVideo, AlertCircle, File, Loader2 } from 'lucide-react';
+import { ImageIcon, FileVideo, AlertCircle, File, Loader2, RefreshCw } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { useMediaLibrary } from './useMediaLibrary';
 import { FileUploader } from './FileUploader';
 import { SearchBar } from './SearchBar';
@@ -31,7 +32,8 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
     handleFileUpload,
     handleDeleteMedia,
     error,
-    loadMedia
+    loadMedia,
+    handleRetry
   } = useMediaLibrary(onChange, bucketName);
   
   // Sync with external selection if provided
@@ -39,7 +41,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
     if (externalSelectedItem) {
       setSelectedItem(externalSelectedItem);
     }
-  }, [externalSelectedItem]);
+  }, [externalSelectedItem, setSelectedItem]);
 
   // Handle external selection change callback
   const handleSelectItem = (item: MediaItem) => {
@@ -52,7 +54,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
   useEffect(() => {
     // Load media items when component mounts
     loadMedia();
-  }, [bucketName]);
+  }, [bucketName, loadMedia]);
   
   if (isLoading) {
     return (
@@ -60,6 +62,24 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
         <Loader2 className="h-8 w-8 animate-spin text-[#ab233a]" />
         <span className="ml-2 text-[#2c3e50]">Loading media library...</span>
       </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          {error}
+          <div className="mt-4">
+            <Button variant="outline" onClick={handleRetry} className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Try Again
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
     );
   }
   
@@ -76,69 +96,56 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
         </div>
       </div>
       
-      {error ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {error}
-            <div className="mt-2">
-              <p className="text-sm">Please ensure you are logged in and have proper permissions to access the media library.</p>
-            </div>
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-gray-100">
-            <TabsTrigger value="images" className="flex items-center gap-1">
-              <ImageIcon className="h-4 w-4" />
-              Images
-            </TabsTrigger>
-            <TabsTrigger value="media" className="flex items-center gap-1">
-              <FileVideo className="h-4 w-4" />
-              All Media
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="images" className="pt-4">
-            <div className="flex gap-4 mb-6">
-              <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search images..."
-              />
-            </div>
-            
-            <ImageGrid
-              isLoading={isLoading}
-              items={mediaItems}
-              searchQuery={searchQuery}
-              selectedItem={selectedItem}
-              onSelectItem={handleSelectItem}
-              onDeleteItem={handleDeleteMedia}
-              onClearSearch={() => setSearchQuery('')}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-gray-100">
+          <TabsTrigger value="images" className="flex items-center gap-1">
+            <ImageIcon className="h-4 w-4" />
+            Images
+          </TabsTrigger>
+          <TabsTrigger value="media" className="flex items-center gap-1">
+            <FileVideo className="h-4 w-4" />
+            All Media
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="images" className="pt-4">
+          <div className="flex gap-4 mb-6">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search images..."
             />
-          </TabsContent>
+          </div>
           
-          <TabsContent value="media" className="pt-4">
-            <div className="flex gap-4 mb-6">
-              <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search all media..."
-              />
-            </div>
-            
-            <MediaList
-              isLoading={isLoading}
-              items={mediaItems}
-              searchQuery={searchQuery}
-              onDeleteItem={handleDeleteMedia}
-              onClearSearch={() => setSearchQuery('')}
+          <ImageGrid
+            isLoading={isLoading}
+            items={mediaItems}
+            searchQuery={searchQuery}
+            selectedItem={selectedItem}
+            onSelectItem={handleSelectItem}
+            onDeleteItem={handleDeleteMedia}
+            onClearSearch={() => setSearchQuery('')}
+          />
+        </TabsContent>
+        
+        <TabsContent value="media" className="pt-4">
+          <div className="flex gap-4 mb-6">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search all media..."
             />
-          </TabsContent>
-        </Tabs>
-      )}
+          </div>
+          
+          <MediaList
+            isLoading={isLoading}
+            items={mediaItems}
+            searchQuery={searchQuery}
+            onDeleteItem={handleDeleteMedia}
+            onClearSearch={() => setSearchQuery('')}
+          />
+        </TabsContent>
+      </Tabs>
       
       {selectedItem && (
         <MediaItemDetails item={selectedItem} onDelete={handleDeleteMedia} />

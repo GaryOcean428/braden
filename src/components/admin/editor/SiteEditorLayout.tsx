@@ -8,6 +8,7 @@ import { ThemeTab } from '@/components/admin/editor/tabs/ThemeTab';
 import { LayoutTab } from '@/components/admin/editor/tabs/LayoutTab';
 import { ComponentsTab } from '@/components/admin/editor/tabs/ComponentsTab';
 import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
+import { LogoTab } from '@/components/admin/editor/tabs/LogoTab';
 import { useSiteEditor } from '@/hooks/useSiteEditor';
 
 interface SiteEditorLayoutProps {
@@ -73,6 +74,10 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
             <Image className="h-4 w-4" />
             Media
           </TabsTrigger>
+          <TabsTrigger value="logos" className="flex items-center gap-1">
+            <Image className="h-4 w-4" />
+            Branding
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="theme">
@@ -89,6 +94,10 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
 
         <TabsContent value="media">
           <MediaTab onChange={handleChange} />
+        </TabsContent>
+        
+        <TabsContent value="logos">
+          <LogoTab onChange={handleChange} />
         </TabsContent>
       </Tabs>
     </div>
