@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { SiteEditorLayout } from '@/components/admin/editor/SiteEditorLayout';
 import { useSiteEditor } from '@/hooks/useSiteEditor';
@@ -31,6 +30,23 @@ const SiteEditor: React.FC = () => {
     };
     
     init();
+  }, []);
+
+  // Initialize favicons storage bucket when component mounts
+  React.useEffect(() => {
+    const initFavicons = async () => {
+      try {
+        await initializeStorageBuckets();
+        console.log('Favicons storage bucket initialized in SiteEditor');
+      } catch (error) {
+        console.error('Error initializing favicons storage bucket:', error);
+        toast.error("Storage Error", {
+          description: "Could not initialize favicons storage. Some features may not work properly."
+        });
+      }
+    };
+    
+    initFavicons();
   }, []);
 
   return (

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Palette, Layout, Layers, Image, File } from 'lucide-react';
+import { Palette, Layout, Layers, Image, File, Star } from 'lucide-react';
 import { SiteEditorHeader } from '@/components/admin/editor/SiteEditorHeader';
 import { SiteEditorLoading } from '@/components/admin/editor/SiteEditorLoading';
 import { ThemeTab } from '@/components/admin/editor/tabs/ThemeTab';
@@ -71,6 +70,10 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
             <File className="h-4 w-4" />
             Logos
           </TabsTrigger>
+          <TabsTrigger value="favicons" className="flex items-center gap-1">
+            <Star className="h-4 w-4" />
+            Favicons
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="theme">
@@ -90,6 +93,10 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
         </TabsContent>
 
         <TabsContent value="logos">
+          <LogoTab onChange={handleChange} />
+        </TabsContent>
+
+        <TabsContent value="favicons">
           <LogoTab onChange={handleChange} />
         </TabsContent>
       </Tabs>

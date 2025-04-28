@@ -11,6 +11,7 @@ import { AdminUsersTable } from '@/components/admin/AdminUsersTable';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 import { AdminStatusAlert } from '@/components/admin/AdminStatusAlert';
 import { toast } from 'sonner';
+import { DashboardCards } from '@/components/admin/DashboardCards';
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('hero');
@@ -220,6 +221,8 @@ const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      <DashboardCards />
     </div>
   );
 };
