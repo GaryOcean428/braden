@@ -56,7 +56,7 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
           'users.view', 'users.create', 'users.edit', 'users.delete',
           'content.view', 'content.create', 'content.edit', 'content.delete',
           'site.edit', 'clients.view', 'clients.manage', 'leads.view', 'leads.manage'
-        ]);
+        ] as Permission[]);
         return;
       }
 
@@ -70,7 +70,7 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
       if (adminError) throw adminError;
 
       if (adminUser) {
-        setRole(adminUser.role);
+        setRole(adminUser.role as AdminRole);
         setIsAdmin(adminUser.role === 'admin');
 
         // Fetch user's permissions based on their role
@@ -81,7 +81,7 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
 
         if (permissionsError) throw permissionsError;
 
-        setPermissions(permissionsData.map(p => p.permission_key));
+        setPermissions(permissionsData.map(p => p.permission_key as Permission));
       }
 
     } catch (err) {

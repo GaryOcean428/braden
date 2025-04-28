@@ -1,6 +1,8 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { AdminRole } from '@/types/permissions';
 
 // Define the AdminUser type instead of importing it
 export interface AdminUser {
@@ -8,6 +10,7 @@ export interface AdminUser {
   user_id?: string;
   email?: string;
   created_at?: string;
+  role?: AdminRole;
 }
 
 export const useAdminUsers = () => {
@@ -57,7 +60,8 @@ export const useAdminUsers = () => {
         id: user.id,
         user_id: user.user_id,
         email: user.email,
-        created_at: user.created_at
+        created_at: user.created_at,
+        role: user.role
       }));
 
       setAdminUsers(formattedAdminUsers);
