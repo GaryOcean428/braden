@@ -47,6 +47,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          role: Database["public"]["Enums"]["admin_role_type"]
           updated_at: string
           user_id: string
         }
@@ -54,6 +55,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          role?: Database["public"]["Enums"]["admin_role_type"]
           updated_at?: string
           user_id: string
         }
@@ -61,6 +63,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          role?: Database["public"]["Enums"]["admin_role_type"]
           updated_at?: string
           user_id?: string
         }
@@ -1489,6 +1492,30 @@ export type Database = {
         }
         Relationships: []
       }
+      permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permission_key: string
+          role: Database["public"]["Enums"]["admin_role_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission_key: string
+          role: Database["public"]["Enums"]["admin_role_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission_key?: string
+          role?: Database["public"]["Enums"]["admin_role_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_roles: {
         Row: {
           created_at: string | null
@@ -2339,6 +2366,10 @@ export type Database = {
         Args: Record<PropertyKey, never> | { user_id: string }
         Returns: boolean
       }
+      is_admin_developer: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_admin_user: {
         Args: { user_uuid: string }
         Returns: boolean
@@ -2359,13 +2390,17 @@ export type Database = {
         Args: { bucket_name: string }
         Returns: undefined
       }
+      user_has_permission: {
+        Args: { user_id: string; required_permission: string }
+        Returns: boolean
+      }
       version: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
     }
     Enums: {
-      [_ in never]: never
+      admin_role_type: "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2480,6 +2515,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      admin_role_type: ["admin", "editor", "viewer"],
+    },
   },
 } as const
