@@ -138,6 +138,33 @@ export const useAdminUsers = () => {
     }
   }, [checkAdminAndLoadUsers]);
 
+  const configurePermissions = useCallback(async (): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      // Call a function to set up database permissions
+      const { data, error } = await supabase.rpc('admin_bypass');
+      
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Permissions Configured', {
+        description: 'Database access has been properly set up'
+      });
+
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Permission configuration failed';
+      console.error('Permission configuration error:', errorMessage);
+      toast.error('Permissions Error', {
+        description: errorMessage
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     checkAdminAndLoadUsers();
   }, [checkAdminAndLoadUsers]);
@@ -148,6 +175,7 @@ export const useAdminUsers = () => {
     error,
     isAdmin,
     checkAdminAndLoadUsers,
-    addAdminUser
+    addAdminUser,
+    configurePermissions
   };
 };
