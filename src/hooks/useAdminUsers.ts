@@ -61,7 +61,7 @@ export const useAdminUsers = () => {
         user_id: user.user_id,
         email: user.email,
         created_at: user.created_at,
-        role: user.role
+        role: user.role as AdminRole
       }));
 
       setAdminUsers(formattedAdminUsers);
