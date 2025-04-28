@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes as RouterRoutes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes as RouterRoutes, Route, Outlet } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import Index from '@/pages/Index';
 import Contact from '@/pages/Contact';
@@ -26,7 +26,7 @@ export function Routes() {
     <BrowserRouter>
       <RouterRoutes>
         {/* Public routes */}
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Layout><Outlet /></Layout>}>
           <Route index element={<Index />} />
           <Route path="contact" element={<Contact />} />
           <Route path="services/:serviceId" element={<Service />} />
@@ -37,7 +37,7 @@ export function Routes() {
 
         {/* Admin routes */}
         <Route path="/admin/auth" element={<AdminAuth />} />
-        <Route path="/admin" element={<Layout />}>
+        <Route path="/admin" element={<Layout><Outlet /></Layout>}>
           <Route index element={<Dashboard />} />
           <Route path="content" element={<ContentManager />} />
           <Route path="editor" element={<SiteEditor />} />
