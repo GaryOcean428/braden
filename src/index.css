@@ -1,6 +1,72 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode variables */
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    /* Braden theme colors */
+    --color-primary: #ab233a;
+    --color-primary-dark: #811a2c;
+    --color-primary-light: #d8c690;
+    --color-navy: #2c3e50;
+    --color-slate: #95a5a6;
+    --color-gold: #cbb26a;
+    
+    /* Typography */
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    
+    /* Animation */
+    --transition-default: all 0.3s ease;
+    --transition-fast: all 0.15s ease;
+    --transition-slow: all 0.5s ease;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    
+    /* Dark mode adjustments */
+    --color-primary: #d8364f;
+    --color-primary-dark: #ab233a;
+    --color-primary-light: #e6d4a8;
+    --color-navy: #34495e;
+    --color-slate: #a7b6b7;
+    --color-gold: #d8c690;
+  }
+}
+
+/* Base styles */
+body {
+  @apply bg-background text-foreground antialiased;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-heading font-semibold;
+}
+
+/* Transitions */
+.transition-default {
+  transition: var(--transition-default);
+}
+
+.transition-fast {
+  transition: var(--transition-fast);
+}
+
+.transition-slow {
+  transition: var(--transition-slow);
+}
+
  
 @layer base {
   :root {
