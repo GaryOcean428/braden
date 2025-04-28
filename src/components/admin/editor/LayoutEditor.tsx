@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -84,6 +83,12 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
   // Get sections for the current template
   const currentTemplateSections = templates.find(t => t.id === selectedTemplate)?.sections || [];
 
+  // Handle the preview layout action
+  const onPreviewLayout = () => {
+    toast.info('Previewing layout');
+    // Implement the preview functionality here
+  };
+
   return (
     <div className="space-y-6">
       <TemplateSelector 
@@ -95,7 +100,15 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
       {/* Template preview */}
       <TemplatePreview sections={currentTemplateSections} />
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Button
+          onClick={onPreviewLayout}
+          disabled={isLoading}
+          variant="outline"
+          className="flex items-center gap-1"
+        >
+          Preview
+        </Button>
         <Button
           onClick={onSaveLayout}
           disabled={isLoading}

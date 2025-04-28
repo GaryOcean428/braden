@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
@@ -14,13 +13,14 @@ import Apprenticeships from '@/pages/apprenticeships';
 import Traineeships from '@/pages/traineeships';
 import Recruitment from '@/pages/recruitment';
 import Service from '@/pages/Service';
+import { AuthLoadingState } from '@/components/auth/AuthLoadingState';
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <AuthLoadingState />;
   }
   
   if (!user) {

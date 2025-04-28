@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,9 +6,9 @@ import { Users, FileText, Settings } from "lucide-react";
 export const DashboardCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xl font-medium">Content</CardTitle>
+          <CardTitle className="text-xl font-semibold">Content</CardTitle>
           <FileText className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -22,9 +21,9 @@ export const DashboardCards = () => {
         </CardContent>
       </Card>
 
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xl font-medium">Users</CardTitle>
+          <CardTitle className="text-xl font-semibold">Users</CardTitle>
           <Users className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -37,9 +36,9 @@ export const DashboardCards = () => {
         </CardContent>
       </Card>
 
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xl font-medium">Settings</CardTitle>
+          <CardTitle className="text-xl font-semibold">Settings</CardTitle>
           <Settings className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
