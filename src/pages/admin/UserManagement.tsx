@@ -27,9 +27,10 @@ export default function UserManagement() {
 
   useEffect(() => {
     checkAdminAndLoadUsers();
-  }, []);
+  }, [checkAdminAndLoadUsers]);
 
   const handleAddAdmin = () => {
+    console.log("Opening add admin dialog");
     setAddDialogOpen(true);
   };
 

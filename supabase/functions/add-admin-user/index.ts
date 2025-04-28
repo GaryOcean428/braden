@@ -29,17 +29,33 @@ serve(async (req) => {
       );
     }
 
-    // Find user by email in auth.users (only possible with service role)
-    const { data: userData, error: userError } = await supabaseClient
-      .from("auth")
-      .select("users.id")
-      .eq("users.email", email)
+    console.log(`Searching for user with email: ${email}`);
+
+    // Find user by email in auth.users
+    const { data: userData, error: userError } = await supabaseClient.auth.admin.getUserByEmail(email);
+
+    if (userError || !userData?.user) {
+      console.error("User lookup error:", userError || "No user found");
+      return new Response(
+        JSON.stringify({ error: "User not found. They must register first." }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      );
+    }
+
+    console.log(`User found with ID: ${userData.user.id}`);
+
+    // Check if user already exists in admin_users table
+    const { data: existingAdmin, error: checkError } = await supabaseClient
+      .from("admin_users")
+      .select("id")
+      .eq("user_id", userData.user.id)
       .single();
 
-    if (userError || !userData) {
+    if (existingAdmin) {
+      console.log("User is already an admin");
       return new Response(
-        JSON.stringify({ error: "User not found" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+        JSON.stringify({ message: "User is already an admin", user: existingAdmin }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
       );
     }
 
@@ -47,19 +63,22 @@ serve(async (req) => {
     const { data: adminData, error: adminError } = await supabaseClient
       .from("admin_users")
       .insert({
-        user_id: userData.id,
-        email: email
+        user_id: userData.user.id,
+        email: email,
+        role: "viewer" // Default role
       })
       .select()
       .single();
 
     if (adminError) {
+      console.error("Admin creation error:", adminError);
       return new Response(
         JSON.stringify({ error: adminError.message }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
 
+    console.log("Admin user created successfully");
     return new Response(
       JSON.stringify(adminData),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }

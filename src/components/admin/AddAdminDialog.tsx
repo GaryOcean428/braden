@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface AddAdminDialogProps {
 export function AddAdminDialog({ open, onOpenChange, onAddAdmin, isLoading }: AddAdminDialogProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +34,21 @@ export function AddAdminDialog({ open, onOpenChange, onAddAdmin, isLoading }: Ad
     }
     
     setError("");
-    const success = await onAddAdmin(email.trim());
+    setSubmitting(true);
     
-    if (success) {
-      setEmail("");
-      onOpenChange(false);
+    try {
+      console.log("Submitting admin user:", email);
+      const success = await onAddAdmin(email.trim());
+      
+      if (success) {
+        setEmail("");
+        onOpenChange(false);
+      }
+    } catch (err) {
+      console.error("Error in add admin dialog:", err);
+      setError("An unexpected error occurred");
+    } finally {
+      setSubmitting(false);
     }
   };
   
@@ -77,6 +89,7 @@ export function AddAdminDialog({ open, onOpenChange, onAddAdmin, isLoading }: Ad
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       autoComplete="email"
+                      disabled={submitting || isLoading}
                     />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -85,16 +98,7 @@ export function AddAdminDialog({ open, onOpenChange, onAddAdmin, isLoading }: Ad
                 </Tooltip>
               </TooltipProvider>
               {error && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <p className="text-sm text-red-500">{error}</p>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{error === "Email is required" ? "The email field cannot be empty." : "Please enter a valid email address."}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <p className="text-sm text-red-500">{error}</p>
               )}
             </div>
           </div>
@@ -104,33 +108,24 @@ export function AddAdminDialog({ open, onOpenChange, onAddAdmin, isLoading }: Ad
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isLoading}
+              disabled={submitting || isLoading}
             >
               Cancel
             </Button>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    type="submit" 
-                    className="bg-[#ab233a] hover:bg-[#811a2c]"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding...
-                      </>
-                    ) : (
-                      "Add Admin"
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>The user will be granted admin privileges upon successful addition.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+              <Button 
+                type="submit" 
+                className="bg-[#ab233a] hover:bg-[#811a2c]"
+                disabled={submitting || isLoading}
+              >
+                {submitting || isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "Add Admin"
+                )}
+              </Button>
           </DialogFooter>
         </form>
       </DialogContent>

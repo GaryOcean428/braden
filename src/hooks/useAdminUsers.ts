@@ -31,17 +31,28 @@ export const useAdminUsers = () => {
         throw new Error('No active session');
       }
 
-      // Check developer status using Supabase function
-      const { data, error: adminCheckError } = await supabase.rpc('is_developer_admin');
-      
-      if (adminCheckError) {
-        throw adminCheckError;
+      // Check developer status directly by email
+      if (session.user.email === "braden.lang77@gmail.com") {
+        console.log("Developer admin detected by direct email check");
+        setIsAdmin(true);
+      } else {
+        // Fallback to RPC function for backward compatibility
+        try {
+          const { data: isDeveloperAdmin, error: adminCheckError } = await supabase.rpc('is_developer_admin');
+          
+          if (adminCheckError) {
+            throw adminCheckError;
+          }
+          
+          setIsAdmin(isDeveloperAdmin === true);
+        } catch (err) {
+          console.error("Error checking admin status:", err);
+          // Continue with a false admin status
+        }
       }
 
-      setIsAdmin(data === true);
-
       // If not an admin, don't load users
-      if (!data) {
+      if (!isAdmin && session.user.email !== "braden.lang77@gmail.com") {
         setAdminUsers([]);
         return;
       }
@@ -74,62 +85,57 @@ export const useAdminUsers = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAdmin]);
 
   const addAdminUser = useCallback(async (email: string): Promise<boolean> => {
     try {
-      // First, check if the email is already in admin_users
-      const { data: userData, error: userFetchError } = await supabase
-        .from('admin_users')
-        .select('id, email')
-        .eq('email', email)
-        .single();
+      setIsLoading(true);
+      console.log(`Adding admin user: ${email}`);
+      
+      // Call the edge function to add the admin user
+      const { data, error } = await supabase.functions.invoke('add-admin-user', {
+        body: { email }
+      });
 
-      if (userFetchError || !userData) {
-        // Instead of using the RPC function that's not in the type definitions,
-        // let's use a direct query approach that accomplishes the same thing
-        
-        // Step 1: Find the user by email in the auth system
-        // We can't query auth.users directly, but we can use a more generic approach
-        // with the Supabase function API to call our function
-        const { data: addedUser, error: functionError } = await supabase.functions.invoke('add-admin-user', {
-          body: { email }
-        });
-        
-        if (functionError) {
-          toast.error('Add Admin Failed', {
-            description: functionError.message
-          });
-          return false;
-        }
-
-        if (!addedUser || addedUser.error) {
-          toast.error('User Not Found', {
-            description: 'No user with this email exists. They must register first.'
-          });
-          return false;
-        }
-
-        toast.success('Admin Added', {
-          description: `${email} has been granted admin access`
-        });
-
-        // Refresh the admin users list
-        await checkAdminAndLoadUsers();
-        return true;
-      } else {
-        // User already exists as admin
-        toast.error('User Already Admin', {
-          description: 'This email is already registered as an admin user'
+      if (error) {
+        console.error('Edge function error:', error);
+        toast.error('Add Admin Failed', {
+          description: error.message
         });
         return false;
       }
+
+      if (data.error) {
+        console.error('Admin user creation error:', data.error);
+        toast.error('Add Admin Failed', {
+          description: data.error
+        });
+        return false;
+      }
+
+      // Success scenario
+      if (data.message === "User is already an admin") {
+        toast.info('User Already Admin', {
+          description: 'This email is already registered as an admin user'
+        });
+      } else {
+        toast.success('Admin Added', {
+          description: `${email} has been granted admin access`
+        });
+      }
+
+      // Refresh the admin users list
+      await checkAdminAndLoadUsers();
+      return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to add admin';
+      console.error('Add admin exception:', errorMessage);
       toast.error('Add Admin Failed', {
         description: errorMessage
       });
       return false;
+    } finally {
+      setIsLoading(false);
     }
   }, [checkAdminAndLoadUsers]);
 
