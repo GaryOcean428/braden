@@ -2355,6 +2355,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      setup_storage_policies: {
+        Args: { bucket_name: string }
+        Returns: undefined
+      }
       version: {
         Args: Record<PropertyKey, never>
         Returns: string
