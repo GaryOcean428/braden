@@ -24,7 +24,6 @@ export const useAdminUsers = () => {
       setIsLoading(true);
       setError(null);
 
-      // Check if the current user is an admin
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -139,29 +138,6 @@ export const useAdminUsers = () => {
     }
   }, [checkAdminAndLoadUsers]);
 
-  const configurePermissions = useCallback(async () => {
-    try {
-      // Call a function to set up database permissions
-      const { data, error } = await supabase.rpc('admin_bypass');
-      
-      if (error) {
-        throw error;
-      }
-
-      toast.success('Permissions Configured', {
-        description: 'Database access has been properly set up'
-      });
-
-      return true;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Permission configuration failed';
-      toast.error('Permissions Error', {
-        description: errorMessage
-      });
-      return false;
-    }
-  }, []);
-
   useEffect(() => {
     checkAdminAndLoadUsers();
   }, [checkAdminAndLoadUsers]);
@@ -172,7 +148,6 @@ export const useAdminUsers = () => {
     error,
     isAdmin,
     checkAdminAndLoadUsers,
-    addAdminUser,
-    configurePermissions
+    addAdminUser
   };
 };
