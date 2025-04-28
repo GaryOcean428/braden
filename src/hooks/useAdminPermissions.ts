@@ -41,47 +41,86 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
         return;
       }
 
-      // Check if user is the developer admin
-      const { data: isDeveloperAdmin, error: developerError } = await supabase.rpc('is_developer_admin');
+      // Check if the user email is the developer email - most reliable method
+      const userEmail = session.user.email;
       
-      if (developerError) throw developerError;
-      
-      setIsDeveloper(isDeveloperAdmin === true);
-
-      if (isDeveloperAdmin) {
+      if (userEmail === 'braden.lang77@gmail.com') {
+        console.log('Developer detected by email');
+        setIsDeveloper(true);
         setIsAdmin(true);
         setRole('admin');
-        // Developer admin has all permissions
+        
+        // Developer has all permissions
         setPermissions([
           'users.view', 'users.create', 'users.edit', 'users.delete',
           'content.view', 'content.create', 'content.edit', 'content.delete',
           'site.edit', 'clients.view', 'clients.manage', 'leads.view', 'leads.manage'
         ] as Permission[]);
+        
+        setLoading(false);
         return;
+      }
+      
+      // Fallback to using the RPC function
+      try {
+        // Check if user is the developer admin
+        const { data: isDeveloperAdmin, error: developerError } = await supabase.rpc('is_developer_admin');
+        
+        if (developerError) {
+          console.error('Developer check error:', developerError);
+        } else if (isDeveloperAdmin === true) {
+          setIsDeveloper(true);
+          setIsAdmin(true);
+          setRole('admin');
+          
+          // Developer admin has all permissions
+          setPermissions([
+            'users.view', 'users.create', 'users.edit', 'users.delete',
+            'content.view', 'content.create', 'content.edit', 'content.delete',
+            'site.edit', 'clients.view', 'clients.manage', 'leads.view', 'leads.manage'
+          ] as Permission[]);
+          
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error('Developer RPC check failed:', err);
+        // Continue with regular admin check
       }
 
       // Get user's role and permissions
-      const { data: adminUser, error: adminError } = await supabase
-        .from('admin_users')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .single();
+      try {
+        const { data: adminUser, error: adminError } = await supabase
+          .from('admin_users')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .single();
 
-      if (adminError) throw adminError;
+        if (adminError) {
+          if (adminError.code === 'PGRST116') {
+            // No data found - not an admin
+            setLoading(false);
+            return;
+          }
+          throw adminError;
+        }
 
-      if (adminUser) {
-        setRole(adminUser.role as AdminRole);
-        setIsAdmin(adminUser.role === 'admin');
+        if (adminUser) {
+          setRole(adminUser.role as AdminRole);
+          setIsAdmin(adminUser.role === 'admin');
 
-        // Fetch user's permissions based on their role
-        const { data: permissionsData, error: permissionsError } = await supabase
-          .from('permissions')
-          .select('permission_key')
-          .eq('role', adminUser.role);
+          // Fetch user's permissions based on their role
+          const { data: permissionsData, error: permissionsError } = await supabase
+            .from('permissions')
+            .select('permission_key')
+            .eq('role', adminUser.role);
 
-        if (permissionsError) throw permissionsError;
+          if (permissionsError) throw permissionsError;
 
-        setPermissions(permissionsData.map(p => p.permission_key as Permission));
+          setPermissions(permissionsData.map(p => p.permission_key as Permission));
+        }
+      } catch (err) {
+        console.error('Admin permissions check error:', err);
       }
 
     } catch (err) {

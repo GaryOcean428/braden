@@ -16,7 +16,19 @@ const Index = () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user?.email === "braden.lang77@gmail.com") {
+          console.log("Developer admin detected on index page");
           setIsAdmin(true);
+        } else {
+          // Fallback to RPC function for backward compatibility
+          try {
+            const { data: isDeveloperAdmin, error: devError } = await supabase.rpc('is_developer_admin');
+            if (!devError && isDeveloperAdmin === true) {
+              console.log("Developer admin detected via RPC");
+              setIsAdmin(true);
+            }
+          } catch (err) {
+            console.error("Error checking developer status via RPC:", err);
+          }
         }
       } catch (error) {
         console.error("Error checking admin status:", error);

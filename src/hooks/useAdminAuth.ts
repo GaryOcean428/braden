@@ -32,42 +32,62 @@ export function useAdminAuth() {
       }
       
       if (data.session) {
-        // Call RPC function to check developer status
-        const { data: isDevData, error: devError } = await supabase
-          .rpc('is_developer');
-          
-        if (devError) {
-          console.error('Developer check error:', devError);
-          return;
-        }
+        // Check if user is the developer by email
+        const userEmail = data.session.user.email;
         
-        if (isDevData) {
-          console.log("Developer access confirmed");
+        if (userEmail === 'braden.lang77@gmail.com') {
+          console.log("Developer access confirmed by email");
           toast.success('Developer Access Confirmed', {
             description: 'You have full system privileges'
           });
           setIsAdmin(true);
           setIsDeveloper(true);
           navigate('/admin');
-        } else {
-          // Check regular admin access as fallback
+          return;
+        }
+        
+        // Fallback to RPC function for developer check
+        try {
+          const { data: isDevData, error: devError } = await supabase
+            .rpc('is_developer');
+            
+          if (devError) {
+            console.error('Developer check error:', devError);
+            // Fall through to next check
+          } else if (isDevData) {
+            console.log("Developer access confirmed by RPC function");
+            toast.success('Developer Access Confirmed', {
+              description: 'You have full system privileges'
+            });
+            setIsAdmin(true);
+            setIsDeveloper(true);
+            navigate('/admin');
+            return;
+          }
+        } catch (err) {
+          console.error('Developer check failed:', err);
+          // Continue to next check
+        }
+        
+        // Check regular admin access as fallback
+        try {
           const { data: adminData, error: adminError } = await supabase
             .rpc('has_admin_access');
             
           if (adminError) {
             console.error('Admin check error:', adminError);
-            return;
-          }
-          
-          if (adminData) {
+          } else if (adminData) {
             console.log("Admin access confirmed");
             toast.success('Admin Access Confirmed');
             setIsAdmin(true);
+            navigate('/admin');
           } else {
             console.log("Standard user access detected");
             setIsAdmin(false);
             setIsDeveloper(false);
           }
+        } catch (err) {
+          console.error('Admin check failed:', err);
         }
       }
     } catch (error) {
@@ -110,18 +130,38 @@ export function useAdminAuth() {
         return;
       }
       
-      // After successful login, check developer/admin status
-      const { data: isDevData } = await supabase.rpc('is_developer');
-      
-      if (isDevData) {
+      // Check developer status by email directly
+      if (data.user.email === 'braden.lang77@gmail.com') {
         toast.success('Developer access confirmed');
         setIsAdmin(true);
         setIsDeveloper(true);
         navigate('/admin');
-      } else {
-        const { data: adminData } = await supabase.rpc('has_admin_access');
+        return;
+      }
+      
+      // Fallback to RPC functions
+      try {
+        const { data: isDevData, error: devError } = await supabase.rpc('is_developer');
         
-        if (adminData) {
+        if (devError) {
+          console.error('Developer check error:', devError);
+        } else if (isDevData) {
+          toast.success('Developer access confirmed');
+          setIsAdmin(true);
+          setIsDeveloper(true);
+          navigate('/admin');
+          return;
+        }
+      } catch (err) {
+        console.error('Developer check failed:', err);
+      }
+      
+      try {
+        const { data: adminData, error: adminError } = await supabase.rpc('has_admin_access');
+        
+        if (adminError) {
+          console.error('Admin check error:', adminError);
+        } else if (adminData) {
           toast.success('Admin access confirmed');
           setIsAdmin(true);
           navigate('/admin');
@@ -132,6 +172,12 @@ export function useAdminAuth() {
           });
           await supabase.auth.signOut();
         }
+      } catch (err) {
+        console.error('Admin check failed:', err);
+        setError('Failed to verify admin status');
+        toast.error('Access Error', {
+          description: 'Failed to verify admin status'
+        });
       }
     } catch (error: any) {
       console.error('Login process error:', error);

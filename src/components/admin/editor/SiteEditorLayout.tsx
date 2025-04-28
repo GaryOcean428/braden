@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Palette, Layout, Layers, Image, File, Star } from 'lucide-react';
 import { SiteEditorHeader } from '@/components/admin/editor/SiteEditorHeader';
@@ -10,6 +11,7 @@ import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
 import { LogoTab } from '@/components/admin/editor/tabs/LogoTab';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { Navigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SiteEditorLayoutProps {
   isLoading: boolean;
@@ -31,12 +33,33 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
   handleChange
 }) => {
   const { isAdmin, loading: permissionLoading, error } = useAdminPermissions();
+  const [isDirectDeveloper, setIsDirectDeveloper] = useState(false);
+  const [checkingDeveloper, setCheckingDeveloper] = useState(true);
 
-  if (isLoading || permissionLoading) {
+  // Direct check for developer email
+  useEffect(() => {
+    const checkDeveloper = async () => {
+      try {
+        setCheckingDeveloper(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email === 'braden.lang77@gmail.com') {
+          setIsDirectDeveloper(true);
+        }
+      } catch (error) {
+        console.error('Error checking developer:', error);
+      } finally {
+        setCheckingDeveloper(false);
+      }
+    };
+    
+    checkDeveloper();
+  }, []);
+
+  if (isLoading || permissionLoading || checkingDeveloper) {
     return <SiteEditorLoading />;
   }
 
-  if (!isAdmin || error) {
+  if (!isAdmin && !isDirectDeveloper) {
     return <Navigate to="/admin/auth" replace />;
   }
 
