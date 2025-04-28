@@ -65,6 +65,7 @@ export const useLogoManager = (
     setSelectedLogo,
     isUpdating,
     error,
+    setError, // Added setError to the return object
     loading,
     logoUrl,
     handleUpdateLogo

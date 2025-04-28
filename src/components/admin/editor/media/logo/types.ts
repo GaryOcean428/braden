@@ -1,4 +1,3 @@
-
 export interface LogoFile {
   id: string;
   name: string;
@@ -18,4 +17,14 @@ export interface LogoPreviewProps {
   url?: string;
   title: string;
   className?: string;
+}
+
+export interface LogoManagerLoadingProps {
+  title?: string;
+}
+
+export interface LogoManagerErrorProps {
+  title?: string;
+  error: string;
+  onRetry: () => void;
 }

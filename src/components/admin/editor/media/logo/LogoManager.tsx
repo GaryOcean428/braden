@@ -3,12 +3,13 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MediaLibrary } from '../MediaLibrary';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ImageIcon, Upload, AlertCircle, Loader2 } from 'lucide-react';
+import { ImageIcon, Upload, Loader2 } from 'lucide-react';
 import { LogoPreview } from './LogoPreview';
 import { useLogoManager } from './useLogoManager';
 import { LogoManagerProps } from './types';
 import { MediaItem } from '../types';
+import { LogoManagerLoading } from './LogoManagerLoading';
+import { LogoManagerError } from './LogoManagerError';
 
 export const LogoManager: React.FC<LogoManagerProps> = ({ 
   onLogoUpdate,
@@ -24,7 +25,8 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
     error,
     loading,
     logoUrl,
-    handleUpdateLogo
+    handleUpdateLogo,
+    setError
   } = useLogoManager(onLogoUpdate, currentLogo);
   
   const handleSelectItem = (item: MediaItem) => {
@@ -34,45 +36,18 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
   const handleMediaChange = () => {
     console.log('Media library changed');
   };
+
+  if (loading) {
+    return <LogoManagerLoading title={title} />;
+  }
   
   if (error) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-[#2c3e50] text-white">
-          <CardTitle className="flex items-center gap-2">
-            <ImageIcon className="h-5 w-5" />
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-          <div className="mt-4">
-            <Button onClick={() => setError(null)}>Try Again</Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-  
-  if (loading) {
-    return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-[#2c3e50] text-white">
-          <CardTitle className="flex items-center gap-2">
-            <ImageIcon className="h-5 w-5" />
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin mr-2 text-[#ab233a]" />
-            <span>Loading {title.toLowerCase()}...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <LogoManagerError 
+        title={title}
+        error={error}
+        onRetry={() => setError(null)}
+      />
     );
   }
   

@@ -933,6 +933,81 @@ export type Database = {
         }
         Relationships: []
       }
+      enterprise_agreements: {
+        Row: {
+          allowances: Json
+          base_rates: Json
+          created_at: string | null
+          financial_year: string
+          id: string
+          industry: string | null
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          overtime_rates: Json
+          penalty_rates: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          allowances?: Json
+          base_rates?: Json
+          created_at?: string | null
+          financial_year: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          overtime_rates?: Json
+          penalty_rates?: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          allowances?: Json
+          base_rates?: Json
+          created_at?: string | null
+          financial_year?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          overtime_rates?: Json
+          penalty_rates?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      financial_years: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          id: string
+          is_current: boolean | null
+          start_date: string
+          year_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          id?: string
+          is_current?: boolean | null
+          start_date: string
+          year_name: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          is_current?: boolean | null
+          start_date?: string
+          year_name?: string
+        }
+        Relationships: []
+      }
       ideas: {
         Row: {
           category: string
@@ -1918,9 +1993,12 @@ export type Database = {
       }
       user_calculations: {
         Row: {
+          award_fixed_id: number | null
           billable_options: Json
           cost_config: Json
           created_at: string | null
+          custom_rates: Json | null
+          financial_year: string | null
           id: string
           name: string
           pay_rate: number
@@ -1930,9 +2008,12 @@ export type Database = {
           work_config: Json
         }
         Insert: {
+          award_fixed_id?: number | null
           billable_options: Json
           cost_config: Json
           created_at?: string | null
+          custom_rates?: Json | null
+          financial_year?: string | null
           id?: string
           name: string
           pay_rate: number
@@ -1942,9 +2023,12 @@ export type Database = {
           work_config: Json
         }
         Update: {
+          award_fixed_id?: number | null
           billable_options?: Json
           cost_config?: Json
           created_at?: string | null
+          custom_rates?: Json | null
+          financial_year?: string | null
           id?: string
           name?: string
           pay_rate?: number
@@ -1953,7 +2037,15 @@ export type Database = {
           user_id?: string
           work_config?: Json
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_calculations_award_fixed_id_fkey"
+            columns: ["award_fixed_id"]
+            isOneToOne: false
+            referencedRelation: "awards"
+            referencedColumns: ["award_fixed_id"]
+          },
+        ]
       }
       user_organizations: {
         Row: {
