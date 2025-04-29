@@ -1527,6 +1527,7 @@ export type Database = {
           conditions: Json | null
           created_at: string
           id: string
+          membership_id: string | null
           permission_key: string
           resource_type: string | null
           role: Database["public"]["Enums"]["admin_role_type"]
@@ -1538,6 +1539,7 @@ export type Database = {
           conditions?: Json | null
           created_at?: string
           id?: string
+          membership_id?: string | null
           permission_key: string
           resource_type?: string | null
           role: Database["public"]["Enums"]["admin_role_type"]
@@ -1549,6 +1551,7 @@ export type Database = {
           conditions?: Json | null
           created_at?: string
           id?: string
+          membership_id?: string | null
           permission_key?: string
           resource_type?: string | null
           role?: Database["public"]["Enums"]["admin_role_type"]
@@ -1556,6 +1559,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_membership_id"
+            columns: ["membership_id"]
+            isOneToOne: false
+            referencedRelation: "memberships"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "permissions_role_id_fkey"
             columns: ["role_id"]

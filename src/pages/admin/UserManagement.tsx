@@ -13,6 +13,7 @@ import { ErrorAlert } from "@/components/admin/ErrorAlert";
 import { AddAdminDialog } from "@/components/admin/AddAdminDialog";
 import { useState } from "react";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function UserManagement() {
   const { 
