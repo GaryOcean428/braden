@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ContentForm } from "@/components/content/ContentForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { AdminUser } from "@/integrations/supabase/database.types";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -34,22 +33,15 @@ export default function ContentEditor() {
         return;
       }
 
-      const userEmail = session.user.email;
-      
-      if (userEmail === 'braden.lang77@gmail.com') {
-        setIsAdmin(true);
-        return;
-      }
+      const userId = session.user.id;
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+        user_id: userId,
+        resource_type: 'content_pages',
+        resource_id: null,
+        action: 'edit'
+      });
 
-      const { data: adminData, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
-
-      if (error) throw error;
-
-      if (!adminData) {
+      if (permissionError || !hasPermission) {
         toast({
           title: "Access Denied",
           description: "You must be an admin to access this page",

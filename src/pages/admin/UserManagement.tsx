@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { AdminUsersTable } from "@/components/admin/AdminUsersTable";
 import { AdminStatusAlert } from "@/components/admin/AdminStatusAlert";
 import { ErrorAlert } from "@/components/admin/ErrorAlert";
 import { AddAdminDialog } from "@/components/admin/AddAdminDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function UserManagement() {
   const { 
@@ -52,6 +52,24 @@ export default function UserManagement() {
         description: "There was an error configuring database permissions"
       });
     }
+  };
+
+  const checkPermission = async (action) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      return false;
+    }
+    const userId = session.user.id;
+    const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+      user_id: userId,
+      resource_type: 'admin_users',
+      resource_id: null,
+      action: action
+    });
+    if (permissionError || !hasPermission) {
+      return false;
+    }
+    return true;
   };
 
   if (isLoading) {

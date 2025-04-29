@@ -1,4 +1,3 @@
-
 -- Function to safely add an admin user by email
 CREATE OR REPLACE FUNCTION public.add_admin_user_by_email(email_input TEXT)
 RETURNS uuid
@@ -42,5 +41,75 @@ BEGIN
     FROM admin_users 
     WHERE user_id = auth.uid()
   );
+END;
+$$;
+
+-- Function to check if user has a specific permission on a resource
+CREATE OR REPLACE FUNCTION public.check_permission(
+  user_id UUID,
+  resource_type TEXT,
+  resource_id UUID,
+  action TEXT
+) RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = 'public'
+AS $$
+DECLARE
+  has_permission BOOLEAN;
+BEGIN
+  SELECT EXISTS (
+    SELECT 1
+    FROM permissions
+    WHERE role_id IN (
+      SELECT role_id
+      FROM user_roles
+      WHERE user_id = user_id
+    )
+    AND resource_type = resource_type
+    AND resource_id = resource_id
+    AND action = action
+  ) INTO has_permission;
+
+  RETURN has_permission;
+END;
+$$;
+
+-- Function to get all roles for a user across organizations
+CREATE OR REPLACE FUNCTION public.get_user_roles(
+  user_id UUID
+) RETURNS TABLE(role TEXT, organization_id UUID)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = 'public'
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT role, organization_id
+  FROM user_roles
+  WHERE user_id = user_id;
+END;
+$$;
+
+-- Function to check if user is member of organization
+CREATE OR REPLACE FUNCTION public.is_org_member(
+  user_id UUID,
+  organization_id UUID
+) RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = 'public'
+AS $$
+DECLARE
+  is_member BOOLEAN;
+BEGIN
+  SELECT EXISTS (
+    SELECT 1
+    FROM user_organizations
+    WHERE user_id = user_id
+    AND organization_id = organization_id
+  ) INTO is_member;
+
+  RETURN is_member;
 END;
 $$;

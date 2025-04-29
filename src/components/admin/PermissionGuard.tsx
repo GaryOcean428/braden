@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Permission } from '@/types/permissions';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
@@ -14,7 +13,8 @@ export function PermissionGuard({ permission, children, fallback = null }: Permi
 
   if (loading) return null;
   
-  if (!checkPermission(permission)) {
+  const hasPermission = checkPermission(permission);
+  if (!hasPermission) {
     return <>{fallback}</>;
   }
 

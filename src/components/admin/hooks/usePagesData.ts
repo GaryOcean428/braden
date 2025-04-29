@@ -32,21 +32,27 @@ export function usePagesData() {
         return;
       }
       
-      // Verify developer status by email
-      const userEmail = session.session.user.email;
+      const userId = session.session.user.id;
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+        user_id: userId,
+        resource_type: 'content_pages',
+        resource_id: null,
+        action: 'view'
+      });
+
+      if (permissionError || !hasPermission) {
         setIsPermissionError(true);
         setError("You don't have permission to access content pages");
         toast.error("Permission Denied", {
-          description: "Only the developer can access this section"
+          description: "You don't have the required permissions to access this section"
         });
         setPages([]);
         return;
       }
       
-      // User is confirmed as the developer, now try to load pages with updated RLS policies
-      console.log("Developer verified, loading pages with updated RLS policies");
+      // User is confirmed to have the required permissions, now try to load pages with updated RLS policies
+      console.log("Permissions verified, loading pages with updated RLS policies");
       setIsAdmin(true);
 
       // Get the pages data
@@ -100,11 +106,18 @@ export function usePagesData() {
         return;
       }
       
-      const userEmail = session.session.user.email;
+      const userId = session.session.user.id;
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+        user_id: userId,
+        resource_type: 'content_pages',
+        resource_id: null,
+        action: 'create'
+      });
+
+      if (permissionError || !hasPermission) {
         toast.error("Permission Denied", {
-          description: "Only the developer can add pages"
+          description: "You don't have the required permissions to add pages"
         });
         return;
       }
@@ -143,11 +156,18 @@ export function usePagesData() {
         return;
       }
       
-      const userEmail = session.session.user.email;
+      const userId = session.session.user.id;
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+        user_id: userId,
+        resource_type: 'content_pages',
+        resource_id: id,
+        action: 'update'
+      });
+
+      if (permissionError || !hasPermission) {
         toast.error("Permission Denied", {
-          description: "Only the developer can edit pages"
+          description: "You don't have the required permissions to edit pages"
         });
         return;
       }
@@ -187,11 +207,18 @@ export function usePagesData() {
         return;
       }
       
-      const userEmail = session.session.user.email;
+      const userId = session.session.user.id;
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+        user_id: userId,
+        resource_type: 'content_pages',
+        resource_id: id,
+        action: 'delete'
+      });
+
+      if (permissionError || !hasPermission) {
         toast.error("Permission Denied", {
-          description: "Only the developer can delete pages"
+          description: "You don't have the required permissions to delete pages"
         });
         return;
       }

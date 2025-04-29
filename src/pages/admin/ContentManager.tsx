@@ -36,13 +36,16 @@ export default function ContentManager() {
         return;
       }
       
-      // Check if the user is the developer by email
-      const userEmail = data.session.user.email;
-      
-      if (userEmail === 'braden.lang77@gmail.com') {
-        console.log("Admin status confirmed via email check");
-        setIsAdmin(true);
-      } else {
+      // Check if the user has the required permission
+      const userId = data.session.user.id;
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+        user_id: userId,
+        resource_type: 'content_pages',
+        resource_id: null,
+        action: 'view'
+      });
+
+      if (permissionError || !hasPermission) {
         setAuthError("You must be an admin to access content management");
         toast.error("Access Denied", {
           description: "You don't have admin permissions"
@@ -54,6 +57,8 @@ export default function ContentManager() {
         }, 1500);
         return;
       }
+
+      setIsAdmin(true);
       
     } catch (error) {
       console.error("Auth check error:", error);

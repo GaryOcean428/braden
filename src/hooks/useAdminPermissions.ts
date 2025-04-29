@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -135,9 +134,27 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
     }
   };
 
-  const checkPermission = (permission: Permission): boolean => {
+  const checkPermission = async (permission: Permission): Promise<boolean> => {
     if (isDeveloper || role === 'admin') return true;
-    return permissions.includes(permission);
+
+    try {
+      const { data: hasPermission, error } = await supabase.rpc('check_permission', {
+        user_id: supabase.auth.user()?.id,
+        resource_type: 'general',
+        resource_id: null,
+        action: permission
+      });
+
+      if (error) {
+        console.error('Permission check error:', error);
+        return false;
+      }
+
+      return hasPermission;
+    } catch (err) {
+      console.error('Permission check failed:', err);
+      return false;
+    }
   };
 
   return { 
