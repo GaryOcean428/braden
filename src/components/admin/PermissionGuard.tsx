@@ -9,10 +9,16 @@ interface PermissionGuardProps {
 }
 
 export function PermissionGuard({ permission, children, fallback = null }: PermissionGuardProps) {
-  const { checkPermission, loading } = useAdminPermissions();
+  const { checkPermission, loading, isDeveloper } = useAdminPermissions();
 
   if (loading) return null;
   
+  // If user is a developer admin, they have all permissions
+  if (isDeveloper) {
+    return <>{children}</>;
+  }
+  
+  // Otherwise check specific permission
   const hasPermission = checkPermission(permission);
   if (!hasPermission) {
     return <>{fallback}</>;

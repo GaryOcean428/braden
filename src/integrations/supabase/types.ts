@@ -1363,6 +1363,35 @@ export type Database = {
         }
         Relationships: []
       }
+      memberships: {
+        Row: {
+          custom_permissions: Json | null
+          membership_role: string
+          organization_id: string
+          user_id: string
+        }
+        Insert: {
+          custom_permissions?: Json | null
+          membership_role: string
+          organization_id: string
+          user_id: string
+        }
+        Update: {
+          custom_permissions?: Json | null
+          membership_role?: string
+          organization_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mind_map_nodes: {
         Row: {
           content: string
@@ -1494,50 +1523,70 @@ export type Database = {
       }
       permissions: {
         Row: {
+          action: string | null
+          conditions: Json | null
           created_at: string
           id: string
           permission_key: string
+          resource_type: string | null
           role: Database["public"]["Enums"]["admin_role_type"]
+          role_id: number | null
           updated_at: string
         }
         Insert: {
+          action?: string | null
+          conditions?: Json | null
           created_at?: string
           id?: string
           permission_key: string
+          resource_type?: string | null
           role: Database["public"]["Enums"]["admin_role_type"]
+          role_id?: number | null
           updated_at?: string
         }
         Update: {
+          action?: string | null
+          conditions?: Json | null
           created_at?: string
           id?: string
           permission_key?: string
+          resource_type?: string | null
           role?: Database["public"]["Enums"]["admin_role_type"]
+          role_id?: number | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       platform_roles: {
         Row: {
           created_at: string | null
           description: string | null
+          hierarchy_level: number | null
           id: string
-          level: number
           name: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
+          hierarchy_level?: number | null
           id?: string
-          level: number
           name: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
+          hierarchy_level?: number | null
           id?: string
-          level?: number
           name?: string
           updated_at?: string | null
         }
@@ -1662,6 +1711,24 @@ export type Database = {
           regulatory_requirements?: string[] | null
           trainingPackage?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      roles: {
+        Row: {
+          id: number
+          level: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          level: number
+          name: string
+        }
+        Update: {
+          id?: number
+          level?: number
+          name?: string
         }
         Relationships: []
       }
@@ -2079,21 +2146,21 @@ export type Database = {
           created_at: string | null
           id: string
           org_id: string
-          role: string
+          organization_role: string
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           org_id: string
-          role: string
+          organization_role: string
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           org_id?: string
-          role?: string
+          organization_role?: string
           user_id?: string | null
         }
         Relationships: [

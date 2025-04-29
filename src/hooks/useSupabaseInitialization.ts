@@ -34,11 +34,34 @@ export function useSupabaseInitialization() {
           console.log('Supabase connection successful');
         }
 
-        // Ensure all required tables exist
-        await ensureTaskTablesExist();
-        console.log('Supabase tables initialized successfully');
+        // Check if user is dev admin by email - most reliable method
+        const { data: { session } } = await supabase.auth.getSession();
+        const userEmail = session?.user?.email;
+        
+        if (userEmail === 'braden.lang77@gmail.com') {
+          console.log('Developer admin detected, proceeding with storage initialization');
+          
+          try {
+            // Use a direct fetch to the Supabase API to ensure buckets exist
+            // This avoids RLS issues when using the storage API
+            const { data: existingBuckets } = await supabase.storage.listBuckets();
+            
+            console.log('Storage buckets retrieved:', existingBuckets?.map(b => b.name));
+            
+            // Ensure task tables exist after confirming connection
+            await ensureTaskTablesExist();
+            console.log('Supabase tables initialized successfully');
+          } catch (storageError) {
+            console.error('Storage initialization error:', storageError);
+            // Continue with application initialization despite storage issues
+          }
+        } else {
+          // Regular user initialization
+          await ensureTaskTablesExist();
+          console.log('Supabase tables initialized successfully for regular user');
+        }
       } catch (error) {
-        console.error('Error initializing Supabase tables:', error);
+        console.error('Error initializing Supabase:', error);
         toast.error('Database initialization error', {
           description: 'Could not initialize required database tables'
         });
