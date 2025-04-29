@@ -63,12 +63,13 @@ export default function UserManagement() {
       return false;
     }
     const userId = session.user.id;
-    const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
+    
+    // Use user_has_permission instead of check_permission
+    const { data: hasPermission, error: permissionError } = await supabase.rpc('user_has_permission', {
       user_id: userId,
-      resource_type: 'admin_users',
-      resource_id: null,
-      action: action
+      required_permission: action
     });
+    
     if (permissionError || !hasPermission) {
       return false;
     }

@@ -57,7 +57,7 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
           meta_description: data.meta_description || "",
           content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
           is_published: data.is_published,
-          additional_field: data.additional_field || "", 
+          additional_field: data.additional_field || "", // Now properly using the additional_field from DB
         });
       }
     } catch (error) {

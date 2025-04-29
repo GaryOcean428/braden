@@ -623,6 +623,7 @@ export type Database = {
       }
       content_pages: {
         Row: {
+          additional_field: string | null
           content: Json
           created_at: string
           id: string
@@ -633,6 +634,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          additional_field?: string | null
           content: Json
           created_at?: string
           id?: string
@@ -643,6 +645,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          additional_field?: string | null
           content?: Json
           created_at?: string
           id?: string
@@ -2414,6 +2417,15 @@ export type Database = {
       bypass_rls_for_user: {
         Args: Record<PropertyKey, never> | { input_user_id: string }
         Returns: undefined
+      }
+      check_permission: {
+        Args: {
+          user_id: string
+          resource_type: string
+          resource_id: string
+          action: string
+        }
+        Returns: boolean
       }
       fix_user_access: {
         Args: Record<PropertyKey, never>
