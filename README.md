@@ -7,6 +7,7 @@ This repository contains the Braden website with enhanced functionality for lead
 - **Contact Form**: Collects lead information and stores it in Supabase
 - **Email Automation**: Sends confirmation emails to leads and notification emails to staff
 - **Task Assignment**: Automatically assigns follow-up tasks to staff members based on service type
+- **CMS Module**: Allows admin users to manage and update content seamlessly
 
 ## Setup Instructions
 
@@ -57,6 +58,7 @@ The application uses the following tables in Supabase:
 - **clients**: Stores client information
 - **staff**: Stores information about staff members who can be assigned to leads
 - **tasks**: Stores follow-up tasks assigned to staff members
+- **content_pages**: Stores content pages for the CMS module
 
 ## Email Templates
 
@@ -82,6 +84,10 @@ npm test
 ```bash
 npm run build
 ```
+
+## Admin Interface for Content Management
+
+The admin interface allows users to manage and update content seamlessly through the CMS module. Admin users can add, edit, and delete content pages, as well as manage media assets and content blocks.
 
 ## Contact
 

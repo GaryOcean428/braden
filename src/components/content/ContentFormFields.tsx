@@ -1,4 +1,3 @@
-
 import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,6 +60,19 @@ export function ContentFormFields({ form }: ContentFormFieldsProps) {
         />
         {form.formState.errors.content && (
           <p className="text-red-500 text-sm mt-1">{form.formState.errors.content.message}</p>
+        )}
+      </div>
+
+      <div>
+        <Label htmlFor="additional_field">Additional Field</Label>
+        <Input 
+          id="additional_field"
+          {...form.register("additional_field")}
+          className="mt-1 w-full"
+          placeholder="Additional Field"
+        />
+        {form.formState.errors.additional_field && (
+          <p className="text-red-500 text-sm mt-1">{form.formState.errors.additional_field.message}</p>
         )}
       </div>
 

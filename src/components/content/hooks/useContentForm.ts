@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +24,7 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
       meta_description: "",
       content: "",
       is_published: false,
+      additional_field: "", // Added field for managing page content
     },
   });
 
@@ -56,6 +56,7 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
           meta_description: data.meta_description || "",
           content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
           is_published: data.is_published,
+          additional_field: data.additional_field || "", // Added field for managing page content
         });
       }
     } catch (error) {
@@ -89,6 +90,7 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
         meta_description: values.meta_description,
         content: contentObject,
         is_published: values.is_published,
+        additional_field: values.additional_field, // Added field for managing page content
       };
 
       let result;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PagesTabContent } from "./PagesTabContent";
@@ -40,35 +39,18 @@ export const ContentTabs = () => {
         return;
       }
       
-      // Verify developer status by exact email match first (most reliable method)
+      // Verify developer status by email instead of using the RPC function
       const userEmail = data.session.user.email;
       
-      if (userEmail === 'braden.lang77@gmail.com') {
-        // User is the developer - grant access
+      if (userEmail !== 'braden.lang77@gmail.com') {
+        setAuthError("You don't have admin access");
+        toast.error("Access Denied", {
+          description: "Only the developer can access these features"
+        });
+      } else {
+        // User is the developer
         setAuthError(null);
-        return;
       }
-      
-      // Fallback to RPC function check
-      try {
-        const { data: isDeveloper, error: developerError } = await supabase.rpc('is_developer_admin');
-        
-        if (developerError) {
-          console.error("Developer check error:", developerError);
-        } else if (isDeveloper) {
-          // User is a developer admin
-          setAuthError(null);
-          return;
-        }
-      } catch (error) {
-        console.error("Developer function check error:", error);
-      }
-      
-      // If we get here, user is not verified as developer
-      setAuthError("You don't have admin access");
-      toast.error("Access Denied", {
-        description: "Only the developer can access these features"
-      });
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Unable to verify authentication status");
@@ -102,6 +84,7 @@ export const ContentTabs = () => {
         <TabsList className="bg-gray-100 border">
           <TabsTrigger value="pages" className="data-[state=active]:bg-white">Recent Pages</TabsTrigger>
           <TabsTrigger value="blocks" className="data-[state=active]:bg-white">Content Blocks</TabsTrigger>
+          <TabsTrigger value="manage-pages" className="data-[state=active]:bg-white">Manage Pages</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pages">
@@ -110,6 +93,20 @@ export const ContentTabs = () => {
 
         <TabsContent value="blocks">
           <BlocksTabContent />
+        </TabsContent>
+
+        <TabsContent value="manage-pages">
+          <div className="space-y-4">
+            <Button variant="default" onClick={() => console.log("Add Page")}>
+              Add Page
+            </Button>
+            <Button variant="default" onClick={() => console.log("Edit Page")}>
+              Edit Page
+            </Button>
+            <Button variant="default" onClick={() => console.log("Delete Page")}>
+              Delete Page
+            </Button>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

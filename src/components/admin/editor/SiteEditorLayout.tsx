@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Palette, Layout, Layers, Image, File, Star } from 'lucide-react';
 import { SiteEditorHeader } from '@/components/admin/editor/SiteEditorHeader';
@@ -9,9 +8,9 @@ import { LayoutTab } from '@/components/admin/editor/tabs/LayoutTab';
 import { ComponentsTab } from '@/components/admin/editor/tabs/ComponentsTab';
 import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
 import { LogoTab } from '@/components/admin/editor/tabs/LogoTab';
+import { PagesTab } from '@/components/admin/editor/tabs/PagesTab';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { Navigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 
 interface SiteEditorLayoutProps {
   isLoading: boolean;
@@ -33,33 +32,12 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
   handleChange
 }) => {
   const { isAdmin, loading: permissionLoading, error } = useAdminPermissions();
-  const [isDirectDeveloper, setIsDirectDeveloper] = useState(false);
-  const [checkingDeveloper, setCheckingDeveloper] = useState(true);
 
-  // Direct check for developer email
-  useEffect(() => {
-    const checkDeveloper = async () => {
-      try {
-        setCheckingDeveloper(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.email === 'braden.lang77@gmail.com') {
-          setIsDirectDeveloper(true);
-        }
-      } catch (error) {
-        console.error('Error checking developer:', error);
-      } finally {
-        setCheckingDeveloper(false);
-      }
-    };
-    
-    checkDeveloper();
-  }, []);
-
-  if (isLoading || permissionLoading || checkingDeveloper) {
+  if (isLoading || permissionLoading) {
     return <SiteEditorLoading />;
   }
 
-  if (!isAdmin && !isDirectDeveloper) {
+  if (!isAdmin || error) {
     return <Navigate to="/admin/auth" replace />;
   }
 
@@ -97,6 +75,10 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
             <Star className="h-4 w-4" />
             Favicons
           </TabsTrigger>
+          <TabsTrigger value="pages" className="flex items-center gap-1">
+            <File className="h-4 w-4" />
+            Pages
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="theme">
@@ -121,6 +103,10 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
 
         <TabsContent value="favicons">
           <LogoTab onChange={handleChange} />
+        </TabsContent>
+
+        <TabsContent value="pages">
+          <PagesTab onChange={handleChange} />
         </TabsContent>
       </Tabs>
     </div>

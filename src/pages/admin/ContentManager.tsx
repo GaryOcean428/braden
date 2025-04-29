@@ -7,12 +7,16 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShieldAlert } from "lucide-react";
+import { ContentForm } from "@/components/content/ContentForm";
+import { ContentPagesTable } from "@/components/content/ContentPagesTable";
+import { usePagesData } from "@/components/admin/hooks/usePagesData";
 
 export default function ContentManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  const { pages, loading, error, addPage, editPage, deletePage } = usePagesData();
 
   useEffect(() => {
     checkAuth();
@@ -98,6 +102,15 @@ export default function ContentManager() {
       <ErrorBoundary>
         <ContentList />
       </ErrorBoundary>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-[#ab233a]">Manage Pages</h2>
+        <ContentForm onSuccess={() => console.log("Page saved successfully")} />
+        <ContentPagesTable 
+          pages={pages} 
+          onTogglePublish={(id, currentStatus) => console.log(`Toggle publish for ${id}`)} 
+          onDelete={(id) => deletePage(id)} 
+        />
+      </div>
     </div>
   );
 }

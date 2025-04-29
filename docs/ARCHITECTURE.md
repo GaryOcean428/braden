@@ -1,4 +1,3 @@
-
 # Visual Website Customization - Architecture
 
 ## Core Components
@@ -76,3 +75,9 @@
 - Layout data connected to page rendering
 - Component library integrated with layout editor
 - Media library integrated with content components
+
+### CMS Module
+- Admin interface for managing content
+- Visual layout editor with drag-and-drop functionality
+- Theme customizer for adjusting colors, typography, and layout settings
+- Database schema for content storage

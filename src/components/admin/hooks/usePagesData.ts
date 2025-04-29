@@ -88,12 +88,145 @@ export function usePagesData() {
     }
   };
 
+  const addPage = async (title: string, slug: string, content: string) => {
+    try {
+      setLoading(true);
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session.session) {
+        toast.error("Authentication Required", {
+          description: "Please log in to add a page"
+        });
+        return;
+      }
+      
+      const userEmail = session.session.user.email;
+      
+      if (userEmail !== 'braden.lang77@gmail.com') {
+        toast.error("Permission Denied", {
+          description: "Only the developer can add pages"
+        });
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('content_pages')
+        .insert([{ title, slug, content }])
+        .single();
+
+      if (error) {
+        toast.error("Error", {
+          description: "Failed to add page"
+        });
+        throw error;
+      }
+
+      setPages([...pages, data]);
+      toast.success("Page added successfully");
+    } catch (error: any) {
+      console.error("Error adding page:", error);
+      setError(error.message || "Failed to add page");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const editPage = async (id: string, title: string, slug: string, content: string) => {
+    try {
+      setLoading(true);
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session.session) {
+        toast.error("Authentication Required", {
+          description: "Please log in to edit a page"
+        });
+        return;
+      }
+      
+      const userEmail = session.session.user.email;
+      
+      if (userEmail !== 'braden.lang77@gmail.com') {
+        toast.error("Permission Denied", {
+          description: "Only the developer can edit pages"
+        });
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('content_pages')
+        .update({ title, slug, content })
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        toast.error("Error", {
+          description: "Failed to edit page"
+        });
+        throw error;
+      }
+
+      setPages(pages.map(page => page.id === id ? data : page));
+      toast.success("Page updated successfully");
+    } catch (error: any) {
+      console.error("Error editing page:", error);
+      setError(error.message || "Failed to edit page");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deletePage = async (id: string) => {
+    try {
+      setLoading(true);
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session.session) {
+        toast.error("Authentication Required", {
+          description: "Please log in to delete a page"
+        });
+        return;
+      }
+      
+      const userEmail = session.session.user.email;
+      
+      if (userEmail !== 'braden.lang77@gmail.com') {
+        toast.error("Permission Denied", {
+          description: "Only the developer can delete pages"
+        });
+        return;
+      }
+      
+      const { error } = await supabase
+        .from('content_pages')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        toast.error("Error", {
+          description: "Failed to delete page"
+        });
+        throw error;
+      }
+
+      setPages(pages.filter(page => page.id !== id));
+      toast.success("Page deleted successfully");
+    } catch (error: any) {
+      console.error("Error deleting page:", error);
+      setError(error.message || "Failed to delete page");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     pages,
     loading,
     error,
     isPermissionError,
     isAdmin,
-    loadPages
+    loadPages,
+    addPage,
+    editPage,
+    deletePage
   };
 }
