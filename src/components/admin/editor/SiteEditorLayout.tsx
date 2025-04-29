@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Palette, Layout, Layers, Image, File, Star } from 'lucide-react';
@@ -106,7 +107,7 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
         </TabsContent>
 
         <TabsContent value="pages">
-          <PagesTab onChange={handleChange} />
+          <PagesTab />
         </TabsContent>
       </Tabs>
     </div>

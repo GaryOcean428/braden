@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -10,18 +11,19 @@ import { AdminUsersTable } from "@/components/admin/AdminUsersTable";
 import { AdminStatusAlert } from "@/components/admin/AdminStatusAlert";
 import { ErrorAlert } from "@/components/admin/ErrorAlert";
 import { AddAdminDialog } from "@/components/admin/AddAdminDialog";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 
 export default function UserManagement() {
   const { 
     adminUsers, 
     isLoading, 
     error, 
-    isAdmin, 
     checkAdminAndLoadUsers, 
     addAdminUser,
     configurePermissions 
   } = useAdminUsers();
+  const { isDeveloper, isAdmin } = useAdminPermissions();
   const navigate = useNavigate();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 

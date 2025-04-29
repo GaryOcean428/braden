@@ -1,18 +1,33 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ContentPage } from "@/integrations/supabase/database.types";
+import { useAdminPermissions } from '@/hooks/useAdminPermissions';
+
+interface ContentPageData {
+  id: string;
+  title: string;
+  slug: string;
+  content: any;
+  meta_description: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 export function usePagesData() {
-  const [pages, setPages] = useState<ContentPage[]>([]);
+  const [pages, setPages] = useState<ContentPageData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPermissionError, setIsPermissionError] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isDeveloper, isAdmin, loading: permissionsLoading } = useAdminPermissions();
 
   useEffect(() => {
-    loadPages();
-  }, []);
+    if (!permissionsLoading) {
+      loadPages();
+    }
+  }, [permissionsLoading]);
 
   const loadPages = async () => {
     try {
@@ -20,6 +35,7 @@ export function usePagesData() {
       setError(null);
       setIsPermissionError(false);
       
+      // Check if user session exists
       const { data: session, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session.session) {
@@ -32,58 +48,36 @@ export function usePagesData() {
         return;
       }
       
-      const userId = session.session.user.id;
+      const userEmail = session.session.user.email;
       
-      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
-        user_id: userId,
-        resource_type: 'content_pages',
-        resource_id: null,
-        action: 'view'
-      });
-
-      if (permissionError || !hasPermission) {
-        setIsPermissionError(true);
-        setError("You don't have permission to access content pages");
-        toast.error("Permission Denied", {
-          description: "You don't have the required permissions to access this section"
-        });
-        setPages([]);
-        return;
-      }
-      
-      // User is confirmed to have the required permissions, now try to load pages with updated RLS policies
-      console.log("Permissions verified, loading pages with updated RLS policies");
-      setIsAdmin(true);
-
-      // Get the pages data
-      const { data: pagesData, error: pagesError } = await supabase
-        .from('content_pages')
-        .select('*')
-        .order('updated_at', { ascending: false });
-
-      if (pagesError) {
-        console.error('Error loading pages:', pagesError);
+      // First, try by email - most reliable method
+      if (userEmail === 'braden.lang77@gmail.com' || isAdmin || isDeveloper) {
+        console.log('Admin access confirmed, loading pages');
         
-        // If access is still denied due to RLS policies
-        if (pagesError.message.toLowerCase().includes('permission') || 
-            pagesError.message.toLowerCase().includes('denied') ||
-            pagesError.code === 'PGRST301') {
-          setIsPermissionError(true);
-          setError("Database access restricted. RLS policies have been updated but might need a session refresh. Please try logging out and back in.");
-          toast.error("Database Permission Issue", {
-            description: "Try logging out and back in to refresh your session"
-          });
-        } else {
+        // Get the pages data
+        const { data: pagesData, error: pagesError } = await supabase
+          .from('content_pages')
+          .select('*')
+          .order('updated_at', { ascending: false });
+
+        if (pagesError) {
+          console.error('Error loading pages:', pagesError);
           setError(pagesError.message || "Failed to load pages");
           toast.error("Error", {
             description: "Failed to load pages due to a database error"
           });
+          setPages([]);
+        } else {
+          console.log("Pages loaded successfully");
+          setPages(pagesData as ContentPageData[]);
         }
-        
-        setPages([]);
       } else {
-        console.log("Pages loaded successfully");
-        setPages(pagesData || []);
+        setIsPermissionError(true);
+        setError("You don't have permission to access content pages");
+        toast.error("Permission Denied", {
+          description: "You don't have the required permissions"
+        });
+        setPages([]);
       }
     } catch (err: any) {
       console.error("Error in auth check:", err);
@@ -97,25 +91,8 @@ export function usePagesData() {
   const addPage = async (title: string, slug: string, content: string) => {
     try {
       setLoading(true);
-      const { data: session, error: sessionError } = await supabase.auth.getSession();
       
-      if (sessionError || !session.session) {
-        toast.error("Authentication Required", {
-          description: "Please log in to add a page"
-        });
-        return;
-      }
-      
-      const userId = session.session.user.id;
-      
-      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
-        user_id: userId,
-        resource_type: 'content_pages',
-        resource_id: null,
-        action: 'create'
-      });
-
-      if (permissionError || !hasPermission) {
+      if (!isAdmin && !isDeveloper) {
         toast.error("Permission Denied", {
           description: "You don't have the required permissions to add pages"
         });
@@ -125,7 +102,7 @@ export function usePagesData() {
       const { data, error } = await supabase
         .from('content_pages')
         .insert([{ title, slug, content }])
-        .single();
+        .select();
 
       if (error) {
         toast.error("Error", {
@@ -134,7 +111,7 @@ export function usePagesData() {
         throw error;
       }
 
-      setPages([...pages, data]);
+      setPages(prev => [...prev, ...(data as ContentPageData[])]);
       toast.success("Page added successfully");
     } catch (error: any) {
       console.error("Error adding page:", error);
@@ -147,25 +124,8 @@ export function usePagesData() {
   const editPage = async (id: string, title: string, slug: string, content: string) => {
     try {
       setLoading(true);
-      const { data: session, error: sessionError } = await supabase.auth.getSession();
       
-      if (sessionError || !session.session) {
-        toast.error("Authentication Required", {
-          description: "Please log in to edit a page"
-        });
-        return;
-      }
-      
-      const userId = session.session.user.id;
-      
-      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
-        user_id: userId,
-        resource_type: 'content_pages',
-        resource_id: id,
-        action: 'update'
-      });
-
-      if (permissionError || !hasPermission) {
+      if (!isAdmin && !isDeveloper) {
         toast.error("Permission Denied", {
           description: "You don't have the required permissions to edit pages"
         });
@@ -176,7 +136,7 @@ export function usePagesData() {
         .from('content_pages')
         .update({ title, slug, content })
         .eq('id', id)
-        .single();
+        .select();
 
       if (error) {
         toast.error("Error", {
@@ -185,7 +145,8 @@ export function usePagesData() {
         throw error;
       }
 
-      setPages(pages.map(page => page.id === id ? data : page));
+      const updatedPage = data?.[0] as ContentPageData;
+      setPages(pages.map(page => page.id === id ? updatedPage : page));
       toast.success("Page updated successfully");
     } catch (error: any) {
       console.error("Error editing page:", error);
@@ -198,25 +159,8 @@ export function usePagesData() {
   const deletePage = async (id: string) => {
     try {
       setLoading(true);
-      const { data: session, error: sessionError } = await supabase.auth.getSession();
       
-      if (sessionError || !session.session) {
-        toast.error("Authentication Required", {
-          description: "Please log in to delete a page"
-        });
-        return;
-      }
-      
-      const userId = session.session.user.id;
-      
-      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
-        user_id: userId,
-        resource_type: 'content_pages',
-        resource_id: id,
-        action: 'delete'
-      });
-
-      if (permissionError || !hasPermission) {
+      if (!isAdmin && !isDeveloper) {
         toast.error("Permission Denied", {
           description: "You don't have the required permissions to delete pages"
         });

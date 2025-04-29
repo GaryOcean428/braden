@@ -6,18 +6,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 
 export default function ContentEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { isDeveloper, isAdmin, loading: permissionsLoading } = useAdminPermissions();
 
   useEffect(() => {
-    checkAdminStatus();
-  }, []);
+    if (!permissionsLoading) {
+      checkAdminStatus();
+    }
+  }, [permissionsLoading]);
 
   const checkAdminStatus = async () => {
     try {
@@ -33,15 +36,7 @@ export default function ContentEditor() {
         return;
       }
 
-      const userId = session.user.id;
-      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
-        user_id: userId,
-        resource_type: 'content_pages',
-        resource_id: null,
-        action: 'edit'
-      });
-
-      if (permissionError || !hasPermission) {
+      if (!isAdmin && !isDeveloper) {
         toast({
           title: "Access Denied",
           description: "You must be an admin to access this page",
@@ -50,8 +45,6 @@ export default function ContentEditor() {
         navigate('/');
         return;
       }
-
-      setIsAdmin(true);
     } catch (error) {
       console.error("Error checking admin status:", error);
       setAuthError("Could not verify admin status");

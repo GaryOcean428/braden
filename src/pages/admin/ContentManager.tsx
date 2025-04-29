@@ -10,17 +10,20 @@ import { ShieldAlert } from "lucide-react";
 import { ContentForm } from "@/components/content/ContentForm";
 import { ContentPagesTable } from "@/components/content/ContentPagesTable";
 import { usePagesData } from "@/components/admin/hooks/usePagesData";
+import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 
 export default function ContentManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { pages, loading, error, addPage, editPage, deletePage } = usePagesData();
+  const { isDeveloper, isAdmin, loading: permissionsLoading } = useAdminPermissions();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (!permissionsLoading) {
+      checkAuth();
+    }
+  }, [permissionsLoading]);
 
   const checkAuth = async () => {
     try {
@@ -36,16 +39,8 @@ export default function ContentManager() {
         return;
       }
       
-      // Check if the user has the required permission
-      const userId = data.session.user.id;
-      const { data: hasPermission, error: permissionError } = await supabase.rpc('check_permission', {
-        user_id: userId,
-        resource_type: 'content_pages',
-        resource_id: null,
-        action: 'view'
-      });
-
-      if (permissionError || !hasPermission) {
+      // Check permissions using the updated hook
+      if (!isAdmin && !isDeveloper) {
         setAuthError("You must be an admin to access content management");
         toast.error("Access Denied", {
           description: "You don't have admin permissions"
@@ -57,9 +52,6 @@ export default function ContentManager() {
         }, 1500);
         return;
       }
-
-      setIsAdmin(true);
-      
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Failed to verify authentication");
@@ -119,3 +111,4 @@ export default function ContentManager() {
     </div>
   );
 }
+

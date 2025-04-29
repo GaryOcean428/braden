@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +7,11 @@ import { usePagesData } from '@/components/admin/hooks/usePagesData';
 import { ContentPagesTable } from '@/components/content/ContentPagesTable';
 import { toast } from 'sonner';
 
-export const PagesTab = () => {
+interface PagesTabProps {
+  onChange?: () => void;
+}
+
+export const PagesTab: React.FC<PagesTabProps> = ({ onChange }) => {
   const { pages, loading, error, isAdmin, loadPages } = usePagesData();
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
@@ -22,6 +27,7 @@ export const PagesTab = () => {
       // Add page logic here
       toast.success('Page added successfully');
       loadPages();
+      if (onChange) onChange();
     } catch (error) {
       toast.error('Failed to add page');
     }
@@ -32,6 +38,7 @@ export const PagesTab = () => {
       // Edit page logic here
       toast.success('Page updated successfully');
       loadPages();
+      if (onChange) onChange();
     } catch (error) {
       toast.error('Failed to update page');
     }
@@ -42,6 +49,7 @@ export const PagesTab = () => {
       // Delete page logic here
       toast.success('Page deleted successfully');
       loadPages();
+      if (onChange) onChange();
     } catch (error) {
       toast.error('Failed to delete page');
     }

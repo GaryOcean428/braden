@@ -8,6 +8,7 @@ export const contentFormSchema = z.object({
   meta_description: z.string().optional(),
   content: z.string().min(1, "Content is required"),
   is_published: z.boolean().default(false),
+  additional_field: z.string().optional(),
 });
 
 export type ContentFormValues = z.infer<typeof contentFormSchema>;
