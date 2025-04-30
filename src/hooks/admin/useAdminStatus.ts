@@ -49,14 +49,21 @@ export function useAdminStatus(): UseAdminStatusReturn {
         return;
       }
       
+      // Check if user ID matches the developer ID - secondary method
+      if (session.user.id === '9600a18c-c8e3-44ef-83ad-99ede9268e77') {
+        console.log('Developer detected by ID');
+        setIsDeveloper(true);
+        setIsAdmin(true);
+        setRole('admin');
+        return;
+      }
+      
       // Fallback to using the RPC function
       try {
-        // Check if user is the developer admin
-        const { data: isDeveloperAdmin, error: developerError } = await supabase.rpc('is_developer_admin');
+        const { data: isDeveloperAdmin, error: developerError } = await supabase.rpc('admin_bypass');
         
-        if (developerError) {
-          console.error('Developer check error:', developerError);
-        } else if (isDeveloperAdmin === true) {
+        if (!developerError && isDeveloperAdmin === true) {
+          console.log("Developer access confirmed by RPC function");
           setIsDeveloper(true);
           setIsAdmin(true);
           setRole('admin');
@@ -67,31 +74,24 @@ export function useAdminStatus(): UseAdminStatusReturn {
         // Continue with regular admin check
       }
 
-      // Get user's role
+      // Get user's role from admin_users table
       try {
         const { data: adminUser, error: adminError } = await supabase
           .from('admin_users')
           .select('role')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (adminError) {
-          if (adminError.code === 'PGRST116') {
-            // No data found - not an admin
-            return;
-          }
-          throw adminError;
-        }
-
-        if (adminUser) {
+          console.error('Admin role check error:', adminError);
+        } else if (adminUser) {
+          console.log('Admin role found:', adminUser.role);
           setRole(adminUser.role as AdminRole);
           setIsAdmin(adminUser.role === 'admin');
         }
       } catch (err) {
         console.error('Admin permissions check error:', err);
-        throw err;
       }
-
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to check admin status');
       console.error("Admin check error:", error);

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Permission } from '@/types/permissions';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
@@ -9,12 +10,12 @@ interface PermissionGuardProps {
 }
 
 export function PermissionGuard({ permission, children, fallback = null }: PermissionGuardProps) {
-  const { checkPermission, loading, isDeveloper } = useAdminPermissions();
+  const { checkPermission, loading, isDeveloper, isAdmin } = useAdminPermissions();
 
   if (loading) return null;
   
   // If user is a developer admin, they have all permissions
-  if (isDeveloper) {
+  if (isDeveloper || isAdmin) {
     return <>{children}</>;
   }
   

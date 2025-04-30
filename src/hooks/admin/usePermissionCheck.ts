@@ -10,7 +10,7 @@ interface UsePermissionCheckReturn {
  * Hook for checking if a user has a specific permission
  */
 export function usePermissionCheck(): UsePermissionCheckReturn {
-  // Simplified synchronous permission check
+  // Enhanced permission check with better developer recognition
   const checkPermission = useCallback(
     (
       permission: Permission,
@@ -18,8 +18,11 @@ export function usePermissionCheck(): UsePermissionCheckReturn {
       isAdmin: boolean,
       userPermissions: Permission[]
     ): boolean => {
-      // Developer or admin always has all permissions
-      if (isDeveloper || isAdmin) return true;
+      // Developer always has all permissions (most important rule)
+      if (isDeveloper) return true;
+      
+      // Admin always has all permissions (secondary rule)
+      if (isAdmin) return true;
       
       // Check if the user has the specific permission
       return userPermissions.includes(permission);

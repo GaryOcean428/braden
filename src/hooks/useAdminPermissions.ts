@@ -43,11 +43,6 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
     if (role) {
       // Developer admins get all permissions by default, no need to fetch
       if (isDeveloper) {
-        const allPermissions: Permission[] = [
-          'users.view', 'users.create', 'users.edit', 'users.delete',
-          'content.view', 'content.create', 'content.edit', 'content.delete',
-          'site.edit', 'clients.view', 'clients.manage', 'leads.view', 'leads.manage'
-        ];
         return;
       }
       

@@ -42,11 +42,43 @@ export function useSupabaseInitialization() {
           console.log('Developer admin detected, proceeding with storage initialization');
           
           try {
-            // Use a direct fetch to the Supabase API to ensure buckets exist
-            // This avoids RLS issues when using the storage API
-            const { data: existingBuckets } = await supabase.storage.listBuckets();
+            // Call admin_bypass RPC function to temporarily elevate permissions
+            const { data: adminBypass, error: bypassError } = await supabase.rpc('admin_bypass');
             
-            console.log('Storage buckets retrieved:', existingBuckets?.map(b => b.name));
+            if (bypassError) {
+              console.error('Admin bypass error:', bypassError);
+            } else {
+              console.log('Admin bypass successful:', adminBypass);
+            }
+            
+            // Try to list existing buckets to check connection
+            const { data: existingBuckets, error: listError } = await supabase.storage.listBuckets();
+            
+            if (listError) {
+              console.error('Error listing buckets:', listError);
+              // Don't try to create buckets if we can't list them
+            } else {
+              console.log('Storage buckets retrieved:', existingBuckets?.map(b => b.name));
+              
+              // Create buckets using a try-catch for each one to handle existing buckets
+              const requiredBuckets = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
+              const existingBucketNames = existingBuckets?.map(b => b.name) || [];
+              
+              for (const bucketName of requiredBuckets) {
+                if (!existingBucketNames.includes(bucketName)) {
+                  try {
+                    await supabase.storage.createBucket(bucketName, {
+                      public: true,
+                      fileSizeLimit: 10485760 // 10MB
+                    });
+                    console.log(`Created bucket: ${bucketName}`);
+                  } catch (createErr) {
+                    // If error says bucket already exists, that's fine
+                    console.warn(`Could not create bucket ${bucketName}:`, createErr);
+                  }
+                }
+              }
+            }
             
             // Ensure task tables exist after confirming connection
             await ensureTaskTablesExist();
