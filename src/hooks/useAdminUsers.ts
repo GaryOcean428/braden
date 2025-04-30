@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -33,6 +34,34 @@ export const useAdminUsers = () => {
       if (session.user.email === "braden.lang77@gmail.com") {
         console.log("Developer admin detected by direct email check");
         setIsAdmin(true);
+        
+        // Directly fetch admin users for developer admin
+        try {
+          // Use direct RPC call to exec_sql for developer admin
+          const { data: adminUsersData, error: fetchError } = await supabase.rpc(
+            'exec_sql',
+            { sql_query: 'SELECT * FROM admin_users' }
+          );
+
+          if (fetchError || !adminUsersData) {
+            throw fetchError || new Error('Failed to fetch admin users');
+          }
+
+          // Transform the data to ensure correct typing
+          const formattedAdminUsers = adminUsersData.map(user => ({
+            id: user.id,
+            user_id: user.user_id,
+            email: user.email,
+            created_at: user.created_at,
+            role: user.role as AdminRole
+          }));
+
+          setAdminUsers(formattedAdminUsers);
+          return;
+        } catch (err) {
+          console.error("Error fetching admin users with exec_sql:", err);
+          // Fall through to regular query as backup
+        }
       } else {
         // Fallback to RPC function for backward compatibility
         try {

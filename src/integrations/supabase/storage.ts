@@ -1,3 +1,4 @@
+
 import { supabase } from './client';
 
 // Storage bucket names
@@ -35,6 +36,18 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
       };
     }
 
+    // Get current user's email to check if they have developer permissions
+    const { data: { user } } = await supabase.auth.getUser();
+    const isDeveloperAdmin = user?.email === 'braden.lang77@gmail.com';
+    
+    if (!isDeveloperAdmin) {
+      console.warn('User does not have developer admin permissions');
+      return {
+        success: false,
+        error: "Developer admin permissions required"
+      };
+    }
+    
     // Create all buckets if they don't exist
     const results: Record<string, { success: boolean; error?: any }> = {};
     const bucketsToCreate = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
@@ -44,8 +57,30 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
     
     if (bucketListError) {
       console.error('Error listing buckets:', bucketListError);
+      
+      // Try to create buckets directly even if listing failed
+      for (const bucketName of bucketsToCreate) {
+        try {
+          const { error } = await supabase.storage.createBucket(bucketName, {
+            public: true,
+            fileSizeLimit: 10485760, // 10MB
+          });
+          
+          results[bucketName] = { 
+            success: !error, 
+            error: error?.message
+          };
+          
+          console.log(`Attempted to create bucket ${bucketName}: ${!error ? 'Success' : 'Failed'}`);
+        } catch (err) {
+          results[bucketName] = { success: false, error: err };
+          console.error(`Failed to create ${bucketName}:`, err);
+        }
+      }
+      
       return {
-        success: false,
+        success: Object.values(results).some(r => r.success),
+        details: results,
         error: bucketListError.message
       };
     }
@@ -74,13 +109,6 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
           console.log(`Bucket ${bucketName} already exists`);
           results[bucketName] = { success: true };
         }
-        
-        // Make sure everyone can see the files (but not modify them unless authenticated)
-        // This matches what we've done in SQL migrations
-        if (!existingBucketNames.includes(bucketName) || results[bucketName]?.success) {
-          console.log(`Setting RLS policies for ${bucketName}`);
-        }
-        
       } catch (error) {
         console.error(`Error processing bucket ${bucketName}:`, error);
         results[bucketName] = { success: false, error };

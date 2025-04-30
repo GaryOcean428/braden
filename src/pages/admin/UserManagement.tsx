@@ -57,23 +57,29 @@ export default function UserManagement() {
     }
   };
 
+  // Simplified permission check for the current user
   const checkPermission = async (action) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    // Check if the user is a developer admin by email - most reliable method
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email === 'braden.lang77@gmail.com') {
+      return true;
+    }
+    
+    // Fall back to the user_has_permission function
+    try {
+      const { data: hasPermission, error: permissionError } = await supabase.rpc('user_has_permission', {
+        user_id: user.id,
+        required_permission: action
+      });
+      
+      if (permissionError || !hasPermission) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Permission check error:", error);
       return false;
     }
-    const userId = session.user.id;
-    
-    // Use user_has_permission instead of check_permission
-    const { data: hasPermission, error: permissionError } = await supabase.rpc('user_has_permission', {
-      user_id: userId,
-      required_permission: action
-    });
-    
-    if (permissionError || !hasPermission) {
-      return false;
-    }
-    return true;
   };
 
   if (isLoading) {

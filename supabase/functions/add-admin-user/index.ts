@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -14,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    // Create a Supabase client with the service role key (required for auth.users access)
+    // Create a Supabase client with the service role key
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
@@ -28,17 +29,42 @@ serve(async (req) => {
       );
     }
 
-    // Find user by email in auth.users (only possible with service role)
-    const { data: userData, error: userError } = await supabaseClient
-      .from("auth.users")
-      .select("id")
-      .eq("email", email)
-      .single();
+    console.log(`Searching for user with email: ${email}`);
 
-    if (userError || !userData) {
+    // Use the exec_sql function to find the user by email
+    const { data: userData, error: execError } = await supabaseClient.rpc(
+      'exec_sql',
+      { sql_query: `SELECT id FROM auth.users WHERE email = '${email}' LIMIT 1` }
+    );
+
+    if (execError || !userData || userData.error) {
+      console.error("Error finding user:", execError || userData?.error);
+      return new Response(
+        JSON.stringify({ error: "Failed to find user" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      );
+    }
+
+    // Check if we got a valid user ID
+    const userId = userData[0]?.id;
+    if (!userId) {
       return new Response(
         JSON.stringify({ error: "User not found" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      );
+    }
+
+    // Check if the user is already an admin
+    const { data: existingAdmin, error: adminCheckError } = await supabaseClient
+      .from("admin_users")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existingAdmin) {
+      return new Response(
+        JSON.stringify({ message: "User is already an admin" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
       );
     }
 
@@ -46,13 +72,15 @@ serve(async (req) => {
     const { data: adminData, error: adminError } = await supabaseClient
       .from("admin_users")
       .insert({
-        user_id: userData.id,
-        email: email
+        user_id: userId,
+        email: email,
+        role: 'admin'
       })
       .select()
       .single();
 
     if (adminError) {
+      console.error("Error adding admin user:", adminError);
       return new Response(
         JSON.stringify({ error: adminError.message }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
