@@ -22,9 +22,10 @@ export default function UserManagement() {
     error, 
     checkAdminAndLoadUsers, 
     addAdminUser,
-    configurePermissions 
+    configurePermissions,
+    isAdmin 
   } = useAdminUsers();
-  const { isDeveloper, isAdmin } = useAdminPermissions();
+  const { isDeveloper } = useAdminPermissions();
   const navigate = useNavigate();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 

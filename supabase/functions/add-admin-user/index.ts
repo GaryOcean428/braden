@@ -31,28 +31,26 @@ serve(async (req) => {
 
     console.log(`Searching for user with email: ${email}`);
 
-    // Use the exec_sql function to find the user by email
-    const { data: userData, error: execError } = await supabaseClient.rpc(
-      'exec_sql',
-      { sql_query: `SELECT id FROM auth.users WHERE email = '${email}' LIMIT 1` }
-    );
+    // Direct query to auth.users table using service role key
+    const { data: userData, error: userError } = await supabaseClient.auth.admin.getUserByEmail(email);
 
-    if (execError || !userData || userData.error) {
-      console.error("Error finding user:", execError || userData?.error);
+    if (userError) {
+      console.error("Error finding user:", userError);
       return new Response(
         JSON.stringify({ error: "Failed to find user" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
 
-    // Check if we got a valid user ID
-    const userId = userData[0]?.id;
-    if (!userId) {
+    // Check if we got a valid user
+    if (!userData || !userData.user) {
       return new Response(
         JSON.stringify({ error: "User not found" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
+
+    const userId = userData.user.id;
 
     // Check if the user is already an admin
     const { data: existingAdmin, error: adminCheckError } = await supabaseClient
@@ -60,6 +58,10 @@ serve(async (req) => {
       .select("id")
       .eq("user_id", userId)
       .maybeSingle();
+
+    if (adminCheckError) {
+      console.error("Error checking for existing admin:", adminCheckError);
+    }
 
     if (existingAdmin) {
       return new Response(

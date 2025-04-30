@@ -36,11 +36,15 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
       };
     }
 
-    // Get current user's email to check if they have developer permissions
+    // Check if current user is developer admin (9600a18c-c8e3-44ef-83ad-99ede9268e77) or has dev email
     const { data: { user } } = await supabase.auth.getUser();
     const isDeveloperAdmin = user?.email === 'braden.lang77@gmail.com';
     
-    if (!isDeveloperAdmin) {
+    if (isDeveloperAdmin) {
+      console.log('Developer access confirmed by email');
+    } else if (user?.id === '9600a18c-c8e3-44ef-83ad-99ede9268e77') {
+      console.log('Developer access confirmed by ID');
+    } else {
       console.warn('User does not have developer admin permissions');
       return {
         success: false,
@@ -53,6 +57,7 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
     const bucketsToCreate = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
     
     // First get list of existing buckets
+    console.log('Listing with auth token:', session.access_token.substring(0, 10) + '...');
     const { data: existingBuckets, error: bucketListError } = await supabase.storage.listBuckets();
     
     if (bucketListError) {

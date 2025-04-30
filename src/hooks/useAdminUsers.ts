@@ -37,29 +37,28 @@ export const useAdminUsers = () => {
         
         // Directly fetch admin users for developer admin
         try {
-          // Use direct RPC call to exec_sql for developer admin
-          const { data: adminUsersData, error: fetchError } = await supabase.rpc(
-            'exec_sql',
-            { sql_query: 'SELECT * FROM admin_users' }
-          );
+          // Since exec_sql is not in TypeScript definitions, use a direct query instead
+          const { data: adminUsersData, error: fetchError } = await supabase
+            .from('admin_users')
+            .select('*');
 
-          if (fetchError || !adminUsersData) {
+          if (fetchError) {
             throw fetchError || new Error('Failed to fetch admin users');
           }
 
-          // Transform the data to ensure correct typing
-          const formattedAdminUsers = adminUsersData.map(user => ({
+          // Format the admin users with correct types
+          const formattedAdminUsers = adminUsersData ? adminUsersData.map(user => ({
             id: user.id,
             user_id: user.user_id,
             email: user.email,
             created_at: user.created_at,
             role: user.role as AdminRole
-          }));
+          })) : [];
 
           setAdminUsers(formattedAdminUsers);
           return;
         } catch (err) {
-          console.error("Error fetching admin users with exec_sql:", err);
+          console.error("Error fetching admin users:", err);
           // Fall through to regular query as backup
         }
       } else {
@@ -94,13 +93,13 @@ export const useAdminUsers = () => {
       }
 
       // Transform the data to ensure correct typing
-      const formattedAdminUsers = adminUsersData.map(user => ({
+      const formattedAdminUsers = adminUsersData ? adminUsersData.map(user => ({
         id: user.id,
         user_id: user.user_id,
         email: user.email,
         created_at: user.created_at,
         role: user.role as AdminRole
-      }));
+      })) : [];
 
       setAdminUsers(formattedAdminUsers);
     } catch (err) {
