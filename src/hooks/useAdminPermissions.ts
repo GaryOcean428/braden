@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { AdminRole, Permission } from '@/types/permissions';
 import { useAdminStatus } from './admin/useAdminStatus';
@@ -14,6 +13,7 @@ interface UseAdminPermissionsReturn {
   loading: boolean;
   error: Error | null;
   checkPermission: (permission: Permission) => boolean;
+  refreshPermissions: () => Promise<void>;
 }
 
 export function useAdminPermissions(): UseAdminPermissionsReturn {
@@ -38,7 +38,7 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
   const loading = statusLoading || permissionsLoading;
   const error = statusError || permissionsError;
   
-  // Load permissions when role changes
+  // Load permissions when role changes or on manual refresh
   useEffect(() => {
     if (role) {
       // Developer admins get all permissions by default, no need to fetch
@@ -46,14 +46,38 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
         return;
       }
       
-      fetchPermissions(role);
+      fetchPermissions(role).catch(err => {
+        console.error('Error fetching permissions:', err);
+      });
     }
   }, [role, isDeveloper, fetchPermissions]);
   
+  // Function to manually refresh permissions
+  const refreshPermissions = useCallback(async () => {
+    try {
+      // First check admin status
+      await checkAdminStatus();
+      
+      // Then fetch permissions if needed
+      if (role && !isDeveloper) {
+        await fetchPermissions(role);
+      }
+    } catch (err) {
+      console.error('Error refreshing permissions:', err);
+      toast.error('Permission Refresh Failed', {
+        description: 'Could not update permission status'
+      });
+    }
+  }, [checkAdminStatus, fetchPermissions, role, isDeveloper]);
+
   // Wrapper for permission check that uses internal state
-  const checkUserPermission = (permission: Permission): boolean => {
-    return checkPermission(permission, isDeveloper, isAdmin, permissions);
-  };
+  const checkUserPermission = useCallback((permission: Permission): boolean => {
+    // Developer and admin bypass all permission checks
+    if (isDeveloper || isAdmin) return true;
+    
+    // Otherwise check against loaded permissions
+    return checkPermission(permission, false, false, permissions);
+  }, [isDeveloper, isAdmin, permissions, checkPermission]);
 
   return { 
     isAdmin, 
@@ -62,6 +86,7 @@ export function useAdminPermissions(): UseAdminPermissionsReturn {
     permissions, 
     loading, 
     error,
-    checkPermission: checkUserPermission
+    checkPermission: checkUserPermission,
+    refreshPermissions
   };
 }

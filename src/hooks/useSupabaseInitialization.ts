@@ -9,89 +9,62 @@ export function useSupabaseInitialization() {
     const initializeSupabase = async () => {
       try {
         // Check Supabase connection first
-        const { data: connectionTest, error: connectionError } = await supabase
-          .from('content_pages')
-          .select('count(*)', { count: 'exact', head: true });
-
-        if (connectionError) {
-          console.error('Supabase connection error:', connectionError);
-          
-          // Provide detailed error information for debugging
-          if (connectionError.code === '42501') {
-            console.warn('Permission denied error detected. This is likely an RLS policy issue.');
-            toast.error('Database permission error', {
-              description: 'RLS policies may be preventing access to tables'
-            });
-          } else if (connectionError.code === 'PGRST116') {
-            console.warn('Foreign key violation or constraint error');
-          } else if (connectionError.message?.includes('JWT')) {
-            console.warn('Authentication token issue detected');
-            toast.error('Authentication error', {
-              description: 'Please try logging in again'
-            });
-          }
-        } else {
-          console.log('Supabase connection successful');
-        }
-
-        // Check if user is dev admin by email - most reliable method
         const { data: { session } } = await supabase.auth.getSession();
-        const userEmail = session?.user?.email;
         
-        if (userEmail === 'braden.lang77@gmail.com') {
-          console.log('Developer admin detected, proceeding with storage initialization');
-          
-          try {
-            // Call admin_bypass RPC function to temporarily elevate permissions
-            const { data: adminBypass, error: bypassError } = await supabase.rpc('admin_bypass');
-            
-            if (bypassError) {
-              console.error('Admin bypass error:', bypassError);
-            } else {
-              console.log('Admin bypass successful:', adminBypass);
-            }
-            
-            // Try to list existing buckets to check connection
-            const { data: existingBuckets, error: listError } = await supabase.storage.listBuckets();
-            
-            if (listError) {
-              console.error('Error listing buckets:', listError);
-              // Don't try to create buckets if we can't list them
-            } else {
-              console.log('Storage buckets retrieved:', existingBuckets?.map(b => b.name));
-              
-              // Create buckets using a try-catch for each one to handle existing buckets
-              const requiredBuckets = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
-              const existingBucketNames = existingBuckets?.map(b => b.name) || [];
-              
-              for (const bucketName of requiredBuckets) {
-                if (!existingBucketNames.includes(bucketName)) {
-                  try {
-                    await supabase.storage.createBucket(bucketName, {
-                      public: true,
-                      fileSizeLimit: 10485760 // 10MB
-                    });
-                    console.log(`Created bucket: ${bucketName}`);
-                  } catch (createErr) {
-                    // If error says bucket already exists, that's fine
-                    console.warn(`Could not create bucket ${bucketName}:`, createErr);
-                  }
-                }
-              }
-            }
-            
-            // Ensure task tables exist after confirming connection
-            await ensureTaskTablesExist();
-            console.log('Supabase tables initialized successfully');
-          } catch (storageError) {
-            console.error('Storage initialization error:', storageError);
-            // Continue with application initialization despite storage issues
-          }
-        } else {
-          // Regular user initialization
-          await ensureTaskTablesExist();
-          console.log('Supabase tables initialized successfully for regular user');
+        // First check authentication status
+        if (!session) {
+          console.log('No authenticated session found');
+          toast.info('Sign in to access all features', {
+            description: 'Some features may be limited until you sign in'
+          });
+          return;
         }
+        
+        console.log('Authenticated session found, checking database connection');
+        
+        try {
+          // Try to list existing buckets to verify storage access
+          const { data: existingBuckets, error: listError } = await supabase.storage.listBuckets();
+          
+          if (listError) {
+            console.error('Error listing buckets:', listError);
+            
+            // If we're authenticated as developer, inform about bucket permissions issue
+            if (session.user.email === 'braden.lang77@gmail.com') {
+              toast.warning('Storage permission issue', {
+                description: 'Storage access is limited. Please check RLS policies.'
+              });
+            }
+          } else {
+            console.log('Storage buckets retrieved:', existingBuckets?.map(b => b.name));
+            
+            // Check if all required buckets exist and are accessible
+            const requiredBuckets = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
+            const existingBucketNames = existingBuckets?.map(b => b.name) || [];
+            
+            const missingBuckets = requiredBuckets.filter(name => !existingBucketNames.includes(name));
+            
+            if (missingBuckets.length > 0) {
+              console.log(`Missing buckets: ${missingBuckets.join(', ')}`);
+              
+              // If authenticated as developer, provide more detailed message
+              if (session.user.email === 'braden.lang77@gmail.com') {
+                toast.warning('Storage initialization needed', { 
+                  description: `${missingBuckets.length} storage buckets need to be created`
+                });
+              }
+            } else {
+              console.log('All required buckets exist');
+            }
+          }
+        } catch (storageError) {
+          console.error('Storage initialization error:', storageError);
+        }
+        
+        // Ensure task tables exist regardless of storage status
+        await ensureTaskTablesExist();
+        console.log('Supabase tables initialized successfully');
+        
       } catch (error) {
         console.error('Error initializing Supabase:', error);
         toast.error('Database initialization error', {

@@ -2418,6 +2418,10 @@ export type Database = {
         Args: Record<PropertyKey, never> | { input_user_id: string }
         Returns: undefined
       }
+      check_auth: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       check_permission: {
         Args: {
           user_id: string
@@ -2451,6 +2455,10 @@ export type Database = {
         Args: Record<PropertyKey, never> | { required_role: string }
         Returns: boolean
       }
+      has_storage_access: {
+        Args: { bucket_name: string }
+        Returns: boolean
+      }
       is_admin: {
         Args: Record<PropertyKey, never> | { user_id: string }
         Returns: boolean
@@ -2474,6 +2482,10 @@ export type Database = {
       is_developer_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      ping: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       setup_storage_policies: {
         Args: { bucket_name: string }
