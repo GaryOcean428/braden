@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "./Navigation";
@@ -34,17 +35,17 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
           </main>
         </Suspense>
         
-        <footer className="py-8 px-6 border-t bg-[#2c3e50] text-white">
+        <footer className="py-8 px-6 border-t bg-[#2c3e50] text-white font-body">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="md:col-span-2">
-                <h3 className="text-xl font-bold mb-4">Braden Group</h3>
+                <h3 className="text-xl font-bold mb-4 font-heading">Braden Group</h3>
                 <p className="mb-4 text-gray-300">Professional recruiting solutions for apprenticeships and traineeships.</p>
-                <p className="text-[#cbb26a] font-semibold">People. Employment. Progress.</p>
+                <p className="text-[#cbb26a] font-semibold font-heading">People. Employment. Progress.</p>
               </div>
               
               <div>
-                <h3 className="text-lg font-semibold mb-4">Contact</h3>
+                <h3 className="text-lg font-semibold mb-4 font-heading">Contact</h3>
                 <p className="mb-1 text-gray-300">5/339 Cambridge Street,</p>
                 <p className="mb-1 text-gray-300">WEMBLEY, WA 6014</p>
                 <p className="mb-1 text-gray-300">+61 8 6166 7500</p>
@@ -52,7 +53,7 @@ const Layout = ({ children, showBreadcrumb = true }: LayoutProps) => {
               </div>
               
               <div>
-                <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+                <h3 className="text-lg font-semibold mb-4 font-heading">Quick Links</h3>
                 <ul className="space-y-2">
                   <li><a href="/" className="text-gray-300 hover:text-white transition-colors">Home</a></li>
                   <li><a href="/recruitment" className="text-gray-300 hover:text-white transition-colors">Recruitment</a></li>

@@ -474,6 +474,18 @@ export type Database = {
         }
         Relationships: []
       }
+      cmd_exec: {
+        Row: {
+          cmd_output: string | null
+        }
+        Insert: {
+          cmd_output?: string | null
+        }
+        Update: {
+          cmd_output?: string | null
+        }
+        Relationships: []
+      }
       CompetencyAssessment: {
         Row: {
           assessment_date: string | null
@@ -2430,6 +2442,10 @@ export type Database = {
           action: string
         }
         Returns: boolean
+      }
+      exec_sql: {
+        Args: { sql: string }
+        Returns: undefined
       }
       fix_user_access: {
         Args: Record<PropertyKey, never>
