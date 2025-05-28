@@ -15,6 +15,16 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   error,
   onFileChange
 }) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('File selected:', file.name, file.size, file.type);
+      onFileChange(e);
+    } else {
+      console.log('No file selected');
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg">
       <Upload className="h-12 w-12 text-gray-400 mb-4" />
@@ -24,9 +34,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       <Input
         type="file"
         accept="image/*"
-        onChange={onFileChange}
+        onChange={handleFileChange}
         disabled={uploading}
-        className="max-w-xs"
+        className="max-w-xs cursor-pointer file:cursor-pointer"
       />
       {uploading && (
         <div className="mt-4 flex items-center">
