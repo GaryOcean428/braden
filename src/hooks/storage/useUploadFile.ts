@@ -40,10 +40,9 @@ export const useUploadFile = (bucketName: StorageBucketName) => {
       
       if (uploadError) {
         console.error('Upload error details:', uploadError);
-        console.error('Upload error code:', uploadError.statusCode);
         console.error('Upload error message:', uploadError.message);
         
-        // Provide more specific error messages
+        // Provide more specific error messages based on common storage error patterns
         if (uploadError.message.includes('row level security') || 
             uploadError.message.includes('permission denied') ||
             uploadError.message.includes('access control')) {

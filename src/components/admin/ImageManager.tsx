@@ -44,8 +44,10 @@ const ImageManager: React.FC<ImageManagerProps> = ({
   const endIndex = startIndex + 12;
   const paginatedImages = useMemo(() => images?.slice(startIndex, endIndex) || [], [images, startIndex, endIndex]);
 
-  // Convert string error to Error object if needed
-  const errorObject = error ? (error instanceof Error ? error : new Error(error)) : null;
+  // Convert error to string for ErrorAlert component
+  const errorString = error ? (error instanceof Error ? error.message : String(error)) : null;
+  // Convert string error to Error object if needed for ImageUploader
+  const errorObject = error ? (error instanceof Error ? error : new Error(String(error))) : null;
 
   return (
     <ErrorBoundary>
@@ -64,7 +66,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {error && <ErrorAlert error={error} />}
+          {errorString && <ErrorAlert error={errorString} />}
           
           <Tabs defaultValue="upload">
             <TabsList className="grid w-full grid-cols-2">
@@ -85,7 +87,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({
                 images={paginatedImages}
                 selectedImage={selectedImage}
                 loading={loading}
-                error={error}
+                error={errorString}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onImageSelect={handleImageSelect}

@@ -43,10 +43,9 @@ export const useListFiles = (bucketName: StorageBucketName) => {
       
       if (listError) {
         console.error('List error details:', listError);
-        console.error('List error code:', listError.statusCode);
         console.error('List error message:', listError.message);
         
-        // Provide more specific error messages
+        // Provide more specific error messages based on common storage error patterns
         if (listError.message.includes('row level security') || 
             listError.message.includes('permission denied')) {
           console.error('Permission denied when listing files');
