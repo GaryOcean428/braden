@@ -30,7 +30,26 @@ export const useListFiles = (bucketName: StorageBucketName) => {
       if (session) {
         console.log('Listing with authenticated user:', session.user.email);
       } else {
-        console.log('Listing without authentication');
+        console.log('No authenticated session - skipping file listing');
+        return [];
+      }
+      
+      // Check if user has admin permissions before attempting storage operations
+      const isDeveloperAdmin = session.user.email === 'braden.lang77@gmail.com';
+      
+      if (!isDeveloperAdmin) {
+        // Try the RPC function to check admin status
+        try {
+          const { data: isDeveloperAdminRPC, error: rpcError } = await supabase.rpc('is_developer_admin');
+          
+          if (rpcError || !isDeveloperAdminRPC) {
+            console.log('User does not have admin permissions, skipping file listing');
+            return [];
+          }
+        } catch (rpcErr) {
+          console.log('RPC admin check failed, skipping file listing');
+          return [];
+        }
       }
       
       const { data, error: listError } = await supabase.storage
@@ -49,14 +68,10 @@ export const useListFiles = (bucketName: StorageBucketName) => {
         if (listError.message.includes('row level security') || 
             listError.message.includes('permission denied')) {
           console.error('Permission denied when listing files');
-          toast.error('Permission Error', {
-            description: 'You do not have permission to view files in this bucket.'
-          });
+          // Don't show toast errors for permission issues since they're expected for non-admin users
         } else if (listError.message.includes('bucket')) {
           console.error('Bucket not found or inaccessible');
-          toast.error('Bucket Error', {
-            description: 'The storage bucket could not be accessed.'
-          });
+          // Don't show toast errors for bucket issues since they're expected when buckets don't exist
         } else {
           toast.error("Failed to list files", {
             description: listError.message || "Unknown error"
@@ -103,11 +118,13 @@ export const useListFiles = (bucketName: StorageBucketName) => {
       console.error('List error:', err);
       setError(err instanceof Error ? err : new Error('Unknown error listing files'));
       
-      // Only show error toast if we haven't already shown one
-      if (!err?.message?.includes('Permission Error') && 
-          !err?.message?.includes('Bucket Error')) {
+      // Only show error toast for unexpected errors, not permission/bucket errors
+      if (err instanceof Error &&
+          !err.message.includes('row level security') &&
+          !err.message.includes('permission denied') &&
+          !err.message.includes('bucket')) {
         toast.error("Failed to list files", {
-          description: err instanceof Error ? err.message : "Unknown error"
+          description: err.message
         });
       }
       return [];
