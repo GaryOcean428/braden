@@ -41,9 +41,6 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
       setUpdateSuccess(false);
       setUpdateError(null);
       
-      // Initialize storage buckets if they don't exist
-      await initializeStorageBuckets();
-      
       // Here you would typically update a database record or settings
       // For now, we'll just simulate the update
       await new Promise(resolve => setTimeout(resolve, 1000));
