@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { RoleManager } from '@/utils/roleManager';
 
 export interface UseAdminPermissionCheckReturn {
   isAdmin: boolean;
@@ -30,51 +31,23 @@ export const useAdminPermissionCheck = (): UseAdminPermissionCheckReturn => {
         return false;
       }
 
-      // Check developer status directly by email - most reliable method
-      if (session.user.email === "braden.lang77@gmail.com") {
-        console.log("Developer admin detected by direct email check");
-        setIsDeveloper(true);
-        setIsAdmin(true);
+      // Use centralized role manager instead of hard-coded checks
+      const userRole = await RoleManager.checkUserRole();
+      
+      setIsDeveloper(userRole.isDeveloper);
+      setIsAdmin(userRole.isAdmin);
+      
+      if (userRole.isDeveloper) {
+        console.log("Developer admin detected");
         return true;
       }
       
-      // Fallback to RPC function for backward compatibility
-      try {
-        const { data: isDeveloperAdmin, error: adminCheckError } = await supabase.rpc('is_developer_admin');
-        
-        if (adminCheckError) {
-          throw adminCheckError;
-        }
-        
-        if (isDeveloperAdmin === true) {
-          setIsDeveloper(true);
-          setIsAdmin(true);
-          return true;
-        }
-      } catch (err) {
-        console.error("Error checking developer admin status:", err);
+      if (userRole.isAdmin) {
+        console.log("Admin access confirmed");
+        return true;
       }
 
-      // Check if user is an admin
-      try {
-        const { data: adminUser, error: adminError } = await supabase
-          .from('admin_users')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-
-        if (adminError) {
-          throw adminError;
-        }
-        
-        if (adminUser && adminUser.role === 'admin') {
-          setIsAdmin(true);
-          return true;
-        }
-      } catch (err) {
-        console.error("Error checking admin status:", err);
-      }
-
+      console.log("No admin access");
       return false;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to check admin status';

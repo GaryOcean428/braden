@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AdminRole } from '@/types/permissions';
+import { RoleManager } from '@/utils/roleManager';
 
 interface UseAdminStatusReturn {
   isAdmin: boolean;
@@ -38,65 +39,19 @@ export function useAdminStatus(): UseAdminStatusReturn {
         return;
       }
 
-      // PRIMARY CHECK: Check if the user email is the developer email - most reliable method
-      const userEmail = session.user.email;
+      // Use centralized role manager instead of hard-coded checks
+      const userRole = await RoleManager.checkUserRole();
       
-      if (userEmail === 'braden.lang77@gmail.com') {
-        console.log('Developer detected by email');
-        setIsDeveloper(true);
-        setIsAdmin(true);
-        setRole('admin');
-        setLoading(false);
-        return;
-      }
+      setIsDeveloper(userRole.isDeveloper);
+      setIsAdmin(userRole.isAdmin);
+      setRole(userRole.role);
       
-      // SECONDARY CHECK: Try multiple methods to verify developer status
-      const promises = [];
-      
-      // Method 1: Check if user ID matches the developer ID
-      if (session.user.id === '9600a18c-c8e3-44ef-83ad-99ede9268e77') {
-        console.log('Developer detected by ID');
-        setIsDeveloper(true);
-        setIsAdmin(true);
-        setRole('admin');
-        setLoading(false);
-        return;
-      }
-      
-      // Method 2: Use the admin_bypass function
-      try {
-        const { data: isBypassAllowed, error: bypassError } = await supabase.rpc('admin_bypass');
-        
-        if (!bypassError && isBypassAllowed === true) {
-          console.log("Developer access confirmed by admin_bypass function");
-          setIsDeveloper(true);
-          setIsAdmin(true);
-          setRole('admin');
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn('Failed to check admin_bypass:', err);
-        // Continue with other methods
-      }
-      
-      // Method 3: Fallback check against admin_users table
-      try {
-        const { data: adminUser, error: adminError } = await supabase
-          .from('admin_users')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-
-        if (adminError) {
-          console.warn('Error checking admin_users table:', adminError);
-        } else if (adminUser) {
-          console.log('Admin role found:', adminUser.role);
-          setRole(adminUser.role as AdminRole);
-          setIsAdmin(adminUser.role === 'admin');
-        }
-      } catch (err) {
-        console.warn('Admin permissions check error:', err);
+      if (userRole.isDeveloper) {
+        console.log('Developer access confirmed');
+      } else if (userRole.isAdmin) {
+        console.log('Admin access confirmed');
+      } else {
+        console.log('No admin access');
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to check admin status');

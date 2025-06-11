@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { RoleManager } from "@/utils/roleManager";
+import { NotificationService } from "@/utils/notificationService";
 
 export const ContentManager = () => {
   const [authError, setAuthError] = useState<string | null>(null);
@@ -27,32 +29,32 @@ export const ContentManager = () => {
       
       if (error) {
         setAuthError("Authentication error: Please log in again");
-        toast.error("Authentication Error", {
-          description: "Your session may have expired. Please log in again."
+        NotificationService.authError("Your session may have expired. Please log in again.", {
+          retry: handleRetry
         });
         return;
       }
 
       if (!data.session) {
         setAuthError("Authentication required: Please log in");
-        toast.error("Authentication Required", {
-          description: "Please log in to access admin content."
-        });
+        NotificationService.authError("Please log in to access admin content.");
         return;
       }
       
-      // Verify developer status by email instead of using the RPC function
-      const userEmail = data.session.user.email;
+      // Use centralized role manager instead of hard-coded email check
+      const userRole = await RoleManager.checkUserRole();
       
-      if (userEmail !== 'braden.lang77@gmail.com') {
-        setAuthError("You don't have admin access");
-        toast.error("Access Denied", {
-          description: "Only the developer can access these features"
-        });
+      if (!userRole.isDeveloper) {
+        setAuthError("You don't have developer access");
+        NotificationService.permissionError("developer features");
       } else {
-        // User is the developer
+        // User has developer access
         setAuthError(null);
         setShowSuccess(true);
+        
+        NotificationService.success("Authentication successful", {
+          description: "You have developer access to content management features."
+        });
         
         // Hide success message after 5 seconds
         setTimeout(() => {
@@ -62,6 +64,7 @@ export const ContentManager = () => {
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Unable to verify authentication status");
+      NotificationService.networkError("verify authentication", handleRetry);
     }
   };
 
