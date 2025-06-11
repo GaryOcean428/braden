@@ -13,14 +13,25 @@ export function useSiteEditor() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    initBuckets();
     checkAdminStatus();
   }, []);
 
   const initBuckets = async () => {
     try {
+      // Only initialize storage buckets when explicitly requested and user has admin permissions
+      if (!isAdmin) {
+        console.log('Storage bucket initialization skipped - user is not admin');
+        return;
+      }
+      
       const result = await initializeStorageBuckets();
       console.log('Storage buckets initialized:', result);
+      
+      if (!result.success) {
+        toast.warning("Storage setup issue", {
+          description: "Some storage buckets could not be initialized."
+        });
+      }
     } catch (error) {
       console.error('Error initializing storage buckets:', error);
       toast.error("Storage configuration error", {
@@ -109,6 +120,7 @@ export function useSiteEditor() {
     hasUnsavedChanges,
     handlePublish,
     handlePreview,
-    handleChange
+    handleChange,
+    initBuckets
   };
 }
