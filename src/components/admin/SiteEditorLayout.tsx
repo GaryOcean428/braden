@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Palette, Layout, Layers, Image, File } from 'lucide-react';
@@ -7,7 +8,6 @@ import { ThemeTab } from '@/components/admin/editor/tabs/ThemeTab';
 import { LayoutTab } from '@/components/admin/editor/tabs/LayoutTab';
 import { ComponentsTab } from '@/components/admin/editor/tabs/ComponentsTab';
 import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
-import { useSiteEditor } from '@/hooks/useSiteEditor';
 
 interface SiteEditorLayoutProps {
   isLoading: boolean;
@@ -39,7 +39,7 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
       <div className="container mx-auto py-8 px-4">
         <div className="card">
           <div className="card-content pt-6 text-center">
-            <p className="text-lg text-gray-500">Checking permissions...</p>
+            <p className="text-lg text-gray-500">Access denied. You don't have permission to use the site editor.</p>
           </div>
         </div>
       </div>

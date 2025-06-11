@@ -13,19 +13,29 @@ export function useSiteEditor() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    initBuckets();
+    initStorage();
     checkAdminStatus();
   }, []);
 
-  const initBuckets = async () => {
+  const initStorage = async () => {
     try {
       const result = await initializeStorageBuckets();
-      console.log('Storage buckets initialized:', result);
+      console.log('Storage initialization result:', result);
+      
+      if (!result.success) {
+        console.warn('Storage initialization had issues:', result.error);
+        toast.warning("Storage Warning", {
+          description: "Some storage features may not work properly."
+        });
+      } else if (result.warning) {
+        console.warn('Storage warning:', result.warning);
+        toast.info("Storage Info", {
+          description: result.warning
+        });
+      }
     } catch (error) {
-      console.error('Error initializing storage buckets:', error);
-      toast.error("Storage configuration error", {
-        description: "There was an issue setting up media storage."
-      });
+      console.error('Error during storage initialization:', error);
+      // Don't show error toast for storage issues - they're not critical for basic functionality
     }
   };
 
