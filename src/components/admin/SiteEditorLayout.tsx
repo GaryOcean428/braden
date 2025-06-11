@@ -8,6 +8,8 @@ import { ThemeTab } from '@/components/admin/editor/tabs/ThemeTab';
 import { LayoutTab } from '@/components/admin/editor/tabs/LayoutTab';
 import { ComponentsTab } from '@/components/admin/editor/tabs/ComponentsTab';
 import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
+import { LogosTab } from '@/components/admin/editor/tabs/LogosTab';
+import { FaviconsTab } from '@/components/admin/editor/tabs/FaviconsTab';
 
 interface SiteEditorLayoutProps {
   isLoading: boolean;
@@ -96,6 +98,14 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
 
         <TabsContent value="media">
           <MediaTab onChange={handleChange} />
+        </TabsContent>
+
+        <TabsContent value="logos">
+          <LogosTab onChange={handleChange} />
+        </TabsContent>
+
+        <TabsContent value="favicons">
+          <FaviconsTab onChange={handleChange} />
         </TabsContent>
       </Tabs>
     </div>
