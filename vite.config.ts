@@ -30,8 +30,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   define: {
-    // Ensure WebSocket token is properly defined
-    __WS_TOKEN__: JSON.stringify(process.env.WS_TOKEN || ''),
+    // Remove the problematic WS_TOKEN definition that's causing the syntax error
+    // Environment variables are automatically available via import.meta.env
   },
   test: {
     globals: true,
