@@ -23,10 +23,12 @@ export const useListFiles = (bucketName: StorageBucketName) => {
       setLoading(true);
       setError(null);
       
+      console.log(`Listing files from bucket: ${bucketName}${path ? ` at path: ${path}` : ''}`);
+      
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
-        console.log('Listing with auth token:', session.access_token.substring(0, 10) + '...');
+        console.log('Listing with authenticated user:', session.user.email);
       } else {
         console.log('Listing without authentication');
       }
@@ -41,15 +43,39 @@ export const useListFiles = (bucketName: StorageBucketName) => {
       
       if (listError) {
         console.error('List error details:', listError);
+        console.error('List error code:', listError.statusCode);
+        console.error('List error message:', listError.message);
+        
+        // Provide more specific error messages
+        if (listError.message.includes('row level security') || 
+            listError.message.includes('permission denied')) {
+          console.error('Permission denied when listing files');
+          toast.error('Permission Error', {
+            description: 'You do not have permission to view files in this bucket.'
+          });
+        } else if (listError.message.includes('bucket')) {
+          console.error('Bucket not found or inaccessible');
+          toast.error('Bucket Error', {
+            description: 'The storage bucket could not be accessed.'
+          });
+        } else {
+          toast.error("Failed to list files", {
+            description: listError.message || "Unknown error"
+          });
+        }
         throw listError;
       }
       
       if (!data) {
+        console.log('No files found in bucket');
         return [];
       }
       
+      console.log(`Found ${data.length} items in bucket ${bucketName}`);
+      
       // Filter out folders, only include files
-      const files = data.filter(item => !item.id.endsWith('/'));
+      const files = data.filter(item => !item.id.endsWith('/') && item.name);
+      console.log(`Filtered to ${files.length} actual files`);
       
       // Map files to include public URLs and extract size and type from metadata
       const filesWithUrls: FileWithUrl[] = files.map(file => {
@@ -59,6 +85,8 @@ export const useListFiles = (bucketName: StorageBucketName) => {
         // Extract size and type from metadata, or use default values if not available
         const size = file.metadata?.size || 0;
         const type = file.metadata?.mimetype || 'unknown';
+        
+        console.log(`Processed file: ${file.name}, URL: ${publicUrl}`);
         
         return {
           id: file.id,
@@ -70,11 +98,19 @@ export const useListFiles = (bucketName: StorageBucketName) => {
         };
       });
       
+      console.log(`Successfully processed ${filesWithUrls.length} files with URLs`);
       return filesWithUrls;
     } catch (err) {
       console.error('List error:', err);
       setError(err instanceof Error ? err : new Error('Unknown error listing files'));
-      toast.error("Failed to list files: " + (err instanceof Error ? err.message : "Unknown error"));
+      
+      // Only show error toast if we haven't already shown one
+      if (!err?.message?.includes('Permission Error') && 
+          !err?.message?.includes('Bucket Error')) {
+        toast.error("Failed to list files", {
+          description: err instanceof Error ? err.message : "Unknown error"
+        });
+      }
       return [];
     } finally {
       setLoading(false);

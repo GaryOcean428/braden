@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ensureGuestAccess, generateUniqueFileName, getPublicUrl } from '@/utils/storage';
+import { generateUniqueFileName, getPublicUrl } from '@/utils/storage';
 import { StorageBucketName } from '@/integrations/supabase/storage';
 
 export const useUploadFile = (bucketName: StorageBucketName) => {
@@ -18,75 +18,86 @@ export const useUploadFile = (bucketName: StorageBucketName) => {
       setError(null);
       setUploadedUrl(null);
       
+      console.log(`Starting upload of ${file.name} to bucket ${bucketName}`);
+      
       // Create a unique file name
       const { filePath } = generateUniqueFileName(file.name, path);
       
-      // Attempt to get session, but proceed with upload regardless
+      // Check authentication status
       const { data: { session } } = await supabase.auth.getSession();
       const isAuthenticated = !!session;
       
       console.log(`Upload initiated${isAuthenticated ? ' with authentication' : ' without authentication'}`);
+      console.log('Session user:', session?.user?.email);
       
       // Upload file to Supabase Storage
-      let uploadResult = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
         });
       
-      let uploadData = uploadResult.data;
-      const uploadError = uploadResult.error;
-      
       if (uploadError) {
         console.error('Upload error details:', uploadError);
+        console.error('Upload error code:', uploadError.statusCode);
+        console.error('Upload error message:', uploadError.message);
         
+        // Provide more specific error messages
         if (uploadError.message.includes('row level security') || 
             uploadError.message.includes('permission denied') ||
             uploadError.message.includes('access control')) {
-          // Attempt to ensure guest access for this upload
-          console.log('Attempting to ensure guest access for upload...');
-          const adminResult = await ensureGuestAccess(bucketName);
-          
-          if (adminResult) {
-            // Retry upload
-            const retryResult = await supabase.storage
-              .from(bucketName)
-              .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: true
-              });
-              
-            if (retryResult.error) {
-              console.error('Retry upload failed:', retryResult.error);
-              throw retryResult.error;
-            }
-            
-            uploadData = retryResult.data;
-            console.log('Upload succeeded after ensuring guest access');
-          } else {
-            throw uploadError;
-          }
+          toast.error('Permission Error', {
+            description: 'You do not have permission to upload files to this bucket. Please check your access rights.'
+          });
+        } else if (uploadError.message.includes('file size')) {
+          toast.error('File Too Large', {
+            description: 'The file you are trying to upload exceeds the maximum size limit.'
+          });
+        } else if (uploadError.message.includes('mime type')) {
+          toast.error('Invalid File Type', {
+            description: 'This file type is not allowed. Please upload an image file.'
+          });
         } else {
-          throw uploadError;
+          toast.error('Upload Failed', {
+            description: uploadError.message || 'Unknown error during upload'
+          });
         }
+        throw uploadError;
       }
       
       if (!uploadData) {
-        throw new Error('Upload failed: no data returned');
+        const errorMsg = 'Upload failed: no data returned';
+        console.error(errorMsg);
+        toast.error('Upload Failed', { description: errorMsg });
+        throw new Error(errorMsg);
       }
+      
+      console.log('Upload successful:', uploadData.path);
       
       // Get public URL
       const publicUrl = getPublicUrl(bucketName, uploadData.path);
+      console.log('Generated public URL:', publicUrl);
       
       setUploadedUrl(publicUrl);
-      toast.success('File uploaded successfully');
+      toast.success('File uploaded successfully', {
+        description: `${file.name} has been uploaded successfully`
+      });
+      
       return publicUrl;
     } catch (err) {
       console.error('Upload error:', err);
       const errorObj = err instanceof Error ? err : new Error('Unknown error during upload');
       setError(errorObj);
-      toast.error("Upload failed: " + (err instanceof Error ? err.message : "Unknown error"));
+      
+      // Only show error toast if we haven't already shown one
+      if (!err?.message?.includes('Permission Error') && 
+          !err?.message?.includes('File Too Large') && 
+          !err?.message?.includes('Invalid File Type')) {
+        toast.error("Upload failed", {
+          description: err instanceof Error ? err.message : "Unknown error"
+        });
+      }
       return null;
     } finally {
       setUploading(false);
