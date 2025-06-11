@@ -4,10 +4,10 @@ import { PagesTabContent } from "./PagesTabContent";
 import { BlocksTabContent } from "./BlocksTabContent";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { checkAdminAuth } from "@/lib/auth";
 
 export const ContentTabs = () => {
   const [authError, setAuthError] = useState<string | null>(null);
@@ -21,17 +21,17 @@ export const ContentTabs = () => {
 
   const checkAuth = async () => {
     try {
-      const { data, error } = await supabase.auth.getSession();
+      const authResult = await checkAdminAuth();
       
-      if (error) {
-        setAuthError("Authentication error: Please log in again");
+      if (authResult.error) {
+        setAuthError(authResult.error);
         toast.error("Authentication Error", {
-          description: "Your session may have expired. Please log in again."
+          description: authResult.error
         });
         return;
       }
 
-      if (!data.session) {
+      if (!authResult.isAuthenticated) {
         setAuthError("Authentication required: Please log in");
         toast.error("Authentication Required", {
           description: "Please log in to access admin content."
@@ -39,21 +39,24 @@ export const ContentTabs = () => {
         return;
       }
       
-      // Verify developer status by email instead of using the RPC function
-      const userEmail = data.session.user.email;
-      
-      if (userEmail !== 'braden.lang77@gmail.com') {
+      if (!authResult.isAdmin) {
         setAuthError("You don't have admin access");
         toast.error("Access Denied", {
-          description: "Only the developer can access these features"
+          description: "Admin permissions required to access these features"
         });
-      } else {
-        // User is the developer
-        setAuthError(null);
+        return;
       }
+
+      // User is authenticated and has admin access
+      setAuthError(null);
+      console.log('Admin access confirmed for user:', authResult.user.email);
+      
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError("Unable to verify authentication status");
+      toast.error("Authentication Error", {
+        description: "Unable to verify authentication status"
+      });
     }
   };
 

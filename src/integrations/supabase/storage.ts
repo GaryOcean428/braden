@@ -25,8 +25,15 @@ export type StorageBucketResult = {
 export const initializeStorageBuckets = async (): Promise<StorageBucketResult> => {
   try {
     // Check if we have an active session
-    const { data: { session } } = await supabase.auth.getSession();
-    console.log('Session found:', session ? 'Yes' : 'No');
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error('Session error:', sessionError);
+      return { 
+        success: false, 
+        error: "Authentication error: Please log in again" 
+      };
+    }
     
     if (!session) {
       console.warn('No active session found. Bucket creation requires authentication.');
@@ -36,28 +43,45 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
       };
     }
 
-    // Check if current user is developer admin (9600a18c-c8e3-44ef-83ad-99ede9268e77) or has dev email
-    const { data: { user } } = await supabase.auth.getUser();
-    const isDeveloperAdmin = user?.email === 'braden.lang77@gmail.com';
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    if (isDeveloperAdmin) {
-      console.log('Developer access confirmed by email');
-    } else if (user?.id === '9600a18c-c8e3-44ef-83ad-99ede9268e77') {
-      console.log('Developer access confirmed by ID');
-    } else {
-      console.warn('User does not have developer admin permissions');
+    if (userError || !user) {
+      console.error('User error:', userError);
       return {
         success: false,
-        error: "Developer admin permissions required"
+        error: "Unable to get user information"
+      };
+    }
+
+    // Check admin status using RLS function
+    const { data: isAdminData, error: adminError } = await supabase
+      .rpc('is_developer_admin');
+    
+    let isAdmin = false;
+    if (adminError) {
+      console.warn('Admin check failed, falling back to email check:', adminError);
+      // Fallback to email check
+      isAdmin = user.email === 'braden.lang77@gmail.com';
+    } else {
+      isAdmin = isAdminData === true;
+    }
+    
+    if (!isAdmin) {
+      console.warn('User does not have admin permissions:', user.email);
+      return {
+        success: false,
+        error: "Admin permissions required for storage configuration"
       };
     }
     
-    // Create all buckets if they don't exist
+    console.log('Admin access confirmed for user:', user.email);
+    
     const results: Record<string, { success: boolean; error?: any }> = {};
     const bucketsToCreate = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
     
-    // First get list of existing buckets
-    console.log('Listing with auth token:', session.access_token.substring(0, 10) + '...');
+    // Get list of existing buckets
+    console.log('Listing existing buckets...');
     const { data: existingBuckets, error: bucketListError } = await supabase.storage.listBuckets();
     
     if (bucketListError) {
@@ -76,7 +100,11 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
             error: error?.message
           };
           
-          console.log(`Attempted to create bucket ${bucketName}: ${!error ? 'Success' : 'Failed'}`);
+          if (error) {
+            console.error(`Error creating bucket ${bucketName}:`, error);
+          } else {
+            console.log(`Created bucket: ${bucketName}`);
+          }
         } catch (err) {
           results[bucketName] = { success: false, error: err };
           console.error(`Failed to create ${bucketName}:`, err);
@@ -86,7 +114,7 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
       return {
         success: Object.values(results).some(r => r.success),
         details: results,
-        error: bucketListError.message
+        error: `Bucket listing failed: ${bucketListError.message}`
       };
     }
     
@@ -128,7 +156,7 @@ export const initializeStorageBuckets = async (): Promise<StorageBucketResult> =
     console.error('Error initializing storage buckets:', error);
     return { 
       success: false, 
-      error 
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 };
