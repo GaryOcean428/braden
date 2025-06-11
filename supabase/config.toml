@@ -1,15 +1,1 @@
-
 project_id = "iykrauzuutvmnxpqppzk"
-
-[api]
-enabled = true
-port = 54321
-schemas = ["public", "storage"]
-
-[functions]
-[functions.add-admin-user]
-verify_jwt = true
-
-[functions.send-confirmation]
-verify_jwt = false
-
