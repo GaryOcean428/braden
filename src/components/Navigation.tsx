@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useLocation, useNavigate } from "react-router-dom";
 import MobileMenu from "./navigation/MobileMenu";
 import DesktopMenu from "./navigation/DesktopMenu";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { checkAdminAuth } from "@/lib/auth";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,16 +16,11 @@ const Navigation = () => {
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
-        const {
-          data: {
-            user
-          }
-        } = await supabase.auth.getUser();
-        if (user?.email === "braden.lang77@gmail.com") {
-          setIsAdmin(true);
-        }
+        const authResult = await checkAdminAuth();
+        setIsAdmin(authResult.isAdmin);
       } catch (error) {
         console.error("Error checking admin status:", error);
+        setIsAdmin(false);
       }
     };
     checkAdminStatus();

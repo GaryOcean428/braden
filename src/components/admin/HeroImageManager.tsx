@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { checkAdminAuth } from '@/lib/auth';
 
 interface HeroImageManagerProps {
   currentHeroImage?: string;
@@ -24,10 +25,24 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { user } = useAuth();
   
-  // Check if the user is an admin (developer)
-  const isAdmin = user?.email === 'braden.lang77@gmail.com';
+  // Check if the user is an admin using the auth helper
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const authResult = await checkAdminAuth();
+        setIsAdmin(authResult.isAdmin);
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+    if (user) {
+      checkAdmin();
+    }
+  }, [user]);
 
   const handleImageSelect = (url: string) => {
     setSelectedImage(url);
