@@ -8,6 +8,9 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    hmr: {
+      clientPort: undefined, // Let Vite auto-detect the port
+    },
   },
   plugins: [
     react(),
@@ -19,7 +22,16 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1000, // Increased from default 500 KB to 1000 KB
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
+  define: {
+    // Ensure WebSocket token is properly defined
+    __WS_TOKEN__: JSON.stringify(process.env.WS_TOKEN || ''),
   },
   test: {
     globals: true,
