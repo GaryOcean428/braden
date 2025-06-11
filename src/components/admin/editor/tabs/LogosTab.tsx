@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LogoTab } from '../LogoTab';
+import { LogoTab } from './LogoTab';
 
 interface LogosTabProps {
   onChange: () => void;
