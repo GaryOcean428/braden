@@ -33,7 +33,7 @@ const Hero = () => {
         <ErrorBoundary>
           <HeroImage onError={handleImageError} />
         </ErrorBoundary>
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#2c3e50]/80 to-[#811a2c]/80"></div>
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-braden-navy/80 to-braden-dark-red/80"></div>
       </div>
       
       <div 
@@ -59,7 +59,7 @@ const Hero = () => {
           
           <button 
             onClick={handleFindOpportunities} 
-            className="bg-white text-[#ab233a] hover:bg-gray-100 font-montserrat font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all text-sm sm:text-base focus:ring-2 focus:ring-offset-2 focus:ring-white focus:outline-none" 
+            className="bg-white text-braden-red hover:bg-gray-100 font-montserrat font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-lg transition-all text-sm sm:text-base focus:ring-2 focus:ring-offset-2 focus:ring-white focus:outline-none" 
             aria-label="Find apprenticeship and traineeship opportunities"
           >
             Find Opportunities

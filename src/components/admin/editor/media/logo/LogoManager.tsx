@@ -53,7 +53,7 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
   
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-[#2c3e50] text-white">
+      <CardHeader className="bg-braden-navy text-white">
         <CardTitle className="flex items-center gap-2">
           <ImageIcon className="h-5 w-5" />
           {title}
@@ -85,7 +85,7 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
           <Button 
             onClick={handleUpdateLogo} 
             disabled={!selectedLogo || isUpdating}
-            className="bg-[#ab233a] hover:bg-[#811a2c]"
+            className="bg-braden-red hover:bg-braden-dark-red"
           >
             {isUpdating ? (
               <>

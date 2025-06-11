@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { RoleManager } from '@/utils/roleManager';
+import { NotificationService } from '@/utils/notificationService';
 
 export function useAdminAuth() {
   const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ export function useAdminAuth() {
         
         if (userRole.isDeveloper) {
           console.log("Developer access confirmed");
-          toast.success('Developer Access Confirmed', {
+          NotificationService.success('Developer Access Confirmed', {
             description: 'You have full system privileges'
           });
           setIsAdmin(true);
@@ -49,7 +50,7 @@ export function useAdminAuth() {
         
         if (userRole.isAdmin) {
           console.log("Admin access confirmed");
-          toast.success('Admin Access Confirmed');
+          NotificationService.success('Admin Access Confirmed');
           setIsAdmin(true);
           setIsDeveloper(false);
           navigate('/admin');
@@ -86,17 +87,13 @@ export function useAdminAuth() {
       
       if (loginError) {
         setError(loginError.message);
-        toast.error('Login Failed', {
-          description: loginError.message
-        });
+        NotificationService.authError(loginError.message);
         return;
       }
       
       if (!data.user) {
         setError('Authentication failed');
-        toast.error('Authentication Failed', {
-          description: 'User information not available'
-        });
+        NotificationService.authError('User information not available');
         return;
       }
       
@@ -104,7 +101,7 @@ export function useAdminAuth() {
       const userRole = await RoleManager.checkUserRole();
       
       if (userRole.isDeveloper) {
-        toast.success('Developer access confirmed');
+        NotificationService.success('Developer access confirmed');
         setIsAdmin(true);
         setIsDeveloper(true);
         navigate('/admin');
@@ -112,7 +109,7 @@ export function useAdminAuth() {
       }
       
       if (userRole.isAdmin) {
-        toast.success('Admin access confirmed');
+        NotificationService.success('Admin access confirmed');
         setIsAdmin(true);
         setIsDeveloper(false);
         navigate('/admin');
@@ -121,14 +118,12 @@ export function useAdminAuth() {
       
       // No admin access
       setError('You do not have admin access');
-      toast.error('Access Denied', {
-        description: 'You do not have admin privileges'
-      });
+      NotificationService.permissionError();
       await supabase.auth.signOut();
     } catch (error: any) {
       console.error('Login process error:', error);
       setError(error.message || 'An unexpected error occurred');
-      toast.error('Login Error', {
+      NotificationService.error('Login Error', {
         description: 'An unexpected error occurred'
       });
     } finally {

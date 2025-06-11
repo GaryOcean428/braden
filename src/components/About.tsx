@@ -32,7 +32,7 @@ const About = () => {
           <p className="font-opensans text-base md:text-lg text-gray-700 leading-relaxed text-center max-w-3xl mx-auto mb-8">We serve individuals seeking career opportunities through apprenticeships and traineeships, as well as businesses looking for skilled workers. Our services span across urban and suburban areas, with plans to expand into rural regions.</p>
           
           <div className="flex justify-center">
-            <Button onClick={() => navigate('/contact')} className="bg-[#ab233a] hover:bg-[#811a2c] text-white">
+            <Button onClick={() => navigate('/contact')} className="bg-braden-red hover:bg-braden-dark-red text-white">
               Get in Touch
             </Button>
           </div>

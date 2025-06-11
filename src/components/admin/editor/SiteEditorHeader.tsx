@@ -48,15 +48,15 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
           <Button 
             variant="ghost" 
             size="sm"
-            className="flex items-center gap-1 text-[#2c3e50] hover:text-[#ab233a]"
+            className="flex items-center gap-1 text-braden-navy hover:text-braden-red"
             onClick={handleBackToDashboard}
           >
             <ChevronLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
         </div>
-        <h1 className="text-3xl font-bold text-[#ab233a]">Site Editor</h1>
-        <p className="text-[#2c3e50] mt-1">
+        <h1 className="text-3xl font-bold text-braden-red">Site Editor</h1>
+        <p className="text-braden-navy mt-1">
           Customize your website appearance and content
         </p>
       </div>
@@ -74,7 +74,7 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
         <Button 
           onClick={handlePublish}
           disabled={!hasUnsavedChanges}
-          className="flex items-center gap-1 bg-[#ab233a] hover:bg-[#811a2c]"
+          className="flex items-center gap-1 bg-braden-red hover:bg-braden-dark-red"
         >
           <Save className="h-4 w-4" />
           Publish Changes
