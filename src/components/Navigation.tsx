@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,8 +14,8 @@ const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Use the white logo for good contrast against the red background
-  const logoPath = "/docs/noBgWhite.png";
+  // Use the gold logo for good contrast against the red background
+  const logoPath = "/docs/noBgGold.png";
 
   useEffect(() => {
     const checkAdminStatus = async () => {
