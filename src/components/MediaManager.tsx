@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { RefreshCw, Upload, AlertCircle } from "lucide-react";
-import { useMediaManagement } from "@/hooks/useMediaManagement";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import React, { useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RefreshCw, Upload, AlertCircle } from 'lucide-react';
+import { useMediaManagement } from '@/hooks/useMediaManagement';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const MediaManager = () => {
   const {
@@ -15,14 +15,16 @@ export const MediaManager = () => {
     error,
     loadFiles,
     uploadFile,
-    deleteFile
+    deleteFile,
   } = useMediaManagement();
 
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       await uploadFile(file);
@@ -92,7 +94,11 @@ export const MediaManager = () => {
                     variant="destructive"
                     size="sm"
                     onClick={() => {
-                      if (window.confirm(`Are you sure you want to delete ${file.title}?`)) {
+                      if (
+                        window.confirm(
+                          `Are you sure you want to delete ${file.title}?`
+                        )
+                      ) {
                         deleteFile(file.id, file.file_path);
                       }
                     }}

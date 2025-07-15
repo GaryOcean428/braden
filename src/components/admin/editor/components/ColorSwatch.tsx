@@ -9,23 +9,20 @@ interface ColorSwatchProps {
   onClick?: () => void;
 }
 
-export const ColorSwatch: React.FC<ColorSwatchProps> = ({ 
-  name, 
-  hex, 
-  rgb, 
-  hsl, 
-  usage, 
-  onClick 
+export const ColorSwatch: React.FC<ColorSwatchProps> = ({
+  name,
+  hex,
+  rgb,
+  hsl,
+  usage,
+  onClick,
 }) => {
   return (
-    <div 
+    <div
       className="border rounded-md overflow-hidden cursor-pointer transition-all hover:shadow-md"
       onClick={onClick}
     >
-      <div 
-        className="h-16 w-full" 
-        style={{ backgroundColor: hex }}
-      />
+      <div className="h-16 w-full" style={{ backgroundColor: hex }} />
       <div className="p-3 space-y-1">
         <h4 className="font-semibold text-sm">{name}</h4>
         <p className="text-xs text-gray-500">{hex}</p>

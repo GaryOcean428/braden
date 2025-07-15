@@ -1,6 +1,5 @@
-
-import { useNavigate } from "react-router-dom";
-import { navigationItems } from "@/config/navigation";
+import { useNavigate } from 'react-router-dom';
+import { navigationItems } from '@/config/navigation';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -9,7 +8,12 @@ interface MobileMenuProps {
   scrollToSection: (sectionId: string) => void;
 }
 
-const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuProps) => {
+const MobileMenu = ({
+  isOpen,
+  setIsOpen,
+  isAdmin,
+  scrollToSection,
+}: MobileMenuProps) => {
   const navigate = useNavigate();
 
   const handleItemClick = (action: 'scroll' | 'navigate', target: string) => {
@@ -22,9 +26,11 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
   };
 
   return (
-    <div 
+    <div
       className={`md:hidden fixed inset-x-0 top-[60px] bg-brand-primary/95 backdrop-blur-sm transition-all duration-300 ease-in-out font-montserrat ${
-        isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+        isOpen
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 -translate-y-4 pointer-events-none'
       }`}
     >
       <div className="px-4 py-4">
@@ -39,7 +45,7 @@ const MobileMenu = ({ isOpen, setIsOpen, isAdmin, scrollToSection }: MobileMenuP
             </button>
           ))}
           {isAdmin && (
-            <button 
+            <button
               onClick={() => {
                 navigate('/admin');
                 setIsOpen(false);

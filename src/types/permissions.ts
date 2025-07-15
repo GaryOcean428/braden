@@ -1,10 +1,9 @@
-
 export type AdminRole = 'admin' | 'editor' | 'viewer';
 
-export type Permission = 
-  | 'users.view' 
-  | 'users.create' 
-  | 'users.edit' 
+export type Permission =
+  | 'users.view'
+  | 'users.create'
+  | 'users.edit'
   | 'users.delete'
   | 'content.view'
   | 'content.create'

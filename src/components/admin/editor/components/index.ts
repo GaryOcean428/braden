@@ -1,4 +1,3 @@
-
 export * from './SearchBar';
 export * from './ComponentLibraryHeader';
 export * from './ComponentCard';

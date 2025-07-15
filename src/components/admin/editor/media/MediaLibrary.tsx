@@ -1,6 +1,12 @@
-
 import React, { useEffect } from 'react';
-import { ImageIcon, FileVideo, AlertCircle, File, Loader2, RefreshCw } from 'lucide-react';
+import {
+  ImageIcon,
+  FileVideo,
+  AlertCircle,
+  File,
+  Loader2,
+  RefreshCw,
+} from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -12,12 +18,12 @@ import { MediaList } from './MediaList';
 import { MediaItemDetails } from './MediaItemDetails';
 import { MediaLibraryProps, MediaItem } from './types';
 
-export const MediaLibrary: React.FC<MediaLibraryProps> = ({ 
-  onChange, 
-  selectedItem: externalSelectedItem, 
+export const MediaLibrary: React.FC<MediaLibraryProps> = ({
+  onChange,
+  selectedItem: externalSelectedItem,
   onSelectItem: externalOnSelectItem,
   bucketName = 'media',
-  title = 'Media Library'
+  title = 'Media Library',
 }) => {
   const {
     mediaItems,
@@ -33,9 +39,9 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
     handleDeleteMedia,
     error,
     loadMedia,
-    handleRetry
+    handleRetry,
   } = useMediaLibrary(onChange, bucketName);
-  
+
   // Sync with external selection if provided
   useEffect(() => {
     if (externalSelectedItem) {
@@ -55,7 +61,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
     // Load media items when component mounts
     loadMedia();
   }, [bucketName, loadMedia]);
-  
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -64,7 +70,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <Alert variant="destructive" className="mb-4">
@@ -73,7 +79,11 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
         <AlertDescription>
           {error}
           <div className="mt-4">
-            <Button variant="outline" onClick={handleRetry} className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={handleRetry}
+              className="flex items-center gap-2"
+            >
               <RefreshCw className="h-4 w-4" />
               Try Again
             </Button>
@@ -82,20 +92,24 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
       </Alert>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">{title}</h3>
         <div className="flex items-center gap-2">
-          <FileUploader 
+          <FileUploader
             uploading={uploading}
             onChange={handleFileUpload}
-            accept={activeTab === 'images' ? 'image/*' : 'image/*,video/*,application/pdf'}
+            accept={
+              activeTab === 'images'
+                ? 'image/*'
+                : 'image/*,video/*,application/pdf'
+            }
           />
         </div>
       </div>
-      
+
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-gray-100">
           <TabsTrigger value="images" className="flex items-center gap-1">
@@ -107,7 +121,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
             All Media
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="images" className="pt-4">
           <div className="flex gap-4 mb-6">
             <SearchBar
@@ -116,7 +130,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
               placeholder="Search images..."
             />
           </div>
-          
+
           <ImageGrid
             isLoading={isLoading}
             items={mediaItems}
@@ -127,7 +141,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
             onClearSearch={() => setSearchQuery('')}
           />
         </TabsContent>
-        
+
         <TabsContent value="media" className="pt-4">
           <div className="flex gap-4 mb-6">
             <SearchBar
@@ -136,7 +150,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
               placeholder="Search all media..."
             />
           </div>
-          
+
           <MediaList
             isLoading={isLoading}
             items={mediaItems}
@@ -146,7 +160,7 @@ export const MediaLibrary: React.FC<MediaLibraryProps> = ({
           />
         </TabsContent>
       </Tabs>
-      
+
       {selectedItem && (
         <MediaItemDetails item={selectedItem} onDelete={handleDeleteMedia} />
       )}

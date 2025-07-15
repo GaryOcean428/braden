@@ -1,7 +1,6 @@
-
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { FormItemContext } from "./FormItemContext";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { FormItemContext } from './FormItemContext';
 
 export const FormItem = React.forwardRef<
   HTMLDivElement,
@@ -11,8 +10,8 @@ export const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn("space-y-2", className)} {...props} />
+      <div ref={ref} className={cn('space-y-2', className)} {...props} />
     </FormItemContext.Provider>
   );
 });
-FormItem.displayName = "FormItem";
+FormItem.displayName = 'FormItem';

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 interface LogoConfig {
@@ -13,7 +12,7 @@ export const useLogo = (defaultLogo?: LogoConfig) => {
     defaultLogo || {
       src: '/docs/noBgWhite.png',
       alt: 'Braden Group Logo',
-      fallbackText: 'braden'
+      fallbackText: 'braden',
     }
   );
 
@@ -31,6 +30,6 @@ export const useLogo = (defaultLogo?: LogoConfig) => {
     logoError,
     currentLogo,
     handleLogoError,
-    updateLogo
+    updateLogo,
   };
 };

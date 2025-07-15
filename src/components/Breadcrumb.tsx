@@ -1,10 +1,9 @@
-
-import { Link, useLocation } from "react-router-dom";
-import { Home } from "lucide-react";
+import { Link, useLocation } from 'react-router-dom';
+import { Home } from 'lucide-react';
 
 export const Breadcrumb = () => {
   const location = useLocation();
-  const pathnames = location.pathname.split('/').filter(x => x);
+  const pathnames = location.pathname.split('/').filter((x) => x);
 
   // If there are no additional paths beyond the root, don't render anything
   if (pathnames.length === 0) return null;
@@ -13,7 +12,10 @@ export const Breadcrumb = () => {
     <nav aria-label="breadcrumbs" className="container mx-auto px-4 py-2">
       <ol className="list-none p-0 inline-flex items-center text-sm text-gray-500">
         <li className="flex items-center">
-          <Link to="/" className="text-braden-navy hover:text-braden-red transition-colors flex items-center">
+          <Link
+            to="/"
+            className="text-braden-navy hover:text-braden-red transition-colors flex items-center"
+          >
             <Home className="h-4 w-4 mr-2" />
             Home
           </Link>
@@ -27,10 +29,12 @@ export const Breadcrumb = () => {
           return (
             <li key={name} className="flex items-center">
               {isLast ? (
-                <span className="capitalize text-gray-700">{name.replace(/[-]/g, ' ')}</span>
+                <span className="capitalize text-gray-700">
+                  {name.replace(/[-]/g, ' ')}
+                </span>
               ) : (
-                <Link 
-                  to={routeTo} 
+                <Link
+                  to={routeTo}
                   className="text-braden-navy hover:text-braden-red transition-colors capitalize"
                 >
                   {name.replace(/[-]/g, ' ')}

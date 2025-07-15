@@ -1,6 +1,11 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { ComponentLibrary } from '@/components/admin/editor/ComponentLibrary';
 
 interface ComponentsTabProps {

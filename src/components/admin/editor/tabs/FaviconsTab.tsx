@@ -1,6 +1,11 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Image } from 'lucide-react';
 import { LogoManager } from '../media/logo/LogoManager';
 
@@ -22,10 +27,13 @@ export const FaviconsTab: React.FC<FaviconsTabProps> = ({ onChange }) => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="mb-4 text-sm text-[#2c3e50]">
-          <p>Upload favicon files that will appear in browser tabs. Recommended size is 32x32 pixels or larger.</p>
+          <p>
+            Upload favicon files that will appear in browser tabs. Recommended
+            size is 32x32 pixels or larger.
+          </p>
         </div>
-        
-        <LogoManager 
+
+        <LogoManager
           onLogoUpdate={onChange}
           bucketName="favicons"
           title="Favicon Manager"

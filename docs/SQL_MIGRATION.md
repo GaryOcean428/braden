@@ -1,4 +1,3 @@
-
 # SQL Migration for Site Editor
 
 Execute the following SQL commands to set up the necessary tables for the site editor:

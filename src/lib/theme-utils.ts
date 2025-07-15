@@ -1,4 +1,3 @@
-
 import { theme } from '@/config/theme';
 
 export const getThemeColor = (color: string) => {

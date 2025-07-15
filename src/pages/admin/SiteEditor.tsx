@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { SiteEditorLayout } from '@/components/admin/SiteEditorLayout';
 import { useSiteEditor } from '@/hooks/useSiteEditor';
@@ -12,7 +11,7 @@ const SiteEditor: React.FC = () => {
     hasUnsavedChanges,
     handlePublish,
     handlePreview,
-    handleChange
+    handleChange,
   } = useSiteEditor();
 
   return (

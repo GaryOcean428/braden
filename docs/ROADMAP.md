@@ -1,9 +1,9 @@
-
 # Website Customization System Roadmap
 
 ## Phase 1: Foundation
+
 - [x] Create initial roadmap and documentation
-- [x] Set up content structure in Supabase 
+- [x] Set up content structure in Supabase
 - [x] Enhance admin dashboard UI
 - [x] Improve media library management
 - [x] Add basic content editing capabilities
@@ -11,6 +11,7 @@
 - [x] Implement theme persistence with database storage
 
 ## Phase 2: Visual Editing
+
 - [x] Create basic layout editor structure
 - [x] Enhance component library with more components
 - [ ] Implement full drag-and-drop layout editor
@@ -20,6 +21,7 @@
 - [ ] Implement content block reusability
 
 ## Phase 3: Advanced Features
+
 - [ ] Add version history and rollbacks
 - [ ] Create publishing workflow
 - [ ] Implement advanced component customization
@@ -27,6 +29,7 @@
 - [ ] Add user role-based editing permissions
 
 ## Current Sprint Tasks
+
 1. [x] Create admin editor foundation
 2. [x] Set up visual theme customizer
 3. [x] Enhance media management

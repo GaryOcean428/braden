@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,10 +10,10 @@ interface LogoManagerErrorProps {
   onRetry: () => void;
 }
 
-export const LogoManagerError: React.FC<LogoManagerErrorProps> = ({ 
-  title = "Logo Manager",
+export const LogoManagerError: React.FC<LogoManagerErrorProps> = ({
+  title = 'Logo Manager',
   error,
-  onRetry
+  onRetry,
 }) => {
   return (
     <Card className="overflow-hidden">

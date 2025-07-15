@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,12 +10,12 @@ import { MediaItem } from '../types';
 import { LogoManagerLoading } from './LogoManagerLoading';
 import { LogoManagerError } from './LogoManagerError';
 
-export const LogoManager: React.FC<LogoManagerProps> = ({ 
+export const LogoManager: React.FC<LogoManagerProps> = ({
   onLogoUpdate,
-  currentLogo, 
-  title = "Logo Manager",
-  description = "Update your site logo",
-  bucketName = "logos"
+  currentLogo,
+  title = 'Logo Manager',
+  description = 'Update your site logo',
+  bucketName = 'logos',
 }) => {
   const {
     selectedLogo,
@@ -26,13 +25,13 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
     loading,
     logoUrl,
     handleUpdateLogo,
-    setError
+    setError,
   } = useLogoManager(onLogoUpdate, currentLogo);
-  
+
   const handleSelectItem = (item: MediaItem) => {
     setSelectedLogo(item);
   };
-  
+
   const handleMediaChange = () => {
     console.log('Media library changed');
   };
@@ -40,17 +39,17 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
   if (loading) {
     return <LogoManagerLoading title={title} />;
   }
-  
+
   if (error) {
     return (
-      <LogoManagerError 
+      <LogoManagerError
         title={title}
         error={error}
         onRetry={() => setError(null)}
       />
     );
   }
-  
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="bg-braden-navy text-white">
@@ -59,31 +58,29 @@ export const LogoManager: React.FC<LogoManagerProps> = ({
           {title}
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="p-6">
         <p className="text-sm text-gray-600 mb-6">{description}</p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {logoUrl && (
-            <LogoPreview url={logoUrl} title="Current" />
-          )}
-          
+          {logoUrl && <LogoPreview url={logoUrl} title="Current" />}
+
           {selectedLogo && (
             <LogoPreview url={selectedLogo.publicUrl} title="Selected" />
           )}
         </div>
-        
-        <MediaLibrary 
+
+        <MediaLibrary
           onChange={handleMediaChange}
           onSelectItem={handleSelectItem}
           selectedItem={selectedLogo}
           bucketName={bucketName}
           title={`Select ${title}`}
         />
-        
+
         <div className="flex justify-end mt-6">
-          <Button 
-            onClick={handleUpdateLogo} 
+          <Button
+            onClick={handleUpdateLogo}
             disabled={!selectedLogo || isUpdating}
             className="bg-braden-red hover:bg-braden-dark-red"
           >

@@ -1,6 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +22,11 @@ interface Email {
 
 const Emails = () => {
   const [emails, setEmails] = useState<Email[]>([]);
-  const [newEmail, setNewEmail] = useState({ subject: '', recipient: '', status: '' });
+  const [newEmail, setNewEmail] = useState({
+    subject: '',
+    recipient: '',
+    status: '',
+  });
 
   useEffect(() => {
     fetchEmails();
@@ -27,8 +37,18 @@ const Emails = () => {
     try {
       // Mock data
       const mockEmails: Email[] = [
-        { id: '1', subject: 'Welcome Email', recipient: 'customer@example.com', status: 'Sent' },
-        { id: '2', subject: 'Follow-up', recipient: 'prospect@example.com', status: 'Draft' }
+        {
+          id: '1',
+          subject: 'Welcome Email',
+          recipient: 'customer@example.com',
+          status: 'Sent',
+        },
+        {
+          id: '2',
+          subject: 'Follow-up',
+          recipient: 'prospect@example.com',
+          status: 'Draft',
+        },
       ];
       setEmails(mockEmails);
     } catch (error) {
@@ -41,7 +61,7 @@ const Emails = () => {
     try {
       const newEmailItem: Email = {
         id: `${emails.length + 1}`,
-        ...newEmail
+        ...newEmail,
       };
       setEmails([...emails, newEmailItem]);
       setNewEmail({ subject: '', recipient: '', status: '' });
@@ -85,7 +105,10 @@ const Emails = () => {
                   <TableCell>{email.recipient}</TableCell>
                   <TableCell>{email.status}</TableCell>
                   <TableCell>
-                    <Button variant="destructive" onClick={() => handleDeleteEmail(email.id)}>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDeleteEmail(email.id)}
+                    >
                       Delete
                     </Button>
                   </TableCell>
@@ -98,21 +121,31 @@ const Emails = () => {
             <Input
               id="subject"
               value={newEmail.subject}
-              onChange={(e) => setNewEmail({ ...newEmail, subject: e.target.value })}
+              onChange={(e) =>
+                setNewEmail({ ...newEmail, subject: e.target.value })
+              }
               placeholder="Enter subject"
             />
-            <Label htmlFor="recipient" className="mt-2">Recipient</Label>
+            <Label htmlFor="recipient" className="mt-2">
+              Recipient
+            </Label>
             <Input
               id="recipient"
               value={newEmail.recipient}
-              onChange={(e) => setNewEmail({ ...newEmail, recipient: e.target.value })}
+              onChange={(e) =>
+                setNewEmail({ ...newEmail, recipient: e.target.value })
+              }
               placeholder="Enter recipient"
             />
-            <Label htmlFor="status" className="mt-2">Status</Label>
+            <Label htmlFor="status" className="mt-2">
+              Status
+            </Label>
             <Input
               id="status"
               value={newEmail.status}
-              onChange={(e) => setNewEmail({ ...newEmail, status: e.target.value })}
+              onChange={(e) =>
+                setNewEmail({ ...newEmail, status: e.target.value })
+              }
               placeholder="Enter status"
             />
             <Button className="mt-4" onClick={handleAddEmail}>

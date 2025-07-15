@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes as RouterRoutes, Route, Navigate, Outlet } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes as RouterRoutes,
+  Route,
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
 import Layout from '@/components/Layout';
 import Index from '@/pages/Index';
 import Contact from '@/pages/Contact';
@@ -22,11 +28,18 @@ import Emails from '@/pages/admin/Emails';
 import Staff from '@/pages/admin/Staff';
 import Tasks from '@/pages/admin/Tasks';
 
-function RequirePermission({ children, permission }: { children: React.ReactNode; permission: Permission }) {
+function RequirePermission({
+  children,
+  permission,
+}: {
+  children: React.ReactNode;
+  permission: Permission;
+}) {
   const { checkPermission, loading } = useAdminPermissions();
-  
+
   if (loading) return null;
-  if (!checkPermission(permission)) return <Navigate to="/admin/auth" replace />;
+  if (!checkPermission(permission))
+    return <Navigate to="/admin/auth" replace />;
   return <>{children}</>;
 }
 
@@ -35,7 +48,14 @@ export function Routes() {
     <BrowserRouter>
       <RouterRoutes>
         {/* Public routes */}
-        <Route path="/" element={<Layout><Outlet /></Layout>}>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Outlet />
+            </Layout>
+          }
+        >
           <Route index element={<Index />} />
           <Route path="contact" element={<Contact />} />
           <Route path="services/:serviceId" element={<Service />} />
@@ -46,57 +66,94 @@ export function Routes() {
 
         {/* Admin routes */}
         <Route path="/admin/auth" element={<AdminAuth />} />
-        <Route path="/admin" element={<Layout><Outlet /></Layout>}>
-          <Route index element={
-            <RequirePermission permission="users.view">
-              <Dashboard />
-            </RequirePermission>
-          } />
-          <Route path="content" element={
-            <RequirePermission permission="content.view">
-              <ContentManager />
-            </RequirePermission>
-          } />
-          <Route path="editor" element={
-            <RequirePermission permission="site.edit">
-              <SiteEditor />
-            </RequirePermission>
-          } />
-          <Route path="settings" element={
-            <RequirePermission permission="site.edit">
-              <SiteSettings />
-            </RequirePermission>
-          } />
-          <Route path="users" element={
-            <RequirePermission permission="users.view">
-              <UserManagement />
-            </RequirePermission>
-          } />
-          <Route path="clients" element={
-            <RequirePermission permission="clients.view">
-              <Clients />
-            </RequirePermission>
-          } />
-          <Route path="leads" element={
-            <RequirePermission permission="leads.view">
-              <Leads />
-            </RequirePermission>
-          } />
-          <Route path="emails" element={
-            <RequirePermission permission="leads.manage">
-              <Emails />
-            </RequirePermission>
-          } />
-          <Route path="staff" element={
-            <RequirePermission permission="leads.manage">
-              <Staff />
-            </RequirePermission>
-          } />
-          <Route path="tasks" element={
-            <RequirePermission permission="leads.manage">
-              <Tasks />
-            </RequirePermission>
-          } />
+        <Route
+          path="/admin"
+          element={
+            <Layout>
+              <Outlet />
+            </Layout>
+          }
+        >
+          <Route
+            index
+            element={
+              <RequirePermission permission="users.view">
+                <Dashboard />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="content"
+            element={
+              <RequirePermission permission="content.view">
+                <ContentManager />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="editor"
+            element={
+              <RequirePermission permission="site.edit">
+                <SiteEditor />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <RequirePermission permission="site.edit">
+                <SiteSettings />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <RequirePermission permission="users.view">
+                <UserManagement />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="clients"
+            element={
+              <RequirePermission permission="clients.view">
+                <Clients />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="leads"
+            element={
+              <RequirePermission permission="leads.view">
+                <Leads />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="emails"
+            element={
+              <RequirePermission permission="leads.manage">
+                <Emails />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="staff"
+            element={
+              <RequirePermission permission="leads.manage">
+                <Staff />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="tasks"
+            element={
+              <RequirePermission permission="leads.manage">
+                <Tasks />
+              </RequirePermission>
+            }
+          />
         </Route>
       </RouterRoutes>
     </BrowserRouter>

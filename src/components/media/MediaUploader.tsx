@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Upload, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
-import { NotificationService } from "@/utils/notificationService";
+import React, { useState } from 'react';
+import { Upload, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
+import { NotificationService } from '@/utils/notificationService';
 
 interface MediaUploaderProps {
   uploading: boolean;
@@ -16,16 +16,18 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   uploading,
   error,
   onFileUpload,
-  acceptedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"],
+  acceptedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
   maxSize = 10 * 1024 * 1024, // 10MB default
-  bucketName = "media"
+  bucketName = 'media',
 }) => {
   const [fileError, setFileError] = useState<string | null>(null);
 
   const validateFile = (file: File): string | null => {
     // Check file type
     if (!acceptedTypes.includes(file.type)) {
-      const typeList = acceptedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ');
+      const typeList = acceptedTypes
+        .map((type) => type.split('/')[1].toUpperCase())
+        .join(', ');
       return `Invalid file type. Only ${typeList} files are allowed.`;
     }
 
@@ -37,22 +39,24 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
     // Check file name
     if (file.name.length > 100) {
-      return "File name is too long. Please rename the file to be under 100 characters.";
+      return 'File name is too long. Please rename the file to be under 100 characters.';
     }
 
     // Check for valid characters in filename
     const validFilenameRegex = /^[a-zA-Z0-9._-]+$/;
-    if (!validFilenameRegex.test(file.name.replace(/\.[^/.]+$/, ""))) {
-      return "File name contains invalid characters. Please use only letters, numbers, dots, hyphens, and underscores.";
+    if (!validFilenameRegex.test(file.name.replace(/\.[^/.]+$/, ''))) {
+      return 'File name contains invalid characters. Please use only letters, numbers, dots, hyphens, and underscores.';
     }
 
     return null;
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) {
-      setFileError("No file selected");
+      setFileError('No file selected');
       return;
     }
 
@@ -65,17 +69,18 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
     }
 
     setFileError(null);
-    
+
     try {
       await onFileUpload(event);
       NotificationService.success('File uploaded successfully', {
-        description: `${file.name} has been uploaded to ${bucketName}`
+        description: `${file.name} has been uploaded to ${bucketName}`,
       });
     } catch (uploadError) {
-      const errorMessage = uploadError instanceof Error ? uploadError.message : 'Upload failed';
+      const errorMessage =
+        uploadError instanceof Error ? uploadError.message : 'Upload failed';
       setFileError(errorMessage);
       NotificationService.error('Upload failed', {
-        description: errorMessage
+        description: errorMessage,
       });
     }
   };
@@ -108,7 +113,12 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
       )}
       <div className="mt-2 text-xs text-gray-500 text-center">
         <p>Max size: {Math.round(maxSize / (1024 * 1024))}MB</p>
-        <p>Accepted: {acceptedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ')}</p>
+        <p>
+          Accepted:{' '}
+          {acceptedTypes
+            .map((type) => type.split('/')[1].toUpperCase())
+            .join(', ')}
+        </p>
       </div>
     </div>
   );

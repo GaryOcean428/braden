@@ -10,8 +10,11 @@ export const useAuth = () => {
     const getCurrentUser = async () => {
       try {
         setLoading(true);
-        const { data: { user }, error } = await supabase.auth.getUser();
-        
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
         if (error) {
           console.error('Error getting user:', error);
           setUser(null);
@@ -29,12 +32,12 @@ export const useAuth = () => {
     getCurrentUser();
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     // Clean up subscription on unmount
     return () => {

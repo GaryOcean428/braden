@@ -18,7 +18,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   loading,
   error,
   onImageSelect,
-  onDeleteImage
+  onDeleteImage,
 }) => {
   return (
     <ErrorBoundary>
@@ -27,29 +27,25 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
-      
-      {error && (
-        <p className="text-center py-8 text-red-500">
-          {error}
-        </p>
-      )}
-      
+
+      {error && <p className="text-center py-8 text-red-500">{error}</p>}
+
       {images.length === 0 && (
         <p className="text-center py-8 text-gray-500">
           No images found. Upload some images to get started.
         </p>
       )}
-      
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {images.map((image) => (
-          <div 
+          <div
             key={image.name}
             className={`relative group rounded-lg overflow-hidden border ${
               selectedImage === image.publicUrl ? 'ring-2 ring-primary' : ''
             }`}
           >
-            <img 
-              src={image.publicUrl} 
+            <img
+              src={image.publicUrl}
               alt={image.name}
               className="w-full h-32 object-cover cursor-pointer"
               onClick={() => onImageSelect(image.publicUrl)}

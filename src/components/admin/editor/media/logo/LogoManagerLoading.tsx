@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ImageIcon, Loader2 } from 'lucide-react';
@@ -7,8 +6,8 @@ interface LogoManagerLoadingProps {
   title?: string;
 }
 
-export const LogoManagerLoading: React.FC<LogoManagerLoadingProps> = ({ 
-  title = "Logo Manager"
+export const LogoManagerLoading: React.FC<LogoManagerLoadingProps> = ({
+  title = 'Logo Manager',
 }) => {
   return (
     <Card className="overflow-hidden">

@@ -1,8 +1,7 @@
-
-import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ShieldAlert, RefreshCcw } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ShieldAlert, RefreshCcw } from 'lucide-react';
 
 export const PagePermissionError = () => {
   const handleRefresh = () => {
@@ -14,19 +13,23 @@ export const PagePermissionError = () => {
       <CardContent className="pt-6 pb-6">
         <div className="flex flex-col items-center gap-3 text-center">
           <ShieldAlert className="h-8 w-8 text-amber-500" />
-          <p className="text-[#ab233a] font-medium">Database Access Restricted</p>
+          <p className="text-[#ab233a] font-medium">
+            Database Access Restricted
+          </p>
           <p className="text-sm text-[#2c3e50] max-w-md mb-2">
-            You are verified as a developer by email, but the database's Row Level Security policies are preventing access to content pages.
+            You are verified as a developer by email, but the database's Row
+            Level Security policies are preventing access to content pages.
           </p>
           <p className="text-sm text-[#2c3e50] max-w-md mb-4 font-medium">
-            Please try refreshing the page as the RLS policies have been updated.
+            Please try refreshing the page as the RLS policies have been
+            updated.
           </p>
           <div className="flex gap-3">
             <Button className="bg-[#2c3e50] hover:bg-[#34495e]" asChild>
               <Link to="/admin/auth">Go to Login</Link>
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="flex items-center gap-2"
               onClick={handleRefresh}
             >

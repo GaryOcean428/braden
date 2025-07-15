@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { getComponentCategories } from '../data/componentLibraryData';
 
@@ -23,6 +22,6 @@ export const useComponentLibrary = (onChange: () => void) => {
     isDragging,
     categories,
     handleDragStart,
-    onChange
+    onChange,
   };
 };

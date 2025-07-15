@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -30,10 +29,13 @@ export function useAdminStatus(): UseAdminStatusReturn {
       setError(null);
 
       // Check if user is authenticated
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
       if (sessionError) throw sessionError;
-      
+
       if (!session) {
         setLoading(false);
         return;
@@ -41,11 +43,11 @@ export function useAdminStatus(): UseAdminStatusReturn {
 
       // Use centralized role manager instead of hard-coded checks
       const userRole = await RoleManager.checkUserRole();
-      
+
       setIsDeveloper(userRole.isDeveloper);
       setIsAdmin(userRole.isAdmin);
       setRole(userRole.role);
-      
+
       if (userRole.isDeveloper) {
         console.log('Developer access confirmed');
       } else if (userRole.isAdmin) {
@@ -54,8 +56,9 @@ export function useAdminStatus(): UseAdminStatusReturn {
         console.log('No admin access');
       }
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to check admin status');
-      console.error("Admin check error:", error);
+      const error =
+        err instanceof Error ? err : new Error('Failed to check admin status');
+      console.error('Admin check error:', error);
       setError(error);
     } finally {
       setLoading(false);
@@ -66,12 +69,12 @@ export function useAdminStatus(): UseAdminStatusReturn {
     checkAdminStatus();
   }, [checkAdminStatus]);
 
-  return { 
-    isAdmin, 
+  return {
+    isAdmin,
     isDeveloper,
     role,
-    loading, 
+    loading,
     error,
-    checkAdminStatus
+    checkAdminStatus,
   };
 }

@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  ComponentLibraryHeader, 
-  SearchBar, 
+import {
+  ComponentLibraryHeader,
+  SearchBar,
   CategoryTabs,
-  ComponentInstructions 
+  ComponentInstructions,
 } from './components';
 import { useComponentLibrary } from './hooks/useComponentLibrary';
 
@@ -11,24 +11,26 @@ interface ComponentLibraryProps {
   onChange: () => void;
 }
 
-export const ComponentLibrary: React.FC<ComponentLibraryProps> = ({ onChange }) => {
-  const { 
+export const ComponentLibrary: React.FC<ComponentLibraryProps> = ({
+  onChange,
+}) => {
+  const {
     activeCategory,
     setActiveCategory,
     searchTerm,
     setSearchTerm,
     isDragging,
     categories,
-    handleDragStart
+    handleDragStart,
   } = useComponentLibrary(onChange);
 
   return (
     <div className="space-y-6">
       <ComponentLibraryHeader />
-      
+
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      
-      <CategoryTabs 
+
+      <CategoryTabs
         categories={categories}
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}

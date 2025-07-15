@@ -1,12 +1,12 @@
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { Resend } from 'npm:resend@2.0.0';
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 interface ContactEmailRequest {
@@ -20,7 +20,7 @@ interface ContactEmailRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -28,13 +28,17 @@ const handler = async (req: Request): Promise<Response> => {
     const formData: ContactEmailRequest = await req.json();
     const { name, email, phone, company, serviceType, message } = formData;
 
-    console.log("Received contact form submission:", { name, email, serviceType });
+    console.log('Received contact form submission:', {
+      name,
+      email,
+      serviceType,
+    });
 
     // Send confirmation email to the user
     const userEmailResponse = await resend.emails.send({
-      from: "Braden Group <no-reply@coms.braden.com.au>",
+      from: 'Braden Group <no-reply@coms.braden.com.au>',
       to: [email],
-      subject: "Thank you for contacting Braden Group",
+      subject: 'Thank you for contacting Braden Group',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #ab233a;">Thank you for contacting Braden Group</h2>
@@ -54,9 +58,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to staff
     const staffEmailResponse = await resend.emails.send({
-      from: "Braden Group Website <notifications@coms.braden.com.au>",
-      to: ["braden.lang@bradengroup.com.au"],
-      subject: "New Contact Form Submission",
+      from: 'Braden Group Website <notifications@coms.braden.com.au>',
+      to: ['braden.lang@bradengroup.com.au'],
+      subject: 'New Contact Form Submission',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #ab233a;">New Contact Form Submission</h2>
@@ -74,22 +78,19 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Confirmation email sent:", userEmailResponse);
-    console.log("Staff notification email sent:", staffEmailResponse);
+    console.log('Confirmation email sent:', userEmailResponse);
+    console.log('Staff notification email sent:', staffEmailResponse);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   } catch (error: any) {
-    console.error("Error in send-confirmation function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    console.error('Error in send-confirmation function:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
   }
 };
 

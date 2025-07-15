@@ -1,7 +1,13 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Users, FileText, Settings } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Users, FileText, Settings } from 'lucide-react';
 
 export const DashboardCards = () => {
   return (
@@ -16,7 +22,9 @@ export const DashboardCards = () => {
             Manage your website content including pages and blocks.
           </CardDescription>
           <Link to="/admin/content">
-            <Button variant="outline" className="w-full">Manage Content</Button>
+            <Button variant="outline" className="w-full">
+              Manage Content
+            </Button>
           </Link>
         </CardContent>
       </Card>
@@ -31,7 +39,9 @@ export const DashboardCards = () => {
             Manage user accounts, permissions and roles.
           </CardDescription>
           <Link to="/admin/users">
-            <Button variant="outline" className="w-full">Manage Users</Button>
+            <Button variant="outline" className="w-full">
+              Manage Users
+            </Button>
           </Link>
         </CardContent>
       </Card>
@@ -46,7 +56,9 @@ export const DashboardCards = () => {
             Configure website settings and preferences.
           </CardDescription>
           <Link to="/admin/settings">
-            <Button variant="outline" className="w-full">Site Settings</Button>
+            <Button variant="outline" className="w-full">
+              Site Settings
+            </Button>
           </Link>
         </CardContent>
       </Card>

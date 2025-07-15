@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Trash, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,20 +20,21 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
   selectedItem,
   onSelectItem,
   onDeleteItem,
-  onClearSearch
+  onClearSearch,
 }) => {
   // Filter for only image types
-  const imageItems = items.filter(item => 
-    item.type.startsWith('image/') || 
-    item.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|svg)$/)
+  const imageItems = items.filter(
+    (item) =>
+      item.type.startsWith('image/') ||
+      item.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|svg)$/)
   );
-  
+
   // Loading state
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {[1, 2, 3, 4, 5, 6].map(i => (
-          <div 
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div
             key={i}
             className="aspect-square bg-gray-200 rounded-md animate-pulse"
           />
@@ -48,18 +48,20 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
     return (
       <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-md">
         <p className="text-gray-500 mb-2">No images found</p>
-        <p className="text-sm text-gray-400">Upload some images using the button above</p>
+        <p className="text-sm text-gray-400">
+          Upload some images using the button above
+        </p>
       </div>
     );
   }
-  
+
   // No search results
   if (imageItems.length === 0 && searchQuery) {
     return (
       <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-md">
         <Search className="mx-auto h-8 w-8 text-gray-400 mb-2" />
         <p className="text-gray-500 mb-2">No images matching "{searchQuery}"</p>
-        <button 
+        <button
           onClick={onClearSearch}
           className="text-sm text-[#ab233a] hover:underline"
         >
@@ -72,21 +74,22 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {imageItems.map((item) => (
-        <div 
-          key={item.id} 
+        <div
+          key={item.id}
           className={`
             relative aspect-square rounded-md border overflow-hidden cursor-pointer group
             ${selectedItem?.id === item.id ? 'ring-2 ring-[#ab233a]' : ''}
           `}
           onClick={() => onSelectItem(item)}
         >
-          <img 
-            src={item.publicUrl} 
-            alt={item.name} 
+          <img
+            src={item.publicUrl}
+            alt={item.name}
             className="w-full h-full object-cover"
             onError={(e) => {
               // Handle image load errors
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Error';
+              (e.target as HTMLImageElement).src =
+                'https://via.placeholder.com/150?text=Error';
             }}
           />
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-end p-2">

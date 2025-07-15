@@ -1,7 +1,7 @@
 import React from 'react';
-import { AlertTriangle } from "lucide-react";
-import { Button } from "./ui/button";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { AlertTriangle } from 'lucide-react';
+import { Button } from './ui/button';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 interface Props {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ interface State {
 /**
  * ErrorBoundary component that catches JavaScript errors anywhere in their child
  * component tree, logs those errors, and displays a fallback UI
- * 
+ *
  * @component
  * @param {Props} props - Component properties
  * @param {React.ReactNode} props.children - Child components to render
@@ -36,15 +36,15 @@ export class ErrorBoundary extends React.Component<Props, State> {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <Alert 
-          variant="destructive" 
+        <Alert
+          variant="destructive"
           className="m-4"
           role="alert"
           aria-live="assertive"

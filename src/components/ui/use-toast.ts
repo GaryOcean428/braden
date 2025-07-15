@@ -1,7 +1,6 @@
-
 // Import and export from the hooks directory
-import { useToast, toast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useToast, toast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 export { useToast, toast };
 
@@ -11,7 +10,7 @@ export function useToastWithPlugins(plugins: Array<(toast: any) => void>) {
 
   useEffect(() => {
     plugins.forEach((plugin) => {
-      if (typeof plugin === "function") {
+      if (typeof plugin === 'function') {
         plugin(toast);
       }
     });

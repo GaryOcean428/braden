@@ -1,4 +1,3 @@
-
 type NavigationItem = {
   label: string;
   action: 'scroll' | 'navigate';
@@ -9,21 +8,21 @@ export const navigationItems: NavigationItem[] = [
   {
     label: 'Home',
     action: 'navigate',
-    target: '/'
+    target: '/',
   },
   {
     label: 'Our Services',
     action: 'scroll',
-    target: 'services'
+    target: 'services',
   },
   {
     label: 'About Us',
     action: 'scroll',
-    target: 'about'
+    target: 'about',
   },
   {
     label: 'Contact',
     action: 'scroll',
-    target: 'contact'
-  }
+    target: 'contact',
+  },
 ];

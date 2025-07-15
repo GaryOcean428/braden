@@ -11,18 +11,20 @@ export async function sendLeadToCRM(leadData) {
     // First, store the lead in Supabase
     const { data: leadRecord, error: leadError } = await supabase
       .from('leads')
-      .insert([{
-        first_name: leadData.firstName,
-        last_name: leadData.lastName,
-        email: leadData.email,
-        phone: leadData.phone || null,
-        message: leadData.message || null,
-        service_interest: leadData.services || [],
-        source: 'website',
-        status: 'new',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }])
+      .insert([
+        {
+          first_name: leadData.firstName,
+          last_name: leadData.lastName,
+          email: leadData.email,
+          phone: leadData.phone || null,
+          message: leadData.message || null,
+          service_interest: leadData.services || [],
+          source: 'website',
+          status: 'new',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ])
       .select();
 
     if (leadError) {
@@ -50,8 +52,8 @@ export async function sendLeadToCRM(leadData) {
           submission_page: 'contact',
           utm_source: getUtmParameter('utm_source'),
           utm_medium: getUtmParameter('utm_medium'),
-          utm_campaign: getUtmParameter('utm_campaign')
-        }
+          utm_campaign: getUtmParameter('utm_campaign'),
+        },
       }),
     });
 
@@ -62,17 +64,17 @@ export async function sendLeadToCRM(leadData) {
     }
 
     const result = await response.json();
-    
+
     // Update the lead record with the CRM lead ID for future reference
     if (result.lead_id) {
       const { error: updateError } = await supabase
         .from('leads')
-        .update({ 
+        .update({
           metadata: { crm_lead_id: result.lead_id },
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', leadRecord[0].id);
-        
+
       if (updateError) {
         console.error('Error updating lead with CRM ID:', updateError);
       }

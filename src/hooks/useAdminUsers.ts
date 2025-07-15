@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useAdminPermissionCheck } from './admin/useAdminPermissionCheck';
@@ -9,43 +8,44 @@ export type { AdminUser } from './admin/useAdminUsersFetch';
 
 export const useAdminUsers = () => {
   const [error, setError] = useState<string | null>(null);
-  
+
   // Compose specialized hooks
-  const { 
-    isAdmin, 
+  const {
+    isAdmin,
     isDeveloper,
     checkAdminStatus,
-    loading: permissionLoading
+    loading: permissionLoading,
   } = useAdminPermissionCheck();
-  
+
   const {
     adminUsers,
     fetchAdminUsers,
-    loading: fetchLoading
+    loading: fetchLoading,
   } = useAdminUsersFetch();
-  
+
   const {
     addAdminUser,
     configurePermissions,
-    loading: managementLoading
+    loading: managementLoading,
   } = useAdminUserManagement();
-  
+
   const isLoading = permissionLoading || fetchLoading || managementLoading;
 
   const checkAdminAndLoadUsers = useCallback(async () => {
     try {
       setError(null);
       const hasAdminAccess = await checkAdminStatus();
-      
+
       // Only fetch admin users if the user is an admin or developer
       if (hasAdminAccess) {
         await fetchAdminUsers();
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      const errorMessage =
+        err instanceof Error ? err.message : 'An unknown error occurred';
       setError(errorMessage);
       toast.error('Admin Access Error', {
-        description: errorMessage
+        description: errorMessage,
       });
     }
   }, [checkAdminStatus, fetchAdminUsers]);
@@ -62,6 +62,6 @@ export const useAdminUsers = () => {
     isDeveloper,
     checkAdminAndLoadUsers,
     addAdminUser,
-    configurePermissions
+    configurePermissions,
   };
 };

@@ -3,7 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ImageManager from '@/components/admin/ImageManager'; // Changed from { ImageManager } to default import
 import { Loader2, Save, RefreshCw } from 'lucide-react';
@@ -51,7 +57,7 @@ export const SiteSettingsManager: React.FC = () => {
     meta_keywords: '',
     analytics_code: '',
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,25 +72,30 @@ export const SiteSettingsManager: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Get current user session to ensure we're authenticated
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         throw new Error('You must be logged in to access site settings');
       }
-      
-      console.log('Fetching settings with auth token:', session.access_token.substring(0, 10) + '...');
-      
+
+      console.log(
+        'Fetching settings with auth token:',
+        session.access_token.substring(0, 10) + '...'
+      );
+
       // Try to fetch settings using a type cast to avoid type errors
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('site_settings' as any)
         .select('*')
         .order('updated_at', { ascending: false })
-        .limit(1) as { data: SiteSettings[] | null, error: any };
-      
+        .limit(1)) as { data: SiteSettings[] | null; error: any };
+
       if (error) throw error;
-      
+
       if (data && data.length > 0) {
         setSettings(data[0]);
         setSettingsId(data[0].id);
@@ -120,15 +131,15 @@ export const SiteSettingsManager: React.FC = () => {
         analytics_code: '',
         updated_at: new Date().toISOString(),
       };
-      
+
       // Use a type cast to avoid type errors
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('site_settings' as any)
         .insert(defaultSettings)
-        .select() as { data: SiteSettings[] | null, error: any };
-      
+        .select()) as { data: SiteSettings[] | null; error: any };
+
       if (error) throw error;
-      
+
       if (data && data.length > 0) {
         setSettings(data[0]);
         setSettingsId(data[0].id);
@@ -136,7 +147,9 @@ export const SiteSettingsManager: React.FC = () => {
       }
     } catch (err: any) {
       console.error('Error creating default settings:', err);
-      setError('Failed to create default settings. Please try refreshing the page.');
+      setError(
+        'Failed to create default settings. Please try refreshing the page.'
+      );
     }
   };
 
@@ -144,52 +157,55 @@ export const SiteSettingsManager: React.FC = () => {
     try {
       setSaving(true);
       setError(null);
-      
+
       // Get current user session to ensure we're authenticated
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         throw new Error('You must be logged in to update site settings');
       }
-      
+
       const updatedSettings = {
         ...settings,
         updated_at: new Date().toISOString(),
       };
-      
+
       if (settingsId) {
         // Update existing settings
-        const { error } = await supabase
+        const { error } = (await supabase
           .from('site_settings' as any)
           .update(updatedSettings)
-          .eq('id', settingsId) as { error: any };
-        
+          .eq('id', settingsId)) as { error: any };
+
         if (error) throw error;
       } else {
         // Create new settings
-        const { data, error } = await supabase
+        const { data, error } = (await supabase
           .from('site_settings' as any)
           .insert(updatedSettings)
-          .select() as { data: SiteSettings[] | null, error: any };
-        
+          .select()) as { data: SiteSettings[] | null; error: any };
+
         if (error) throw error;
-        
+
         if (data && data.length > 0) {
           setSettingsId(data[0].id);
         }
       }
-      
-      toast("Settings saved", {
-        description: "Your site settings have been updated successfully.",
+
+      toast('Settings saved', {
+        description: 'Your site settings have been updated successfully.',
       });
-      
+
       console.log('Settings saved successfully');
     } catch (err: any) {
       console.error('Error saving settings:', err);
       setError('Failed to save settings. Please try again.');
-      
-      toast("Error saving settings", {
-        description: "There was a problem saving your settings. Please try again.",
+
+      toast('Error saving settings', {
+        description:
+          'There was a problem saving your settings. Please try again.',
       });
     } finally {
       setSaving(false);
@@ -197,16 +213,18 @@ export const SiteSettingsManager: React.FC = () => {
   };
 
   const handleLogoSelect = (url: string) => {
-    setSettings(prev => ({ ...prev, logo_url: url }));
+    setSettings((prev) => ({ ...prev, logo_url: url }));
   };
 
   const handleFaviconSelect = (url: string) => {
-    setSettings(prev => ({ ...prev, favicon_url: url }));
+    setSettings((prev) => ({ ...prev, favicon_url: url }));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setSettings(prev => ({ ...prev, [name]: value }));
+    setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleRefresh = () => {
@@ -218,13 +236,17 @@ export const SiteSettingsManager: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>Site Settings</span>
-          <Button 
-            variant="outline" 
-            size="icon" 
+          <Button
+            variant="outline"
+            size="icon"
             onClick={handleRefresh}
             disabled={loading}
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
           </Button>
         </CardTitle>
         <CardDescription>
@@ -246,10 +268,13 @@ export const SiteSettingsManager: React.FC = () => {
                 <TabsTrigger value="seo">SEO</TabsTrigger>
                 <TabsTrigger value="analytics">Analytics</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="general" className="space-y-4 pt-4">
                 <div>
-                  <label htmlFor="site_name" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="site_name"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Site Name
                   </label>
                   <Input
@@ -259,9 +284,12 @@ export const SiteSettingsManager: React.FC = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="site_description" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="site_description"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Site Description
                   </label>
                   <Textarea
@@ -272,22 +300,20 @@ export const SiteSettingsManager: React.FC = () => {
                     rows={3}
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Logo
-                  </label>
+                  <label className="block text-sm font-medium mb-1">Logo</label>
                   {settings.logo_url && (
                     <div className="mb-4 border rounded-lg overflow-hidden p-4 bg-gray-50">
-                      <img 
-                        src={settings.logo_url} 
-                        alt="Logo" 
+                      <img
+                        src={settings.logo_url}
+                        alt="Logo"
                         className="max-h-24 object-contain"
                       />
                     </div>
                   )}
-                  
-                  <ImageManager 
+
+                  <ImageManager
                     onImageSelect={handleLogoSelect}
                     title="Select Logo"
                   />
@@ -299,24 +325,27 @@ export const SiteSettingsManager: React.FC = () => {
                   </label>
                   {settings.favicon_url && (
                     <div className="mb-4 border rounded-lg overflow-hidden p-4 bg-gray-50">
-                      <img 
-                        src={settings.favicon_url} 
-                        alt="Favicon" 
+                      <img
+                        src={settings.favicon_url}
+                        alt="Favicon"
                         className="max-h-24 object-contain"
                       />
                     </div>
                   )}
-                  
-                  <ImageManager 
+
+                  <ImageManager
                     onImageSelect={handleFaviconSelect}
                     title="Select Favicon"
                   />
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="contact" className="space-y-4 pt-4">
                 <div>
-                  <label htmlFor="contact_email" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="contact_email"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Contact Email
                   </label>
                   <Input
@@ -327,9 +356,12 @@ export const SiteSettingsManager: React.FC = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="contact_phone" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="contact_phone"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Contact Phone
                   </label>
                   <Input
@@ -339,9 +371,12 @@ export const SiteSettingsManager: React.FC = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Address
                   </label>
                   <Textarea
@@ -352,12 +387,15 @@ export const SiteSettingsManager: React.FC = () => {
                     rows={3}
                   />
                 </div>
-                
+
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">Social Media</h3>
-                  
+
                   <div>
-                    <label htmlFor="social_facebook" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="social_facebook"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Facebook URL
                     </label>
                     <Input
@@ -367,9 +405,12 @@ export const SiteSettingsManager: React.FC = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="social_twitter" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="social_twitter"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Twitter URL
                     </label>
                     <Input
@@ -379,9 +420,12 @@ export const SiteSettingsManager: React.FC = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="social_instagram" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="social_instagram"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Instagram URL
                     </label>
                     <Input
@@ -391,9 +435,12 @@ export const SiteSettingsManager: React.FC = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="social_linkedin" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="social_linkedin"
+                      className="block text-sm font-medium mb-1"
+                    >
                       LinkedIn URL
                     </label>
                     <Input
@@ -405,10 +452,13 @@ export const SiteSettingsManager: React.FC = () => {
                   </div>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="appearance" className="space-y-4 pt-4">
                 <div>
-                  <label htmlFor="primary_color" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="primary_color"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Primary Color
                   </label>
                   <div className="flex items-center space-x-2">
@@ -427,9 +477,12 @@ export const SiteSettingsManager: React.FC = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div>
-                  <label htmlFor="secondary_color" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="secondary_color"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Secondary Color
                   </label>
                   <div className="flex items-center space-x-2">
@@ -452,7 +505,10 @@ export const SiteSettingsManager: React.FC = () => {
 
               <TabsContent value="seo" className="space-y-4 pt-4">
                 <div>
-                  <label htmlFor="meta_title" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="meta_title"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Meta Title
                   </label>
                   <Input
@@ -462,9 +518,12 @@ export const SiteSettingsManager: React.FC = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="meta_description" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="meta_description"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Meta Description
                   </label>
                   <Textarea
@@ -475,9 +534,12 @@ export const SiteSettingsManager: React.FC = () => {
                     rows={3}
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="meta_keywords" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="meta_keywords"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Meta Keywords
                   </label>
                   <Input
@@ -491,7 +553,10 @@ export const SiteSettingsManager: React.FC = () => {
 
               <TabsContent value="analytics" className="space-y-4 pt-4">
                 <div>
-                  <label htmlFor="analytics_code" className="block text-sm font-medium mb-1">
+                  <label
+                    htmlFor="analytics_code"
+                    className="block text-sm font-medium mb-1"
+                  >
                     Analytics Tracking Code
                   </label>
                   <Textarea
@@ -504,10 +569,10 @@ export const SiteSettingsManager: React.FC = () => {
                 </div>
               </TabsContent>
             </Tabs>
-            
+
             <div className="flex justify-end pt-4">
-              <Button 
-                onClick={handleSave} 
+              <Button
+                onClick={handleSave}
                 disabled={saving}
                 className="flex items-center"
               >
@@ -524,12 +589,8 @@ export const SiteSettingsManager: React.FC = () => {
                 )}
               </Button>
             </div>
-            
-            {error && (
-              <p className="mt-4 text-sm text-red-500">
-                {error}
-              </p>
-            )}
+
+            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
           </div>
         )}
       </CardContent>

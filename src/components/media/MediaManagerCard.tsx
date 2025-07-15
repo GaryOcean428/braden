@@ -1,21 +1,20 @@
-
-import React from "react";
-import { RefreshCw } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MediaUploader } from "./MediaUploader";
-import { MediaGallery } from "./MediaGallery";
-import { useMediaManager } from "./useMediaManager";
+import React from 'react';
+import { RefreshCw } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { MediaUploader } from './MediaUploader';
+import { MediaGallery } from './MediaGallery';
+import { useMediaManager } from './useMediaManager';
 
 const MediaManagerCard = () => {
-  const { 
-    loading, 
-    images, 
-    error, 
-    uploading, 
+  const {
+    loading,
+    images,
+    error,
+    uploading,
     loadImages,
     handleFileUpload,
-    deleteImage
+    deleteImage,
   } = useMediaManager();
 
   return (
@@ -35,13 +34,13 @@ const MediaManagerCard = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <MediaUploader 
-          uploading={uploading} 
-          onFileUpload={handleFileUpload} 
+        <MediaUploader
+          uploading={uploading}
+          onFileUpload={handleFileUpload}
           error={error}
         />
 
-        <MediaGallery 
+        <MediaGallery
           loading={loading}
           images={images}
           onDeleteImage={deleteImage}

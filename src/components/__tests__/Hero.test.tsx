@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -15,32 +14,32 @@ vi.mock('@/integrations/supabase/client', () => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() => ({
             data: { file_path: 'test-path.jpg' },
-            error: null
-          }))
-        }))
+            error: null,
+          })),
+        })),
       })),
       url: '',
       headers: {},
       insert: vi.fn(),
       upsert: vi.fn(),
       delete: vi.fn(),
-      update: vi.fn()
+      update: vi.fn(),
     })),
     storage: {
       from: vi.fn(() => ({
         getPublicUrl: vi.fn(() => ({
-          data: { publicUrl: 'test-url.jpg' }
-        }))
-      }))
-    }
-  }
+          data: { publicUrl: 'test-url.jpg' },
+        })),
+      })),
+    },
+  },
 }));
 
 vi.mock('sonner', () => ({
   toast: {
     info: vi.fn(),
-    error: vi.fn()
-  }
+    error: vi.fn(),
+  },
 }));
 
 describe('Hero Component', () => {
@@ -72,16 +71,16 @@ describe('Hero Component', () => {
         eq: vi.fn().mockReturnValue({
           maybeSingle: vi.fn().mockResolvedValue({
             data: { file_path: 'test-path.jpg' },
-            error: null
-          })
-        })
+            error: null,
+          }),
+        }),
       }),
       url: '',
       headers: {},
       insert: vi.fn(),
       upsert: vi.fn(),
       delete: vi.fn(),
-      update: vi.fn()
+      update: vi.fn(),
     } as any;
 
     vi.spyOn(supabase, 'from').mockImplementation(() => mockQueryBuilder);
@@ -89,7 +88,9 @@ describe('Hero Component', () => {
     renderHero();
 
     await waitFor(() => {
-      expect(screen.queryByLabelText('Loading content')).not.toBeInTheDocument();
+      expect(
+        screen.queryByLabelText('Loading content')
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -97,15 +98,15 @@ describe('Hero Component', () => {
     const mockQueryBuilder = {
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          maybeSingle: vi.fn().mockRejectedValue(new Error('Failed to load'))
-        })
+          maybeSingle: vi.fn().mockRejectedValue(new Error('Failed to load')),
+        }),
       }),
       url: '',
       headers: {},
       insert: vi.fn(),
       upsert: vi.fn(),
       delete: vi.fn(),
-      update: vi.fn()
+      update: vi.fn(),
     } as any;
 
     vi.spyOn(supabase, 'from').mockImplementation(() => mockQueryBuilder);
@@ -113,17 +114,19 @@ describe('Hero Component', () => {
     renderHero();
 
     await waitFor(() => {
-      expect(screen.queryByLabelText('Loading content')).not.toBeInTheDocument();
+      expect(
+        screen.queryByLabelText('Loading content')
+      ).not.toBeInTheDocument();
       expect(screen.getByRole('alert')).toBeInTheDocument();
     });
   });
 
   it('navigates on button click', () => {
     renderHero();
-    
+
     fireEvent.click(screen.getByText('Start Hiring'));
     expect(toast.info).toHaveBeenCalledWith('Redirecting to hiring portal...');
-    
+
     fireEvent.click(screen.getByText('Find Opportunities'));
     expect(toast.info).toHaveBeenCalledWith('Exploring opportunities...');
   });

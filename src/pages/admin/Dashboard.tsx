@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { HeroImageManager } from '@/components/admin/HeroImageManager';
 import { ContentManager } from '@/components/admin/ContentManager';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Image, FileText, Users, Settings, Palette } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Image,
+  FileText,
+  Users,
+  Settings,
+  Palette,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminUsersTable } from '@/components/admin/AdminUsersTable';
@@ -16,7 +29,8 @@ import { DashboardCards } from '@/components/admin/DashboardCards';
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('hero');
   const navigate = useNavigate();
-  const { adminUsers, isLoading, error, isAdmin, checkAdminAndLoadUsers } = useAdminUsers();
+  const { adminUsers, isLoading, error, isAdmin, checkAdminAndLoadUsers } =
+    useAdminUsers();
 
   useEffect(() => {
     checkAdminAndLoadUsers();
@@ -28,14 +42,15 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleAddAdmin = () => {
-    toast.info("Feature Coming Soon", {
-      description: "Admin user creation will be available in a future update"
+    toast.info('Feature Coming Soon', {
+      description: 'Admin user creation will be available in a future update',
     });
   };
 
   const handleDBSettings = () => {
-    toast.info("Database Configuration Required", {
-      description: "Contact your database administrator to grant the necessary permissions"
+    toast.info('Database Configuration Required', {
+      description:
+        'Contact your database administrator to grant the necessary permissions',
     });
   };
 
@@ -52,8 +67,8 @@ const AdminDashboard: React.FC = () => {
             <Palette className="h-4 w-4" />
             Site Editor
           </Button>
-          <Button 
-            onClick={handleLogout} 
+          <Button
+            onClick={handleLogout}
             variant="outline"
             className="border-[#ab233a] text-[#ab233a] hover:bg-[#ab233a] hover:text-white"
           >
@@ -67,81 +82,81 @@ const AdminDashboard: React.FC = () => {
           <Card>
             <CardContent className="p-4">
               <nav className="space-y-2">
-                <Button 
-                  variant={activeTab === 'hero' ? 'default' : 'ghost'} 
-                  className="w-full justify-start" 
+                <Button
+                  variant={activeTab === 'hero' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
                   onClick={() => setActiveTab('hero')}
                 >
                   <Image className="mr-2 h-4 w-4" />
                   Hero Images
                 </Button>
-                <Button 
-                  variant={activeTab === 'content' ? 'default' : 'ghost'} 
-                  className="w-full justify-start" 
+                <Button
+                  variant={activeTab === 'content' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
                   onClick={() => setActiveTab('content')}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Content
                 </Button>
-                <Button 
-                  variant={activeTab === 'users' ? 'default' : 'ghost'} 
-                  className="w-full justify-start" 
+                <Button
+                  variant={activeTab === 'users' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
                   onClick={() => setActiveTab('users')}
                 >
                   <Users className="mr-2 h-4 w-4" />
                   Users
                 </Button>
-                <Button 
-                  variant={activeTab === 'settings' ? 'default' : 'ghost'} 
-                  className="w-full justify-start" 
+                <Button
+                  variant={activeTab === 'settings' ? 'default' : 'ghost'}
+                  className="w-full justify-start"
                   onClick={() => setActiveTab('settings')}
                 >
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full justify-start mt-4" 
+                  className="w-full justify-start mt-4"
                   onClick={() => navigate('/admin/site-editor')}
                 >
                   <Palette className="mr-2 h-4 w-4" />
                   Visual Site Editor
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full justify-start mt-4" 
+                  className="w-full justify-start mt-4"
                   onClick={() => navigate('/admin/leads')}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Manage Leads
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full justify-start mt-4" 
+                  className="w-full justify-start mt-4"
                   onClick={() => navigate('/admin/clients')}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Manage Clients
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full justify-start mt-4" 
+                  className="w-full justify-start mt-4"
                   onClick={() => navigate('/admin/staff')}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Manage Staff
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full justify-start mt-4" 
+                  className="w-full justify-start mt-4"
                   onClick={() => navigate('/admin/tasks')}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Manage Tasks
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
-                  className="w-full justify-start mt-4" 
+                  className="w-full justify-start mt-4"
                   onClick={() => navigate('/admin/emails')}
                 >
                   <FileText className="mr-2 h-4 w-4" />
@@ -159,15 +174,19 @@ const AdminDashboard: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
-                <CardDescription>Manage website users and permissions</CardDescription>
+                <CardDescription>
+                  Manage website users and permissions
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-[#811a2c]">Admin Users</h2>
+                  <h2 className="text-xl font-semibold text-[#811a2c]">
+                    Admin Users
+                  </h2>
                   <div className="flex gap-2">
                     {error && (
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="flex items-center gap-2 border-[#95a5a6] text-[#2c3e50] hover:bg-gray-100"
                         onClick={handleDBSettings}
                       >
@@ -175,8 +194,8 @@ const AdminDashboard: React.FC = () => {
                         Permissions
                       </Button>
                     )}
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="flex items-center gap-2 border-[#cbb26a] text-[#2c3e50] hover:bg-[#d8c690] hover:text-[#2c3e50]"
                       onClick={handleAddAdmin}
                     >
@@ -185,13 +204,13 @@ const AdminDashboard: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                
-                <AdminStatusAlert 
-                  isAdmin={isAdmin} 
-                  error={error} 
-                  adminUsersCount={adminUsers.length} 
+
+                <AdminStatusAlert
+                  isAdmin={isAdmin}
+                  error={error}
+                  adminUsersCount={adminUsers.length}
                 />
-                
+
                 <AdminUsersTable adminUsers={adminUsers} />
               </CardContent>
             </Card>
@@ -205,10 +224,11 @@ const AdminDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-6">
                   <p className="text-gray-500 mb-4">
-                    Basic site settings can be configured here. For advanced visual customization, use the Site Editor.
+                    Basic site settings can be configured here. For advanced
+                    visual customization, use the Site Editor.
                   </p>
-                  
-                  <Button 
+
+                  <Button
                     onClick={() => navigate('/admin/site-editor')}
                     className="w-full bg-[#ab233a] hover:bg-[#811a2c]"
                   >

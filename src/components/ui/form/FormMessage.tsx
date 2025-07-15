@@ -1,7 +1,6 @@
-
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { useFormField } from "./useFormField";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { useFormField } from './useFormField';
 
 export const FormMessage = React.forwardRef<
   HTMLParagraphElement,
@@ -18,11 +17,11 @@ export const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-sm font-medium text-destructive", className)}
+      className={cn('text-sm font-medium text-destructive', className)}
       {...props}
     >
       {body}
     </p>
   );
 });
-FormMessage.displayName = "FormMessage";
+FormMessage.displayName = 'FormMessage';

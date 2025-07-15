@@ -1,14 +1,13 @@
-
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Plus } from "lucide-react";
-import { useContentPages } from "./hooks/useContentPages";
-import { ContentPagesTable } from "./ContentPagesTable";
-import { ContentEmptyState } from "./ContentEmptyState";
-import { DeletePageDialog } from "./DeletePageDialog";
-import { ContentErrorState } from "./ContentErrorState";
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Plus } from 'lucide-react';
+import { useContentPages } from './hooks/useContentPages';
+import { ContentPagesTable } from './ContentPagesTable';
+import { ContentEmptyState } from './ContentEmptyState';
+import { DeletePageDialog } from './DeletePageDialog';
+import { ContentErrorState } from './ContentErrorState';
 
 export function ContentList() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export function ContentList() {
     setDeleteId,
     fetchPages,
     handleTogglePublish,
-    handleDelete
+    handleDelete,
   } = useContentPages();
 
   if (loading) {
@@ -60,8 +59,8 @@ export function ContentList() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-[#811a2c]">Pages</h2>
-          <Button 
-            onClick={() => navigate("/admin/content/edit")}
+          <Button
+            onClick={() => navigate('/admin/content/edit')}
             className="bg-[#2c3e50] hover:bg-[#34495e]"
           >
             <Plus className="h-4 w-4 mr-2" /> Create New Page
@@ -77,15 +76,15 @@ export function ContentList() {
         ) : pages.length === 0 ? (
           <ContentEmptyState />
         ) : (
-          <ContentPagesTable 
-            pages={pages} 
-            onTogglePublish={handleTogglePublish} 
-            onDelete={setDeleteId} 
+          <ContentPagesTable
+            pages={pages}
+            onTogglePublish={handleTogglePublish}
+            onDelete={setDeleteId}
           />
         )}
 
-        <DeletePageDialog 
-          open={!!deleteId} 
+        <DeletePageDialog
+          open={!!deleteId}
           deleting={deleting}
           onOpenChange={(open) => !open && setDeleteId(null)}
           onConfirm={handleDelete}

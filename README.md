@@ -20,17 +20,20 @@ This repository contains the Braden website with enhanced functionality for lead
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/GaryOcean428/braden.git
 cd braden
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create a `.env` file with the following variables:
+
 ```
 # Supabase Configuration
 SUPABASE_URL=https://your-project.supabase.co
@@ -46,6 +49,7 @@ EMAIL_FROM=no-reply@braden.com.au
 ```
 
 4. Start the development server:
+
 ```bash
 npm run dev
 ```

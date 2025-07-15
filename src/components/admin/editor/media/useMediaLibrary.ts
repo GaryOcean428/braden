@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,7 +5,10 @@ import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
 import { toast } from 'sonner';
 import { MediaItem } from './types';
 
-export const useMediaLibrary = (onChange: () => void, bucketName: string = 'media') => {
+export const useMediaLibrary = (
+  onChange: () => void,
+  bucketName: string = 'media'
+) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,9 +16,11 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retries, setRetries] = useState(0);
-  
+
   // Use the appropriate bucket based on parameters
-  const { uploadImage, uploading, deleteImage } = useImageUpload(bucketName as any);
+  const { uploadImage, uploading, deleteImage } = useImageUpload(
+    bucketName as any
+  );
 
   // Function to load media from Supabase
   const loadMedia = useCallback(async () => {
@@ -24,7 +28,7 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       console.log(`Loading media from bucket: ${bucketName}`);
       setIsLoading(true);
       setError(null);
-      
+
       // Check auth status before attempting to list files
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
@@ -33,53 +37,59 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
         setMediaItems([]);
         return;
       }
-      
+
       // List files from the Supabase storage
       console.log(`Listing files from bucket: ${bucketName}`);
       const { data: files, error: listError } = await supabase.storage
         .from(bucketName)
-        .list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
-      
+        .list('', {
+          limit: 100,
+          sortBy: { column: 'created_at', order: 'desc' },
+        });
+
       if (listError) {
         console.error('Error listing files:', listError);
-        
-        if (listError.message.includes('security policy') || listError.message.includes('permission')) {
+
+        if (
+          listError.message.includes('security policy') ||
+          listError.message.includes('permission')
+        ) {
           setError('You do not have permission to access this media library');
         } else {
           setError(`Failed to load media: ${listError.message}`);
         }
-        
+
         setMediaItems([]);
         return;
       }
-      
+
       // Handle case where files is null
       if (!files) {
         console.log('No files returned from storage');
         setMediaItems([]);
         return;
       }
-      
+
       console.log(`Found ${files.length} files in bucket ${bucketName}`);
-      
+
       // Filter out folders, only include files
       const fileItems = files
-        .filter(item => !item.id.endsWith('/') && item.name)
-        .map(file => {
+        .filter((item) => !item.id.endsWith('/') && item.name)
+        .map((file) => {
           const { data } = supabase.storage
             .from(bucketName)
             .getPublicUrl(file.name);
-          
+
           return {
             id: file.id,
             name: file.name,
             publicUrl: data.publicUrl,
             size: file.metadata?.size || 0,
             type: file.metadata?.mimetype || 'unknown',
-            created_at: file.created_at || new Date().toISOString()
+            created_at: file.created_at || new Date().toISOString(),
           };
         });
-      
+
       console.log(`Processed ${fileItems.length} media items`);
       setMediaItems(fileItems);
     } catch (error: any) {
@@ -90,22 +100,22 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       setIsLoading(false);
     }
   }, [bucketName]);
-  
+
   // Load media when the component mounts or bucket changes
   useEffect(() => {
     loadMedia();
   }, [loadMedia, retries]);
-  
+
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     try {
       console.log(`Uploading file to bucket: ${bucketName}`);
       // Upload the file
       const result = await uploadImage(file);
-      
+
       if (result) {
         toast.success('File uploaded successfully');
         onChange();
@@ -116,21 +126,23 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
       toast.error(`Failed to upload file: ${error.message || 'Unknown error'}`);
     }
   };
-  
+
   // Handle media deletion
   const handleDeleteMedia = async (item: MediaItem) => {
-    const confirmed = window.confirm(`Are you sure you want to delete ${item.name}?`);
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${item.name}?`
+    );
     if (!confirmed) return;
-    
+
     try {
       console.log(`Deleting file from bucket: ${bucketName}`);
       const result = await deleteImage(item.name);
-      
+
       if (result) {
         toast.success('File deleted successfully');
         onChange();
         loadMedia();
-        
+
         if (selectedItem?.id === item.id) {
           setSelectedItem(null);
         }
@@ -143,11 +155,11 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
 
   // Retry loading if there was an error
   const handleRetry = () => {
-    setRetries(prev => prev + 1);
+    setRetries((prev) => prev + 1);
   };
 
   // Filter media items by search query
-  const filteredMedia = mediaItems.filter(item => 
+  const filteredMedia = mediaItems.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -165,6 +177,6 @@ export const useMediaLibrary = (onChange: () => void, bucketName: string = 'medi
     handleDeleteMedia,
     loadMedia,
     handleRetry,
-    error
+    error,
   };
 };
