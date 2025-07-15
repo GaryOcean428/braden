@@ -10,8 +10,12 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Use the gold logo for good contrast against the red background
+  const logoPath = "/docs/noBgGold.png";
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -80,13 +84,29 @@ const Navigation = () => {
     setIsOpen(false);
   };
 
+  const handleLogoError = () => {
+    setLogoError(true);
+    console.warn('Logo failed to load:', logoPath);
+  };
+
   return <ErrorBoundary>
       <nav className={`bg-[#811a2c] ${isScrolled ? 'shadow-md' : ''}`}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <a href="/" className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center logo" onClick={handleHomeClick}>
-              <img src="/path/to/logo.png" alt="Logo" className="logo" />
-              braden
+            <a 
+              href="/" 
+              className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center gap-3" 
+              onClick={handleHomeClick}
+            >
+              {!logoError && (
+                <img 
+                  src={logoPath} 
+                  alt="Braden Group Logo" 
+                  className="h-8 w-auto object-contain"
+                  onError={handleLogoError}
+                  loading="eager"
+                />
+              )}
             </a>
             
             <div className="flex items-center gap-4">

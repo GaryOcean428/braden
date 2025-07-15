@@ -1,134 +1,107 @@
 
 import { supabase } from './client';
 
-// Storage bucket names
 export const STORAGE_BUCKETS = {
+  MEDIA: 'media',
   HERO_IMAGES: 'hero-images',
   CONTENT_IMAGES: 'content-images',
   PROFILE_IMAGES: 'profile-images',
-  MEDIA: 'media',
   LOGOS: 'logos',
-  FAVICONS: 'favicons',
+  FAVICONS: 'favicons'
 } as const;
 
-// Define bucket name type for better type safety
-export type StorageBucketName = typeof STORAGE_BUCKETS[keyof typeof STORAGE_BUCKETS] | string;
+export type StorageBucketName = typeof STORAGE_BUCKETS[keyof typeof STORAGE_BUCKETS];
 
-// Define the return types for better type safety
-export type StorageBucketResult = {
-  success: boolean;
-  details?: Record<string, { success: boolean; error?: any }>;
-  error?: any;
+/**
+ * Initialize storage buckets - simplified to just verify access
+ */
+export const initializeStorageBuckets = async () => {
+  try {
+    console.log('Initializing storage buckets...');
+    
+    // Check if we have a valid session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error('Session error:', sessionError);
+      return { success: false, error: 'Session error' };
+    }
+
+    if (!session) {
+      console.log('No active session found. Storage operations may be limited.');
+      return { success: true, message: 'No session - limited access mode' };
+    }
+
+    console.log('Session found:', session.user.email);
+
+    // Simply verify we can list buckets (no need to create them)
+    try {
+      const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+      
+      if (listError) {
+        console.error('Error listing buckets:', listError);
+        return { success: false, error: 'Cannot access storage buckets' };
+      }
+
+      console.log('Available buckets:', buckets?.map(b => b.name) || []);
+      
+      // Check if our required buckets exist
+      const requiredBuckets = Object.values(STORAGE_BUCKETS);
+      const existingBuckets = buckets?.map(b => b.name) || [];
+      const missingBuckets = requiredBuckets.filter(bucket => !existingBuckets.includes(bucket));
+      
+      if (missingBuckets.length > 0) {
+        console.warn('Some buckets are missing:', missingBuckets);
+        return { 
+          success: true, 
+          warning: `Some buckets missing: ${missingBuckets.join(', ')}` 
+        };
+      }
+
+      console.log('All required storage buckets are available');
+      return { success: true, message: 'Storage initialized successfully' };
+
+    } catch (bucketError) {
+      console.error('Bucket access error:', bucketError);
+      return { success: false, error: 'Storage access error' };
+    }
+
+  } catch (error) {
+    console.error('Storage initialization failed:', error);
+    return { success: false, error: 'Initialization failed' };
+  }
 };
 
-// Helper function to initialize storage buckets
-export const initializeStorageBuckets = async (): Promise<StorageBucketResult> => {
+/**
+ * Get a public URL for a file in storage
+ */
+export const getPublicUrl = (bucketName: StorageBucketName, path: string): string => {
   try {
-    // Check if we have an active session
-    const { data: { session } } = await supabase.auth.getSession();
-    console.log('Session found:', session ? 'Yes' : 'No');
+    const { data } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(path);
     
-    if (!session) {
-      console.warn('No active session found. Bucket creation requires authentication.');
-      return { 
-        success: false, 
-        error: "Authentication required for storage configuration" 
-      };
-    }
-
-    // Check if current user is developer admin (9600a18c-c8e3-44ef-83ad-99ede9268e77) or has dev email
-    const { data: { user } } = await supabase.auth.getUser();
-    const isDeveloperAdmin = user?.email === 'braden.lang77@gmail.com';
-    
-    if (isDeveloperAdmin) {
-      console.log('Developer access confirmed by email');
-    } else if (user?.id === '9600a18c-c8e3-44ef-83ad-99ede9268e77') {
-      console.log('Developer access confirmed by ID');
-    } else {
-      console.warn('User does not have developer admin permissions');
-      return {
-        success: false,
-        error: "Developer admin permissions required"
-      };
-    }
-    
-    // Create all buckets if they don't exist
-    const results: Record<string, { success: boolean; error?: any }> = {};
-    const bucketsToCreate = ['media', 'logos', 'favicons', 'content-images', 'hero-images', 'profile-images'];
-    
-    // First get list of existing buckets
-    console.log('Listing with auth token:', session.access_token.substring(0, 10) + '...');
-    const { data: existingBuckets, error: bucketListError } = await supabase.storage.listBuckets();
-    
-    if (bucketListError) {
-      console.error('Error listing buckets:', bucketListError);
-      
-      // Try to create buckets directly even if listing failed
-      for (const bucketName of bucketsToCreate) {
-        try {
-          const { error } = await supabase.storage.createBucket(bucketName, {
-            public: true,
-            fileSizeLimit: 10485760, // 10MB
-          });
-          
-          results[bucketName] = { 
-            success: !error, 
-            error: error?.message
-          };
-          
-          console.log(`Attempted to create bucket ${bucketName}: ${!error ? 'Success' : 'Failed'}`);
-        } catch (err) {
-          results[bucketName] = { success: false, error: err };
-          console.error(`Failed to create ${bucketName}:`, err);
-        }
-      }
-      
-      return {
-        success: Object.values(results).some(r => r.success),
-        details: results,
-        error: bucketListError.message
-      };
-    }
-    
-    const existingBucketNames = existingBuckets?.map(b => b.name) || [];
-    console.log('Existing buckets:', existingBucketNames);
-    
-    // Create any missing buckets
-    for (const bucketName of bucketsToCreate) {
-      try {
-        if (!existingBucketNames.includes(bucketName)) {
-          console.log(`Creating bucket: ${bucketName}`);
-          const { error } = await supabase.storage.createBucket(bucketName, {
-            public: true,
-            fileSizeLimit: 10485760, // 10MB
-          });
-          
-          if (error) {
-            console.error(`Error creating bucket ${bucketName}:`, error);
-            results[bucketName] = { success: false, error };
-          } else {
-            console.log(`Created bucket: ${bucketName}`);
-            results[bucketName] = { success: true };
-          }
-        } else {
-          console.log(`Bucket ${bucketName} already exists`);
-          results[bucketName] = { success: true };
-        }
-      } catch (error) {
-        console.error(`Error processing bucket ${bucketName}:`, error);
-        results[bucketName] = { success: false, error };
-      }
-    }
-    
-    return { 
-      success: Object.values(results).every(r => r.success),
-      details: results
-    };
+    console.log(`Generated public URL for ${bucketName}/${path}:`, data.publicUrl);
+    return data.publicUrl;
   } catch (error) {
-    console.error('Error initializing storage buckets:', error);
-    return { 
-      success: false, 
-      error 
-    };
+    console.error('Error generating public URL:', error);
+    return '';
   }
+};
+
+/**
+ * Generates a unique filename for upload
+ */
+export const generateUniqueFileName = (originalFileName: string, path?: string): { fileName: string, filePath: string } => {
+  const fileExt = originalFileName.split('.').pop() || '';
+  const baseName = originalFileName.replace(/\.[^/.]+$/, '');
+  const timestamp = Date.now();
+  const randomId = Math.random().toString(36).substring(2, 8);
+  
+  const fileName = `${baseName}_${timestamp}_${randomId}.${fileExt}`;
+  const filePath = path ? `${path}/${fileName}` : fileName;
+  
+  console.log(`Generated unique filename: ${fileName} -> ${filePath}`);
+  
+  return { fileName, filePath };
 };

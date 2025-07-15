@@ -16,7 +16,7 @@ export function useSiteEditor() {
     checkAdminStatus();
   }, []);
 
-  const initBuckets = async () => {
+  const initStorage = async () => {
     try {
       // Only initialize storage buckets when explicitly requested and user has admin permissions
       if (!isAdmin) {
@@ -33,10 +33,8 @@ export function useSiteEditor() {
         });
       }
     } catch (error) {
-      console.error('Error initializing storage buckets:', error);
-      toast.error("Storage configuration error", {
-        description: "There was an issue setting up media storage."
-      });
+      console.error('Error during storage initialization:', error);
+      // Don't show error toast for storage issues - they're not critical for basic functionality
     }
   };
 
