@@ -13,7 +13,7 @@ async function generateHeroImage() {
     // Create a gradient background
     const width = 1920;
     const height = 1080;
-    
+
     // Create a gradient SVG
     const svg = `
     <svg width="${width}" height="${height}">
@@ -28,12 +28,12 @@ async function generateHeroImage() {
       <text x="50%" y="58%" font-family="Arial" font-size="40" fill="white" text-anchor="middle">Shaping Tomorrow's Workforce Today</text>
     </svg>
     `;
-    
+
     // Convert SVG to JPEG
     await sharp(Buffer.from(svg))
       .jpeg({ quality: 90 })
       .toFile(path.join(__dirname, 'public', 'hero-image.jpg'));
-    
+
     console.log('Hero image generated successfully!');
   } catch (error) {
     console.error('Error generating hero image:', error);

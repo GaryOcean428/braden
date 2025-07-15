@@ -6,12 +6,12 @@ import { useSyncLeads } from './leadSync';
 export function useLeadSynchronization() {
   // Set up periodic sync for leads
   useSyncLeads(300000); // Sync every 5 minutes
-  
+
   // Set up real-time webhooks
   useEffect(() => {
     // Initialize webhook listeners
     const cleanupWebhooks = setupLeadWebhooks();
-    
+
     // Clean up webhook listeners on unmount
     return () => {
       cleanupWebhooks();

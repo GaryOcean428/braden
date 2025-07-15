@@ -1,4 +1,11 @@
-export type ServiceType = 'apprenticeship' | 'traineeship' | 'recruitment' | 'technology' | 'compliance' | 'mentoring' | 'future_services';
+export type ServiceType =
+  | 'apprenticeship'
+  | 'traineeship'
+  | 'recruitment'
+  | 'technology'
+  | 'compliance'
+  | 'mentoring'
+  | 'future_services';
 
 export interface ContactFormValues {
   name: string;

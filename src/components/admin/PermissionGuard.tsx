@@ -8,8 +8,13 @@ interface PermissionGuardProps {
   fallback?: React.ReactNode;
 }
 
-export function PermissionGuard({ permission, children, fallback = null }: PermissionGuardProps) {
-  const { checkPermission, loading, isDeveloper, isAdmin } = useAdminPermissions();
+export function PermissionGuard({
+  permission,
+  children,
+  fallback = null,
+}: PermissionGuardProps) {
+  const { checkPermission, loading, isDeveloper, isAdmin } =
+    useAdminPermissions();
   const [hasAccess, setHasAccess] = useState(false);
 
   // Effect to set access status once loading is complete
@@ -20,7 +25,7 @@ export function PermissionGuard({ permission, children, fallback = null }: Permi
         setHasAccess(true);
         return;
       }
-      
+
       // Otherwise check specific permission
       const permissionGranted = checkPermission(permission);
       setHasAccess(permissionGranted);
@@ -29,7 +34,7 @@ export function PermissionGuard({ permission, children, fallback = null }: Permi
 
   // If still loading, don't render anything
   if (loading) return null;
-  
+
   // Render based on access status
   return hasAccess ? <>{children}</> : <>{fallback}</>;
 }

@@ -1,4 +1,3 @@
-
 // Braden Group theme configuration
 export const theme = {
   colors: {
@@ -17,11 +16,11 @@ export const theme = {
   },
   spacing: {
     base: '0.25rem', // 4px
-    xs: '0.5rem',    // 8px
-    sm: '0.75rem',   // 12px
-    md: '1rem',      // 16px
-    lg: '1.5rem',    // 24px
-    xl: '2rem',      // 32px
+    xs: '0.5rem', // 8px
+    sm: '0.75rem', // 12px
+    md: '1rem', // 16px
+    lg: '1.5rem', // 24px
+    xl: '2rem', // 32px
   },
   transition: {
     DEFAULT: 'all 0.3s ease',

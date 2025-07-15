@@ -8,29 +8,31 @@ import { ColorsPanel } from './components/ColorsPanel';
 import { TypographyPanel } from './components/TypographyPanel';
 import { SpacingPanel } from './components/SpacingPanel';
 
-export const ThemeEditor: React.FC<{ onChange?: () => void }> = ({ onChange }) => {
-  const { 
-    themeSettings, 
-    isLoading, 
+export const ThemeEditor: React.FC<{ onChange?: () => void }> = ({
+  onChange,
+}) => {
+  const {
+    themeSettings,
+    isLoading,
     isSaving,
-    loadThemeSettings, 
+    loadThemeSettings,
     saveThemeSettings,
     handleColorChange,
     handleTypographyChange,
-    handleSpacingChange
+    handleSpacingChange,
   } = useThemeEditor();
-  
+
   useEffect(() => {
     loadThemeSettings();
   }, [loadThemeSettings]);
-  
+
   // When theme settings change, notify parent component
   useEffect(() => {
     if (onChange && !isLoading && !isSaving && themeSettings) {
       onChange();
     }
   }, [themeSettings, isLoading, isSaving, onChange]);
-  
+
   if (isLoading || !themeSettings) {
     return (
       <div className="flex justify-center items-center h-40">
@@ -38,12 +40,12 @@ export const ThemeEditor: React.FC<{ onChange?: () => void }> = ({ onChange }) =
       </div>
     );
   }
-  
+
   const handleSave = async () => {
     await saveThemeSettings();
-    toast.success("Theme settings saved successfully");
+    toast.success('Theme settings saved successfully');
   };
-  
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="colors">
@@ -52,34 +54,34 @@ export const ThemeEditor: React.FC<{ onChange?: () => void }> = ({ onChange }) =
           <TabsTrigger value="typography">Typography</TabsTrigger>
           <TabsTrigger value="spacing">Spacing</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="colors">
-          <ColorsPanel 
+          <ColorsPanel
             primaryColors={themeSettings.colors.primary}
             secondaryColors={themeSettings.colors.secondary}
             extendedColors={themeSettings.colors.extended}
             onColorChange={handleColorChange}
           />
         </TabsContent>
-        
+
         <TabsContent value="typography">
-          <TypographyPanel 
+          <TypographyPanel
             typography={themeSettings.typography}
             onTypographyChange={handleTypographyChange}
           />
         </TabsContent>
-        
+
         <TabsContent value="spacing">
-          <SpacingPanel 
+          <SpacingPanel
             spacing={themeSettings.spacing}
             onSpacingChange={handleSpacingChange}
           />
         </TabsContent>
       </Tabs>
-      
+
       <div className="flex justify-end">
-        <Button 
-          onClick={handleSave} 
+        <Button
+          onClick={handleSave}
           disabled={isSaving}
           className="bg-braden-red hover:bg-braden-dark-red"
         >

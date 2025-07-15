@@ -1,6 +1,11 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { FileImage, Upload } from 'lucide-react';
 import { MediaLibrary } from '@/components/admin/editor/media/MediaLibrary';
 
@@ -22,11 +27,16 @@ export const MediaTab: React.FC<MediaTabProps> = ({ onChange }) => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="mb-4 text-sm text-[#2c3e50]">
-          <p>Upload and organize your media files. Supported formats include images (JPG, PNG, GIF, WebP), 
-          videos (MP4, WebM), and documents (PDF).</p>
+          <p>
+            Upload and organize your media files. Supported formats include
+            images (JPG, PNG, GIF, WebP), videos (MP4, WebM), and documents
+            (PDF).
+          </p>
           <div className="flex items-center gap-2 mt-2 text-[#ab233a]">
             <Upload className="h-4 w-4" />
-            <span className="font-medium">Drag and drop files or use the upload button below</span>
+            <span className="font-medium">
+              Drag and drop files or use the upload button below
+            </span>
           </div>
         </div>
         <MediaLibrary onChange={onChange} />

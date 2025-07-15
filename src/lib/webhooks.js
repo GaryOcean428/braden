@@ -9,17 +9,18 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export async function sendWebhookToCRM(eventType, leadData) {
   try {
     const webhookUrl = 'https://crm7.vercel.app/api/webhooks/leads';
-    
+
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Webhook-Secret': import.meta.env.VITE_WEBHOOK_SECRET || 'default-webhook-secret'
+        'X-Webhook-Secret':
+          import.meta.env.VITE_WEBHOOK_SECRET || 'default-webhook-secret',
       },
       body: JSON.stringify({
         event_type: eventType,
         lead_data: leadData,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }),
     });
 
@@ -47,7 +48,7 @@ export function setupLeadWebhooks() {
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'leads'
+        table: 'leads',
       },
       (payload) => {
         console.log('New lead inserted:', payload);
@@ -64,7 +65,7 @@ export function setupLeadWebhooks() {
       {
         event: 'UPDATE',
         schema: 'public',
-        table: 'leads'
+        table: 'leads',
       },
       (payload) => {
         console.log('Lead updated:', payload);
@@ -81,7 +82,7 @@ export function setupLeadWebhooks() {
       {
         event: 'DELETE',
         schema: 'public',
-        table: 'leads'
+        table: 'leads',
       },
       (payload) => {
         console.log('Lead deleted:', payload);

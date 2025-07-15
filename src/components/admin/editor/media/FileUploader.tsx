@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, Loader2 } from 'lucide-react';
@@ -10,14 +9,14 @@ interface FileUploaderProps {
   multiple?: boolean;
 }
 
-export const FileUploader: React.FC<FileUploaderProps> = ({ 
-  uploading, 
-  onChange, 
-  accept = 'image/*', 
-  multiple = false 
+export const FileUploader: React.FC<FileUploaderProps> = ({
+  uploading,
+  onChange,
+  accept = 'image/*',
+  multiple = false,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  
+
   const handleClick = () => {
     fileInputRef.current?.click();
   };
@@ -26,10 +25,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e);
   };
-  
+
   return (
     <div>
-      <Button 
+      <Button
         onClick={handleClick}
         variant="outline"
         className="flex items-center gap-2"

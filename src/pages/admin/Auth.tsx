@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -17,13 +24,13 @@ const AdminAuth: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('Attempting login with email:', email);
-      
+
       // Create a test user if in development mode
       if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         // Check if test user exists
@@ -35,26 +42,26 @@ const AdminAuth: React.FC = () => {
             email: 'admin@example.com',
             password: 'password123',
           });
-          
+
           if (signUpError) {
             console.warn('Could not create test user:', signUpError);
           }
         }
       }
-      
+
       // Attempt login
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) {
         console.error('Authentication error:', error);
         throw error;
       }
-      
+
       console.log('Login successful:', data);
-      
+
       // Successful login
       navigate('/admin/dashboard');
     } catch (err) {
@@ -83,7 +90,7 @@ const AdminAuth: React.FC = () => {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -95,7 +102,7 @@ const AdminAuth: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
@@ -108,7 +115,7 @@ const AdminAuth: React.FC = () => {
                 required
               />
             </div>
-            
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>
@@ -122,8 +129,8 @@ const AdminAuth: React.FC = () => {
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button 
-            variant="link" 
+          <Button
+            variant="link"
             className="text-sm text-gray-500"
             onClick={() => navigate('/')}
           >

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ThemeSettings, defaultTheme } from './types';
 import { applyThemeToCss } from './colorUtils';
@@ -11,7 +17,7 @@ type ThemeContextType = {
 // Create context with default values
 const ThemeContext = createContext<ThemeContextType>({
   theme: defaultTheme,
-  applyTheme: () => {}
+  applyTheme: () => {},
 });
 
 export const useTheme = () => {
@@ -22,7 +28,9 @@ export const useTheme = () => {
   return context;
 };
 
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [theme, setTheme] = useState<ThemeSettings>(defaultTheme);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,22 +38,23 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const loadThemeFromDb = async () => {
       try {
         setIsLoading(true);
-        
+
         const { data, error } = await supabase
           .from('site_settings')
           .select('*')
           .eq('type', 'theme')
           .single();
-        
+
         if (error) {
-          if (error.code !== 'PGRST116') { // Not found error
+          if (error.code !== 'PGRST116') {
+            // Not found error
             console.error('Error loading theme:', error);
           }
           // Use default theme if no theme is found
           applyThemeToCss(defaultTheme);
           return;
         }
-        
+
         if (data && data.settings) {
           const loadedTheme = data.settings as ThemeSettings;
           setTheme(loadedTheme);
@@ -62,7 +71,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setIsLoading(false);
       }
     };
-    
+
     loadThemeFromDb();
   }, []);
 

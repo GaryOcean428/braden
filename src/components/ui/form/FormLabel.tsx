@@ -1,14 +1,13 @@
-
-import * as React from "react";
-import * as LabelPrimitive from "@radix-ui/react-label";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { useFormField } from "./useFormField";
+import * as React from 'react';
+import * as LabelPrimitive from '@radix-ui/react-label';
+import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import { useFormField } from './useFormField';
 
 export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & {
-    color?: "default" | "primary" | "secondary";
+    color?: 'default' | 'primary' | 'secondary';
   }
 >(({ className, color, ...props }, ref) => {
   const { error, formItemId } = useFormField();
@@ -16,12 +15,11 @@ export const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      color={color || "default"}
-      className={cn(error && "text-destructive", className)}
+      color={color || 'default'}
+      className={cn(error && 'text-destructive', className)}
       htmlFor={formItemId}
       {...props}
     />
   );
 });
-FormLabel.displayName = "FormLabel";
-
+FormLabel.displayName = 'FormLabel';

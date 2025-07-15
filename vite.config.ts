@@ -1,21 +1,19 @@
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import { componentTagger } from "lovable-tagger";
+import { componentTagger } from 'lovable-tagger';
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: '::',
     port: 8080,
     hmr: {
       clientPort: undefined, // Let Vite auto-detect the port
     },
   },
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === 'development' && componentTagger()].filter(
+    Boolean
+  ),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -28,6 +26,9 @@ export default defineConfig(({ mode }) => ({
         manualChunks: undefined,
       },
     },
+    // Generate bundle analysis data
+    reportCompressedSize: true,
+    minify: 'esbuild',
   },
   define: {
     // Remove the problematic WS_TOKEN definition that's causing the syntax error
@@ -37,5 +38,17 @@ export default defineConfig(({ mode }) => ({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/setupTests.ts',
+        '**/*.d.ts',
+        '**/*.test.{ts,tsx}',
+        '**/__tests__/**',
+        'dist/',
+        'coverage/',
+      ],
+    },
   },
 }));

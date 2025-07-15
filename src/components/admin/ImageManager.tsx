@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,10 @@ import { ImageUploader } from './images/ImageUploader';
 import { GalleryTab } from './images/components/GalleryTab';
 import { ErrorAlert } from './ErrorAlert';
 import { useImageManager } from './images/hooks/useImageManager';
-import { STORAGE_BUCKETS, StorageBucketName } from '@/integrations/supabase/storage';
+import {
+  STORAGE_BUCKETS,
+  StorageBucketName,
+} from '@/integrations/supabase/storage';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface ImageManagerProps {
@@ -42,12 +44,23 @@ const ImageManager: React.FC<ImageManagerProps> = ({
   const totalPages = Math.ceil((images?.length || 0) / 12);
   const startIndex = (currentPage - 1) * 12;
   const endIndex = startIndex + 12;
-  const paginatedImages = useMemo(() => images?.slice(startIndex, endIndex) || [], [images, startIndex, endIndex]);
+  const paginatedImages = useMemo(
+    () => images?.slice(startIndex, endIndex) || [],
+    [images, startIndex, endIndex]
+  );
 
   // Convert error to string for ErrorAlert component
-  const errorString = error ? (error instanceof Error ? error.message : String(error)) : null;
+  const errorString = error
+    ? error instanceof Error
+      ? error.message
+      : String(error)
+    : null;
   // Convert string error to Error object if needed for ImageUploader
-  const errorObject = error ? (error instanceof Error ? error : new Error(String(error))) : null;
+  const errorObject = error
+    ? error instanceof Error
+      ? error
+      : new Error(String(error))
+    : null;
 
   return (
     <ErrorBoundary>
@@ -55,35 +68,39 @@ const ImageManager: React.FC<ImageManagerProps> = ({
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             <span>{title}</span>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               onClick={handleRefresh}
               disabled={loading}
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
             </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {errorString && <ErrorAlert error={errorString} />}
-          
+
           <Tabs defaultValue="upload">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="upload">Upload</TabsTrigger>
               <TabsTrigger value="gallery">Gallery</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="upload" className="space-y-4">
-              <ImageUploader 
+              <ImageUploader
                 uploading={uploading}
                 error={errorObject}
                 onFileChange={handleFileChange}
               />
             </TabsContent>
-            
+
             <TabsContent value="gallery">
-              <GalleryTab 
+              <GalleryTab
                 images={paginatedImages}
                 selectedImage={selectedImage}
                 loading={loading}

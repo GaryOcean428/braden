@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Plus, FileText } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Edit, Plus, FileText } from 'lucide-react';
 
 export const BlocksTabContent = () => {
   const [blocks, setBlocks] = useState<any[]>([]);
@@ -21,7 +21,7 @@ export const BlocksTabContent = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data: blocksData, error: blocksError } = await supabase
         .from('content_blocks')
         .select('*')
@@ -31,11 +31,11 @@ export const BlocksTabContent = () => {
       setBlocks(blocksData || []);
     } catch (error: any) {
       console.error('Error loading blocks:', error);
-      setError(error.message || "Failed to load content blocks");
+      setError(error.message || 'Failed to load content blocks');
       toast({
-        title: "Error",
-        description: "Failed to load content blocks",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load content blocks',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -65,9 +65,9 @@ export const BlocksTabContent = () => {
       <Alert variant="destructive" className="mb-4">
         <AlertDescription className="flex flex-col gap-2">
           <p>{error}</p>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="w-fit mt-2"
             onClick={() => loadBlocks()}
           >
@@ -86,9 +86,12 @@ export const BlocksTabContent = () => {
           <Plus className="h-4 w-4" /> Add Block
         </Button>
       </div>
-      
+
       {blocks.map((block) => (
-        <Card key={block.id} className="border-gray-200 hover:border-gray-300 transition-colors">
+        <Card
+          key={block.id}
+          className="border-gray-200 hover:border-gray-300 transition-colors"
+        >
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <FileText className="h-4 w-4 text-gray-500" />
@@ -97,13 +100,17 @@ export const BlocksTabContent = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-500">Type: {block.type}</p>
-            <Button variant="ghost" size="sm" className="mt-2 hover:bg-gray-100">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-2 hover:bg-gray-100"
+            >
               <Edit className="h-4 w-4 mr-1" /> Edit
             </Button>
           </CardContent>
         </Card>
       ))}
-      
+
       {blocks.length === 0 && !error && (
         <Card>
           <CardContent className="pt-6 pb-6 text-center">

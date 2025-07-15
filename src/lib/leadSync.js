@@ -51,25 +51,27 @@ export async function syncLeadsWithCRM() {
                 submission_page: lead.submission_page || 'contact',
                 utm_source: lead.utm_source,
                 utm_medium: lead.utm_medium,
-                utm_campaign: lead.utm_campaign
-              }
+                utm_campaign: lead.utm_campaign,
+              },
             }),
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(`Failed to sync lead: ${JSON.stringify(errorData)}`);
+            throw new Error(
+              `Failed to sync lead: ${JSON.stringify(errorData)}`
+            );
           }
 
           const result = await response.json();
-          
+
           // Update the lead record with the CRM lead ID
           if (result.lead_id) {
             const { error: updateError } = await supabase
               .from('leads')
               .update({ crm_lead_id: result.lead_id })
               .eq('id', lead.id);
-              
+
             if (updateError) {
               console.error('Error updating lead with CRM ID:', updateError);
               return { id: lead.id, success: false, error: updateError };
@@ -84,11 +86,11 @@ export async function syncLeadsWithCRM() {
       })
     );
 
-    const successCount = results.filter(r => r.success).length;
-    return { 
-      success: true, 
+    const successCount = results.filter((r) => r.success).length;
+    return {
+      success: true,
       message: `Synced ${successCount} of ${unsyncedLeads.length} leads`,
-      results
+      results,
     };
   } catch (error) {
     console.error('Lead synchronization error:', error);
@@ -97,16 +99,17 @@ export async function syncLeadsWithCRM() {
 }
 
 // Hook to periodically sync leads
-export function useSyncLeads(interval = 300000) { // Default: 5 minutes
+export function useSyncLeads(interval = 300000) {
+  // Default: 5 minutes
   useEffect(() => {
     // Initial sync
     syncLeadsWithCRM();
-    
+
     // Set up interval for periodic syncing
     const syncInterval = setInterval(() => {
       syncLeadsWithCRM();
     }, interval);
-    
+
     // Clean up interval on unmount
     return () => clearInterval(syncInterval);
   }, [interval]);

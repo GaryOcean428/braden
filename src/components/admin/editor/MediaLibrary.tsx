@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MediaLibrary as NewMediaLibrary } from './media/MediaLibrary';
 

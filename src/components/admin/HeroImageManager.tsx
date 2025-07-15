@@ -1,9 +1,14 @@
-
 import React, { useState } from 'react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { STORAGE_BUCKETS } from '@/integrations/supabase/storage';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import ImageManager from '@/components/admin/ImageManager';
 import { initializeStorageBuckets } from '@/integrations/supabase/storage';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,14 +23,14 @@ interface HeroImageManagerProps {
 
 export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
   currentHeroImage = 'https://lh3.googleusercontent.com/gps-cs-s/AB5caB_4-M4Ztd7dnkISNbA9YI26OrkyCqv3kce_4tVhCDHOtO43YLbyhEqva1ipphv3ImbIijtOkIfjkqYSzAAZNUQGAX1XYt4TRBpwyb7sLa4H-iQhAoUV-rATbTbNKFxphZA7pbtH=w540-h312-n-k-no',
-  onImageUpdate
+  onImageUpdate,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const { user } = useAuth();
-  
+
   // Check if the user is an admin (developer)
   const isAdmin = user?.email === 'braden.lang77@gmail.com';
 
@@ -35,20 +40,20 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
 
   const handleUpdateHero = async () => {
     if (!selectedImage || !isAdmin) return;
-    
+
     try {
       setIsUpdating(true);
       setUpdateSuccess(false);
       setUpdateError(null);
-      
+
       // Here you would typically update a database record or settings
       // For now, we'll just simulate the update
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       if (onImageUpdate) {
         onImageUpdate(selectedImage);
       }
-      
+
       setUpdateSuccess(true);
     } catch (error) {
       setUpdateError('Failed to update hero image. Please try again.');
@@ -84,55 +89,51 @@ export const HeroImageManager: React.FC<HeroImageManagerProps> = ({
             <div>
               <h3 className="text-lg font-medium mb-2">Current Hero Image</h3>
               <div className="border rounded-lg overflow-hidden">
-                <img 
-                  src={currentHeroImage} 
-                  alt="Current hero image" 
+                <img
+                  src={currentHeroImage}
+                  alt="Current hero image"
                   className="w-full h-48 object-cover"
                 />
               </div>
             </div>
-            
+
             {selectedImage && (
               <div>
                 <h3 className="text-lg font-medium mb-2">Selected New Image</h3>
                 <div className="border rounded-lg overflow-hidden">
-                  <img 
-                    src={selectedImage} 
-                    alt="Selected hero image" 
+                  <img
+                    src={selectedImage}
+                    alt="Selected hero image"
                     className="w-full h-48 object-cover"
                   />
                 </div>
               </div>
             )}
           </div>
-          
-          <ImageManager 
+
+          <ImageManager
             bucketName={STORAGE_BUCKETS.HERO_IMAGES}
             onImageSelect={handleImageSelect}
             title="Select Hero Image"
           />
-          
+
           <div className="flex justify-end">
-            <Button 
-              onClick={handleUpdateHero} 
+            <Button
+              onClick={handleUpdateHero}
               disabled={!selectedImage || isUpdating}
               className="w-full md:w-auto"
             >
               {isUpdating ? 'Updating...' : 'Update Hero Image'}
             </Button>
           </div>
-          
+
           {updateSuccess && (
             <p className="text-green-600 text-sm">
               Hero image updated successfully!
             </p>
           )}
-          
-          {updateError && (
-            <p className="text-red-600 text-sm">
-              {updateError}
-            </p>
-          )}
+
+          {updateError && <p className="text-red-600 text-sm">{updateError}</p>}
         </CardContent>
       </Card>
     </ErrorBoundary>

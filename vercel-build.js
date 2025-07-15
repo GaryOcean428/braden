@@ -19,16 +19,16 @@ console.log('Public directory:', publicDir);
 try {
   if (fs.existsSync(buildDir)) {
     console.log('Build directory exists, checking for hero image');
-    
+
     // Source hero image
     const sourceImage = path.join(publicDir, 'hero-image.jpg');
-    
+
     // Destination in build directory
     const destImage = path.join(buildDir, 'hero-image.jpg');
-    
+
     if (fs.existsSync(sourceImage)) {
       console.log('Hero image found in public directory');
-      
+
       // Copy the image to the build directory if it doesn't exist
       if (!fs.existsSync(destImage)) {
         console.log('Copying hero image to build directory');

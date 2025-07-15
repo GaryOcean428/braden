@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,17 +6,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
-import { ErrorBoundary } from "./ErrorBoundary";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface ShareModalProps {
   icon: React.ReactNode;
 }
 
 const ShareModal = ({ icon }: ShareModalProps) => {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   // Only update URL when the dialog is open
@@ -31,21 +30,21 @@ const ShareModal = ({ icon }: ShareModalProps) => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Braden Group",
-          text: "Check out this page from Braden Group",
+          title: 'Braden Group',
+          text: 'Check out this page from Braden Group',
           url: url,
         });
       } else {
         await navigator.clipboard.writeText(url);
         toast({
-          description: "Link copied to clipboard!",
+          description: 'Link copied to clipboard!',
         });
       }
     } catch (error) {
-      console.error("Error sharing:", error);
+      console.error('Error sharing:', error);
       toast({
-        variant: "destructive",
-        description: "Failed to share",
+        variant: 'destructive',
+        description: 'Failed to share',
       });
     }
   };
@@ -74,7 +73,7 @@ const ShareModal = ({ icon }: ShareModalProps) => {
                 className="flex-1 px-3 py-2 border rounded-md bg-muted"
               />
               <Button onClick={handleShare}>
-                {navigator.share ? "Share" : "Copy"}
+                {navigator.share ? 'Share' : 'Copy'}
               </Button>
             </div>
           </div>

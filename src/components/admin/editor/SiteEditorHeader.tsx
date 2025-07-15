@@ -13,14 +13,14 @@ interface SiteEditorHeaderProps {
 export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
   hasUnsavedChanges,
   onPreview,
-  onPublish
+  onPublish,
 }) => {
   const navigate = useNavigate();
-  
+
   const handleBackToDashboard = () => {
     if (hasUnsavedChanges) {
       const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to leave? Your changes may be lost."
+        'You have unsaved changes. Are you sure you want to leave? Your changes may be lost.'
       );
       if (!confirmed) return;
     }
@@ -29,15 +29,15 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
 
   const handlePreview = () => {
     onPreview();
-    toast.success("Opening preview in new tab");
+    toast.success('Opening preview in new tab');
   };
 
   const handlePublish = async () => {
     try {
       await onPublish();
-      toast.success("Changes published successfully");
+      toast.success('Changes published successfully');
     } catch (error) {
-      toast.error("Failed to publish changes");
+      toast.error('Failed to publish changes');
     }
   };
 
@@ -45,8 +45,8 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div className="flex flex-col">
         <div className="flex items-center gap-2 mb-1">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             className="flex items-center gap-1 text-braden-navy hover:text-braden-red"
             onClick={handleBackToDashboard}
@@ -60,18 +60,18 @@ export const SiteEditorHeader: React.FC<SiteEditorHeaderProps> = ({
           Customize your website appearance and content
         </p>
       </div>
-      
+
       <div className="flex items-center gap-2">
-        <Button 
-          onClick={handlePreview} 
+        <Button
+          onClick={handlePreview}
           variant="outline"
           className="flex items-center gap-1"
         >
           <Eye className="h-4 w-4" />
           Preview
         </Button>
-        
-        <Button 
+
+        <Button
           onClick={handlePublish}
           disabled={!hasUnsavedChanges}
           className="flex items-center gap-1 bg-braden-red hover:bg-braden-dark-red"

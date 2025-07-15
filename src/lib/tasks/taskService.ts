@@ -1,5 +1,4 @@
-
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
 // Define interfaces for the data
 interface StaffDetails {
@@ -29,53 +28,60 @@ interface Task {
 }
 
 // Get staff details from the database
-export const getStaffDetails = async (staffId: string): Promise<StaffDetails> => {
+export const getStaffDetails = async (
+  staffId: string
+): Promise<StaffDetails> => {
   try {
     // Use type casting to avoid TypeScript errors
-    const { data, error } = await supabase
+    const { data, error } = (await supabase
       .from('users')
       .select('id, email, first_name, last_name')
       .eq('id', staffId)
-      .single() as { data: any, error: any };
-    
+      .single()) as { data: any; error: any };
+
     if (error) throw error;
-    
+
     return {
       id: data?.id || staffId,
       email: data?.email || 'staff@example.com',
-      name: `${data?.first_name || ''} ${data?.last_name || ''}`.trim() || 'Staff Member',
-      role: 'staff' // Default role since users table might not have role column
+      name:
+        `${data?.first_name || ''} ${data?.last_name || ''}`.trim() ||
+        'Staff Member',
+      role: 'staff', // Default role since users table might not have role column
     };
   } catch (error) {
-    console.error("Error fetching staff details:", error);
+    console.error('Error fetching staff details:', error);
     // Fallback to mock data if database query fails
     return {
       id: staffId || 'staff-123',
       email: 'staff@example.com',
       name: 'Staff Member',
-      role: 'staff'
+      role: 'staff',
     };
   }
 };
 
 // Create a follow-up task in the database
-export const createFollowUpTask = async (leadId: string, serviceType: string) => {
+export const createFollowUpTask = async (
+  leadId: string,
+  serviceType: string
+) => {
   try {
     // First, ensure the lead exists
     // Use type casting to avoid TypeScript errors
-    const { data: leadData, error: leadError } = await supabase
+    const { data: leadData, error: leadError } = (await supabase
       .from('leads')
       .select('id, email, name')
       .eq('id', leadId)
-      .single() as { data: Lead, error: any };
-    
+      .single()) as { data: Lead; error: any };
+
     if (leadError) {
-      console.error("Error fetching lead:", leadError);
-      throw new Error("Lead not found");
+      console.error('Error fetching lead:', leadError);
+      throw new Error('Lead not found');
     }
-    
+
     // Create the task - using any to bypass strict type checking
-    const { data, error } = await supabase
+    const { data, error } = (await supabase
       .from('tasks' as any)
       .insert({
         lead_id: leadId,
@@ -84,24 +90,26 @@ export const createFollowUpTask = async (leadId: string, serviceType: string) =>
         title: `Follow up with ${leadData.name}`,
         description: `Follow up on ${serviceType} inquiry`,
         due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       })
       .select()
-      .single() as { data: Task, error: any };
-    
+      .single()) as { data: Task; error: any };
+
     if (error) throw error;
-    
-    console.log(`Created follow up task for lead ${leadId} (service: ${serviceType})`);
-    
+
+    console.log(
+      `Created follow up task for lead ${leadId} (service: ${serviceType})`
+    );
+
     return {
       success: true,
       taskId: data.id,
     };
   } catch (error) {
-    console.error("Error creating follow up task:", error);
+    console.error('Error creating follow up task:', error);
     return {
       success: false,
-      error: "Failed to create follow-up task"
+      error: 'Failed to create follow-up task',
     };
   }
 };
@@ -110,16 +118,16 @@ export const createFollowUpTask = async (leadId: string, serviceType: string) =>
 export const ensureTaskTablesExist = async () => {
   try {
     // For debugging only - this will be removed in production
-    console.log("Checking if task-related tables exist");
-    
+    console.log('Checking if task-related tables exist');
+
     return {
-      success: true
+      success: true,
     };
   } catch (error) {
-    console.error("Error ensuring task tables exist:", error);
+    console.error('Error ensuring task tables exist:', error);
     return {
       success: false,
-      error: "Failed to ensure task tables exist"
+      error: 'Failed to ensure task tables exist',
     };
   }
 };

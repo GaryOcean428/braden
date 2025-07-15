@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, ShieldAlert, User, UserCheck, UserX } from "lucide-react";
-import { AdminUser } from "@/hooks/useAdminUsers";
-import { Input } from "@/components/ui/input";
-import { Pagination } from "@/components/ui/pagination";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import {
+  CheckCircle2,
+  ShieldAlert,
+  User,
+  UserCheck,
+  UserX,
+} from 'lucide-react';
+import { AdminUser } from '@/hooks/useAdminUsers';
+import { Input } from '@/components/ui/input';
+import { Pagination } from '@/components/ui/pagination';
 import { PermissionGuard } from './PermissionGuard';
 
 interface AdminUsersTableProps {
@@ -12,7 +25,7 @@ interface AdminUsersTableProps {
 }
 
 export function AdminUsersTable({ adminUsers }: AdminUsersTableProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
@@ -39,12 +52,24 @@ export function AdminUsersTable({ adminUsers }: AdminUsersTableProps) {
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="text-[#2c3e50] font-semibold">Admin ID</TableHead>
-              <TableHead className="text-[#2c3e50] font-semibold">User ID</TableHead>
-              <TableHead className="text-[#2c3e50] font-semibold">Email</TableHead>
-              <TableHead className="text-[#2c3e50] font-semibold">Role</TableHead>
-              <TableHead className="text-[#2c3e50] font-semibold">Created At</TableHead>
-              <TableHead className="text-[#2c3e50] font-semibold">Actions</TableHead>
+              <TableHead className="text-[#2c3e50] font-semibold">
+                Admin ID
+              </TableHead>
+              <TableHead className="text-[#2c3e50] font-semibold">
+                User ID
+              </TableHead>
+              <TableHead className="text-[#2c3e50] font-semibold">
+                Email
+              </TableHead>
+              <TableHead className="text-[#2c3e50] font-semibold">
+                Role
+              </TableHead>
+              <TableHead className="text-[#2c3e50] font-semibold">
+                Created At
+              </TableHead>
+              <TableHead className="text-[#2c3e50] font-semibold">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -53,9 +78,12 @@ export function AdminUsersTable({ adminUsers }: AdminUsersTableProps) {
                 <TableCell colSpan={6} className="text-center py-8">
                   <div className="flex flex-col items-center gap-3">
                     <ShieldAlert className="h-8 w-8 text-[#95a5a6]" />
-                    <p className="text-[#95a5a6] font-medium">No admin users found</p>
+                    <p className="text-[#95a5a6] font-medium">
+                      No admin users found
+                    </p>
                     <p className="text-sm text-gray-500 max-w-md">
-                      Admin users will appear here once they have been added to the system.
+                      Admin users will appear here once they have been added to
+                      the system.
                     </p>
                   </div>
                 </TableCell>
@@ -64,21 +92,28 @@ export function AdminUsersTable({ adminUsers }: AdminUsersTableProps) {
               paginatedUsers.map((admin) => (
                 <TableRow key={admin.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium text-[#2c3e50]">
-                    {typeof admin.id === 'string' && admin.id.length > 8 ? admin.id.substring(0, 8) + '...' : admin.id}
+                    {typeof admin.id === 'string' && admin.id.length > 8
+                      ? admin.id.substring(0, 8) + '...'
+                      : admin.id}
                   </TableCell>
                   <TableCell className="text-[#3498db]">
-                    {typeof admin.user_id === 'string' && admin.user_id.length > 8 ? admin.user_id.substring(0, 8) + '...' : admin.user_id}
+                    {typeof admin.user_id === 'string' &&
+                    admin.user_id.length > 8
+                      ? admin.user_id.substring(0, 8) + '...'
+                      : admin.user_id}
                   </TableCell>
                   <TableCell>{admin.email || 'N/A'}</TableCell>
                   <TableCell>{admin.role || 'viewer'}</TableCell>
                   <TableCell>
-                    {admin.created_at ? new Date(admin.created_at).toLocaleString() : 'N/A'}
+                    {admin.created_at
+                      ? new Date(admin.created_at).toLocaleString()
+                      : 'N/A'}
                   </TableCell>
                   <TableCell>
                     <PermissionGuard permission="users.edit">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="flex items-center gap-1 border-[#cbb26a] text-[#2c3e50] hover:bg-[#d8c690]"
                       >
                         <CheckCircle2 className="h-4 w-4" />

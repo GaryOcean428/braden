@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { RoleManager } from '@/utils/roleManager';
@@ -23,35 +22,38 @@ export const useAdminPermissionCheck = (): UseAdminPermissionCheckReturn => {
   const checkAdminStatus = useCallback(async (): Promise<boolean> => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         return false;
       }
 
       // Use centralized role manager instead of hard-coded checks
       const userRole = await RoleManager.checkUserRole();
-      
+
       setIsDeveloper(userRole.isDeveloper);
       setIsAdmin(userRole.isAdmin);
-      
+
       if (userRole.isDeveloper) {
-        console.log("Developer admin detected");
-        return true;
-      }
-      
-      if (userRole.isAdmin) {
-        console.log("Admin access confirmed");
+        console.log('Developer admin detected');
         return true;
       }
 
-      console.log("No admin access");
+      if (userRole.isAdmin) {
+        console.log('Admin access confirmed');
+        return true;
+      }
+
+      console.log('No admin access');
       return false;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to check admin status';
-      console.error("Admin check error:", errorMessage);
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to check admin status';
+      console.error('Admin check error:', errorMessage);
       setError(errorMessage);
       return false;
     } finally {
@@ -64,6 +66,6 @@ export const useAdminPermissionCheck = (): UseAdminPermissionCheckReturn => {
     isDeveloper,
     error,
     checkAdminStatus,
-    loading
+    loading,
   };
 };
