@@ -31,35 +31,7 @@ export const useAdminUsersFetch = (): UseAdminUsersFetchReturn => {
     setError(null);
     
     try {
-      // Check if user is authenticated and has admin permissions before making the API call
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        console.log('No authenticated session found, skipping admin users fetch');
-        setAdminUsers([]);
-        return [];
-      }
-
-      // Check if user has developer admin access
-      const isDeveloperAdmin = session.user.email === 'braden.lang77@gmail.com';
-      
-      if (!isDeveloperAdmin) {
-        // Try the RPC function to check admin status
-        try {
-          const { data: isDeveloperAdminRPC, error: rpcError } = await supabase.rpc('is_developer_admin');
-          
-          if (rpcError || !isDeveloperAdminRPC) {
-            console.log('User does not have admin permissions, skipping admin users fetch');
-            setAdminUsers([]);
-            return [];
-          }
-        } catch (rpcErr) {
-          console.log('RPC admin check failed, user likely does not have admin permissions');
-          setAdminUsers([]);
-          return [];
-        }
-      }
-
+      // Use typed query-builder from @supabase/supabase-js to avoid malformed URLs and guarantee JWT is attached
       const { data: adminUsersData, error: fetchError } = await supabase
         .from('admin_users')
         .select('*');

@@ -25,33 +25,7 @@ export const useListFiles = (bucketName: StorageBucketName) => {
       
       console.log(`Listing files from bucket: ${bucketName}${path ? ` at path: ${path}` : ''}`);
       
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        console.log('Listing with authenticated user:', session.user.email);
-      } else {
-        console.log('No authenticated session - skipping file listing');
-        return [];
-      }
-      
-      // Check if user has admin permissions before attempting storage operations
-      const isDeveloperAdmin = session.user.email === 'braden.lang77@gmail.com';
-      
-      if (!isDeveloperAdmin) {
-        // Try the RPC function to check admin status
-        try {
-          const { data: isDeveloperAdminRPC, error: rpcError } = await supabase.rpc('is_developer_admin');
-          
-          if (rpcError || !isDeveloperAdminRPC) {
-            console.log('User does not have admin permissions, skipping file listing');
-            return [];
-          }
-        } catch (rpcErr) {
-          console.log('RPC admin check failed, skipping file listing');
-          return [];
-        }
-      }
-      
+      // Use typed query-builder from @supabase/supabase-js to guarantee JWT is attached  
       const { data, error: listError } = await supabase.storage
         .from(bucketName)
         .list(path || '', {
