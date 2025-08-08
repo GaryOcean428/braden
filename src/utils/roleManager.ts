@@ -75,10 +75,20 @@ export class RoleManager {
     userId: string
   ): Promise<AdminRole | null> {
     try {
+      // Get current user email
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      
+      if (!session?.user?.email) {
+        return null;
+      }
+
+      // Check if email exists in admin_users table
       const { data: adminUser, error } = await supabase
         .from('admin_users')
-        .select('role')
-        .eq('user_id', userId)
+        .select('id')
+        .eq('email', session.user.email)
         .maybeSingle();
 
       if (error) {
@@ -86,7 +96,8 @@ export class RoleManager {
         return null;
       }
 
-      return (adminUser?.role as AdminRole) || null;
+      // If found in admin_users, they're an admin/developer
+      return adminUser ? 'admin' : null;
     } catch (error) {
       console.warn('Database role check failed:', error);
       return null;
