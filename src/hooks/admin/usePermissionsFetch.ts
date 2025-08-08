@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminRole, Permission } from '@/types/permissions';
@@ -18,39 +17,46 @@ export function usePermissionsFetch(): UsePermissionsFetchReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchPermissions = useCallback(async (role: AdminRole | null): Promise<Permission[]> => {
-    if (!role) {
-      return [];
-    }
+  const fetchPermissions = useCallback(
+    async (role: AdminRole | null): Promise<Permission[]> => {
+      if (!role) {
+        return [];
+      }
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      const { data: permissionsData, error: permissionsError } = await supabase
-        .from('permissions')
-        .select('permission_key')
-        .eq('role', role);
+        const { data: permissionsData, error: permissionsError } =
+          await supabase
+            .from('permissions')
+            .select('permission_key')
+            .eq('role', role);
 
-      if (permissionsError) throw permissionsError;
+        if (permissionsError) throw permissionsError;
 
-      const formattedPermissions = permissionsData.map(p => p.permission_key as Permission);
-      setPermissions(formattedPermissions);
-      return formattedPermissions;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to fetch permissions');
-      console.error("Permissions fetch error:", error);
-      setError(error);
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        const formattedPermissions = permissionsData.map(
+          (p) => p.permission_key as Permission
+        );
+        setPermissions(formattedPermissions);
+        return formattedPermissions;
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error('Failed to fetch permissions');
+        console.error('Permissions fetch error:', error);
+        setError(error);
+        return [];
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   return {
     permissions,
     loading,
     error,
-    fetchPermissions
+    fetchPermissions,
   };
 }

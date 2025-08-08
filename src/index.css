@@ -19,13 +19,13 @@
     --destructive-foreground: 210 40% 98%;
     --ring: 215 20.2% 65.1%;
     --radius: 0.5rem;
-    
+
     /* Braden Group brand colors (consolidated naming) */
     --primary: 350 66% 40%; /* #ab233a in HSL */
     --primary-foreground: 210 40% 98%;
     --secondary: 45 48% 61%; /* #cbb26a in HSL */
     --secondary-foreground: 222.2 47.4% 11.2%;
-    
+
     /* Extended brand color palette */
     --color-primary: #ab233a;
     --color-primary-dark: #811a2c;
@@ -37,12 +37,12 @@
     --color-sky: #3498db;
     --color-green: #27ae60;
     --color-purple: #9b59b6;
-    
+
     /* Typography */
     --font-heading: 'Montserrat', sans-serif;
     --font-body: 'Inter', sans-serif;
     --base-font-size: 16px;
-    
+
     /* Spacing and animation */
     --base-spacing-unit: 4px;
     --spacing-scale: 1.5;
@@ -69,7 +69,7 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --ring: 216 34% 17%;
-    
+
     /* Dark mode brand color adjustments */
     --color-primary: #d8364f;
     --color-primary-dark: #ab233a;
@@ -83,7 +83,7 @@
   * {
     @apply border-border;
   }
-  
+
   html {
     font-family: var(--font-body);
     font-size: var(--base-font-size);
@@ -92,17 +92,27 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading font-semibold;
     font-family: var(--font-heading);
     font-weight: 600;
   }
 
   /* Force font-family on form elements since they don't inherit properly in some browsers */
-  button, input, select, textarea {
+  button,
+  input,
+  select,
+  textarea {
     font-family: inherit;
   }
 }
@@ -179,7 +189,9 @@
 
 /* Brand utilities */
 .brand-shadow {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .brand-transition {

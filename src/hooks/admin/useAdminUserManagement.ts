@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -22,16 +21,19 @@ export const useAdminUserManagement = (): UseAdminUserManagementReturn => {
       setLoading(true);
       setError(null);
       console.log(`Adding admin user: ${email}`);
-      
+
       // Call the edge function to add the admin user
-      const { data, error } = await supabase.functions.invoke('add-admin-user', {
-        body: { email }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        'add-admin-user',
+        {
+          body: { email },
+        }
+      );
 
       if (error) {
         console.error('Edge function error:', error);
         toast.error('Add Admin Failed', {
-          description: error.message
+          description: error.message,
         });
         setError(error.message);
         return false;
@@ -40,29 +42,30 @@ export const useAdminUserManagement = (): UseAdminUserManagementReturn => {
       if (data.error) {
         console.error('Admin user creation error:', data.error);
         toast.error('Add Admin Failed', {
-          description: data.error
+          description: data.error,
         });
         setError(data.error);
         return false;
       }
 
       // Success scenario
-      if (data.message === "User is already an admin") {
+      if (data.message === 'User is already an admin') {
         toast.info('User Already Admin', {
-          description: 'This email is already registered as an admin user'
+          description: 'This email is already registered as an admin user',
         });
       } else {
         toast.success('Admin Added', {
-          description: `${email} has been granted admin access`
+          description: `${email} has been granted admin access`,
         });
       }
 
       return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to add admin';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to add admin';
       console.error('Add admin exception:', errorMessage);
       toast.error('Add Admin Failed', {
-        description: errorMessage
+        description: errorMessage,
       });
       setError(errorMessage);
       return false;
@@ -75,24 +78,25 @@ export const useAdminUserManagement = (): UseAdminUserManagementReturn => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Call a function to set up database permissions
       const { data, error } = await supabase.rpc('admin_bypass');
-      
+
       if (error) {
         throw error;
       }
 
       toast.success('Permissions Configured', {
-        description: 'Database access has been properly set up'
+        description: 'Database access has been properly set up',
       });
 
       return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Permission configuration failed';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Permission configuration failed';
       console.error('Permission configuration error:', errorMessage);
       toast.error('Permissions Error', {
-        description: errorMessage
+        description: errorMessage,
       });
       setError(errorMessage);
       return false;
@@ -105,6 +109,6 @@ export const useAdminUserManagement = (): UseAdminUserManagementReturn => {
     addAdminUser,
     configurePermissions,
     loading,
-    error
+    error,
   };
 };

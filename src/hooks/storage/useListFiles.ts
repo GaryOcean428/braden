@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -22,28 +21,35 @@ export const useListFiles = (bucketName: StorageBucketName) => {
     try {
       setLoading(true);
       setError(null);
-      
-      console.log(`Listing files from bucket: ${bucketName}${path ? ` at path: ${path}` : ''}`);
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      
+
+      console.log(
+        `Listing files from bucket: ${bucketName}${path ? ` at path: ${path}` : ''}`
+      );
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (session) {
         console.log('Listing with authenticated user:', session.user.email);
       } else {
         console.log('No authenticated session - skipping file listing');
         return [];
       }
-      
+
       // Check if user has admin permissions before attempting storage operations
       const isDeveloperAdmin = session.user.email === 'braden.lang77@gmail.com';
-      
+
       if (!isDeveloperAdmin) {
         // Try the RPC function to check admin status
         try {
-          const { data: isDeveloperAdminRPC, error: rpcError } = await supabase.rpc('is_developer_admin');
-          
+          const { data: isDeveloperAdminRPC, error: rpcError } =
+            await supabase.rpc('is_developer_admin');
+
           if (rpcError || !isDeveloperAdminRPC) {
-            console.log('User does not have admin permissions, skipping file listing');
+            console.log(
+              'User does not have admin permissions, skipping file listing'
+            );
             return [];
           }
         } catch (rpcErr) {
@@ -51,80 +57,88 @@ export const useListFiles = (bucketName: StorageBucketName) => {
           return [];
         }
       }
-      
+
       const { data, error: listError } = await supabase.storage
         .from(bucketName)
         .list(path || '', {
           limit: 100,
           offset: 0,
-          sortBy: { column: 'created_at', order: 'desc' }
+          sortBy: { column: 'created_at', order: 'desc' },
         });
-      
+
       if (listError) {
         console.error('List error details:', listError);
         console.error('List error message:', listError.message);
-        
+
         // Provide more specific error messages based on common storage error patterns
-        if (listError.message.includes('row level security') || 
-            listError.message.includes('permission denied')) {
+        if (
+          listError.message.includes('row level security') ||
+          listError.message.includes('permission denied')
+        ) {
           console.error('Permission denied when listing files');
           // Don't show toast errors for permission issues since they're expected for non-admin users
         } else if (listError.message.includes('bucket')) {
           console.error('Bucket not found or inaccessible');
           // Don't show toast errors for bucket issues since they're expected when buckets don't exist
         } else {
-          toast.error("Failed to list files", {
-            description: listError.message || "Unknown error"
+          toast.error('Failed to list files', {
+            description: listError.message || 'Unknown error',
           });
         }
         throw listError;
       }
-      
+
       if (!data) {
         console.log('No files found in bucket');
         return [];
       }
-      
+
       console.log(`Found ${data.length} items in bucket ${bucketName}`);
-      
+
       // Filter out folders, only include files
-      const files = data.filter(item => !item.id.endsWith('/') && item.name);
+      const files = data.filter((item) => !item.id.endsWith('/') && item.name);
       console.log(`Filtered to ${files.length} actual files`);
-      
+
       // Map files to include public URLs and extract size and type from metadata
-      const filesWithUrls: FileWithUrl[] = files.map(file => {
+      const filesWithUrls: FileWithUrl[] = files.map((file) => {
         const filePath = path ? `${path}/${file.name}` : file.name;
         const publicUrl = getPublicUrl(bucketName, filePath);
-        
+
         // Extract size and type from metadata, or use default values if not available
         const size = file.metadata?.size || 0;
         const type = file.metadata?.mimetype || 'unknown';
-        
+
         console.log(`Processed file: ${file.name}, URL: ${publicUrl}`);
-        
+
         return {
           id: file.id,
           name: file.name,
           publicUrl,
           size,
           type,
-          created_at: file.created_at || new Date().toISOString()
+          created_at: file.created_at || new Date().toISOString(),
         };
       });
-      
-      console.log(`Successfully processed ${filesWithUrls.length} files with URLs`);
+
+      console.log(
+        `Successfully processed ${filesWithUrls.length} files with URLs`
+      );
       return filesWithUrls;
     } catch (err) {
       console.error('List error:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error listing files'));
-      
+      setError(
+        err instanceof Error ? err : new Error('Unknown error listing files')
+      );
+
       // Only show error toast for unexpected errors, not permission/bucket errors
-      if (err instanceof Error &&
-          !err.message.includes('row level security') &&
-          !err.message.includes('permission denied') &&
-          !err.message.includes('bucket')) {
-        toast.error("Failed to list files", {
-          description: err.message
+      if (
+        err instanceof Error &&
+        !err.message.includes('row level security') &&
+        !err.message.includes('permission denied') &&
+        !err.message.includes('bucket')
+      ) {
+        toast.error('Failed to list files', {
+          description: err.message,
         });
       }
       return [];
@@ -136,6 +150,6 @@ export const useListFiles = (bucketName: StorageBucketName) => {
   return {
     listFiles,
     loading,
-    error
+    error,
   };
 };

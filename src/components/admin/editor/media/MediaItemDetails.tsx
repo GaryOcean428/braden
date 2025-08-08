@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { formatDistance } from 'date-fns';
 import { Trash2, Calendar, FileType, HardDrive } from 'lucide-react';
@@ -11,18 +10,21 @@ interface MediaItemDetailsProps {
   onDelete: (item: MediaItem) => void;
 }
 
-export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({ item, onDelete }) => {
+export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({
+  item,
+  onDelete,
+}) => {
   return (
     <div className="border rounded-lg p-4 mt-4">
       <h3 className="text-lg font-medium mb-4">Media Details</h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div className="border rounded-md p-4 bg-gray-50 mb-4 flex justify-center">
             {item.type.startsWith('image/') ? (
-              <img 
-                src={item.publicUrl} 
-                alt={item.name} 
+              <img
+                src={item.publicUrl}
+                alt={item.name}
                 className="max-h-48 object-contain"
               />
             ) : (
@@ -32,9 +34,9 @@ export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({ item, onDele
               </div>
             )}
           </div>
-          
+
           <div className="flex justify-end">
-            <Button 
+            <Button
               variant="destructive"
               onClick={() => onDelete(item)}
               className="flex items-center gap-1"
@@ -44,15 +46,19 @@ export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({ item, onDele
             </Button>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div>
-            <h4 className="text-sm font-medium mb-1 text-gray-700">File Name</h4>
+            <h4 className="text-sm font-medium mb-1 text-gray-700">
+              File Name
+            </h4>
             <p className="text-sm break-all">{item.name}</p>
           </div>
-          
+
           <div>
-            <h4 className="text-sm font-medium mb-1 text-gray-700">Direct URL</h4>
+            <h4 className="text-sm font-medium mb-1 text-gray-700">
+              Direct URL
+            </h4>
             <div className="flex items-center">
               <input
                 type="text"
@@ -73,7 +79,7 @@ export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({ item, onDele
               </Button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium mb-1 flex items-center gap-1 text-gray-700">
@@ -82,7 +88,7 @@ export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({ item, onDele
               </h4>
               <p className="text-sm">{item.type}</p>
             </div>
-            
+
             <div>
               <h4 className="text-sm font-medium mb-1 flex items-center gap-1 text-gray-700">
                 <HardDrive className="h-4 w-4" />
@@ -90,14 +96,16 @@ export const MediaItemDetails: React.FC<MediaItemDetailsProps> = ({ item, onDele
               </h4>
               <p className="text-sm">{formatFileSize(item.size)}</p>
             </div>
-            
+
             <div>
               <h4 className="text-sm font-medium mb-1 flex items-center gap-1 text-gray-700">
                 <Calendar className="h-4 w-4" />
                 Uploaded
               </h4>
               <p className="text-sm">
-                {formatDistance(new Date(item.created_at), new Date(), { addSuffix: true })}
+                {formatDistance(new Date(item.created_at), new Date(), {
+                  addSuffix: true,
+                })}
               </p>
             </div>
           </div>

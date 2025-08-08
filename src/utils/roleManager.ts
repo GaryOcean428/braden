@@ -13,7 +13,8 @@ export interface UserRole {
  */
 export class RoleManager {
   private static readonly DEVELOPER_EMAIL = 'braden.lang77@gmail.com';
-  private static readonly DEVELOPER_USER_ID = '9600a18c-c8e3-44ef-83ad-99ede9268e77';
+  private static readonly DEVELOPER_USER_ID =
+    '9600a18c-c8e3-44ef-83ad-99ede9268e77';
 
   /**
    * Check if the current user has admin/developer privileges
@@ -21,13 +22,16 @@ export class RoleManager {
    */
   static async checkUserRole(): Promise<UserRole> {
     try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
       if (sessionError) {
         console.error('Session error:', sessionError);
         return { isAdmin: false, isDeveloper: false, role: null };
       }
-      
+
       if (!session) {
         return { isAdmin: false, isDeveloper: false, role: null };
       }
@@ -41,7 +45,7 @@ export class RoleManager {
         return { isAdmin: true, isDeveloper: true, role: 'admin' };
       }
 
-      // Secondary check: Developer user ID 
+      // Secondary check: Developer user ID
       if (userId === this.DEVELOPER_USER_ID) {
         console.log('Developer access confirmed by user ID');
         return { isAdmin: true, isDeveloper: true, role: 'admin' };
@@ -58,7 +62,6 @@ export class RoleManager {
 
       // Fallback RPC function checks
       return await this.checkRPCFunctions(userId);
-
     } catch (error) {
       console.error('Error checking user role:', error);
       return { isAdmin: false, isDeveloper: false, role: null };
@@ -68,12 +71,24 @@ export class RoleManager {
   /**
    * Check role via database table
    */
-  private static async checkDatabaseRole(userId: string): Promise<AdminRole | null> {
+  private static async checkDatabaseRole(
+    userId: string
+  ): Promise<AdminRole | null> {
     try {
+      // Get current user email
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      
+      if (!session?.user?.email) {
+        return null;
+      }
+
+      // Check if email exists in admin_users table
       const { data: adminUser, error } = await supabase
         .from('admin_users')
-        .select('role')
-        .eq('user_id', userId)
+        .select('id')
+        .eq('email', session.user.email)
         .maybeSingle();
 
       if (error) {
@@ -81,7 +96,8 @@ export class RoleManager {
         return null;
       }
 
-      return adminUser?.role as AdminRole || null;
+      // If found in admin_users, they're an admin/developer
+      return adminUser ? 'admin' : null;
     } catch (error) {
       console.warn('Database role check failed:', error);
       return null;
@@ -94,29 +110,31 @@ export class RoleManager {
   private static async checkRPCFunctions(userId: string): Promise<UserRole> {
     try {
       // Check developer admin status
-      const { data: isDeveloperAdmin, error: devError } = await supabase.rpc('is_developer_admin');
-      
+      const { data: isDeveloperAdmin, error: devError } =
+        await supabase.rpc('is_developer_admin');
+
       if (!devError && isDeveloperAdmin === true) {
         console.log('Developer access confirmed by RPC function');
         return { isAdmin: true, isDeveloper: true, role: 'admin' };
       }
 
       // Check admin_bypass function
-      const { data: isBypassAllowed, error: bypassError } = await supabase.rpc('admin_bypass');
-      
+      const { data: isBypassAllowed, error: bypassError } =
+        await supabase.rpc('admin_bypass');
+
       if (!bypassError && isBypassAllowed === true) {
         console.log('Admin access confirmed by bypass function');
         return { isAdmin: true, isDeveloper: true, role: 'admin' };
       }
 
       // Check general admin access
-      const { data: hasAdminAccess, error: adminError } = await supabase.rpc('has_admin_access');
-      
+      const { data: hasAdminAccess, error: adminError } =
+        await supabase.rpc('has_admin_access');
+
       if (!adminError && hasAdminAccess === true) {
         console.log('Admin access confirmed by admin function');
         return { isAdmin: true, isDeveloper: false, role: 'admin' };
       }
-
     } catch (error) {
       console.warn('RPC function checks failed:', error);
     }

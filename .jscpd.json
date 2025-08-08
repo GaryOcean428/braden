@@ -1,0 +1,15 @@
+{
+  "threshold": 10,
+  "minLines": 10,
+  "minTokens": 50,
+  "ignore": [
+    "node_modules/**",
+    "dist/**",
+    "coverage/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__tests__/**"
+  ],
+  "reporters": ["console", "html"],
+  "output": "./reports/duplication"
+}

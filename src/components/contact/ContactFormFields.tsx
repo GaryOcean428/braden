@@ -1,9 +1,21 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
-import { ContactFormValues } from "./types";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { UseFormReturn } from 'react-hook-form';
+import { ContactFormValues } from './types';
 
 interface ContactFormFieldsProps {
   form: UseFormReturn<ContactFormValues>;
@@ -11,7 +23,7 @@ interface ContactFormFieldsProps {
 
 export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
   if (!form || !form.control) {
-    console.error("Form or form.control is undefined in ContactFormFields");
+    console.error('Form or form.control is undefined in ContactFormFields');
     return <div className="text-red-500">Form configuration error</div>;
   }
 
@@ -22,9 +34,15 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-braden-navy font-heading">Name</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">
+              Name
+            </FormLabel>
             <FormControl>
-              <Input placeholder="Your name" {...field} className="bg-braden-light-gold font-body" />
+              <Input
+                placeholder="Your name"
+                {...field}
+                className="bg-braden-light-gold font-body"
+              />
             </FormControl>
             <FormMessage className="font-body" />
           </FormItem>
@@ -35,9 +53,16 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-braden-navy font-heading">Email</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">
+              Email
+            </FormLabel>
             <FormControl>
-              <Input placeholder="your.email@example.com" type="email" {...field} className="bg-braden-light-gold font-body" />
+              <Input
+                placeholder="your.email@example.com"
+                type="email"
+                {...field}
+                className="bg-braden-light-gold font-body"
+              />
             </FormControl>
             <FormMessage className="font-body" />
           </FormItem>
@@ -48,9 +73,16 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-braden-navy font-heading">Phone</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">
+              Phone
+            </FormLabel>
             <FormControl>
-              <Input placeholder="Your phone number" type="tel" {...field} className="bg-braden-light-gold font-body" />
+              <Input
+                placeholder="Your phone number"
+                type="tel"
+                {...field}
+                className="bg-braden-light-gold font-body"
+              />
             </FormControl>
             <FormMessage className="font-body" />
           </FormItem>
@@ -61,9 +93,15 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="company"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-braden-navy font-heading">Company</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">
+              Company
+            </FormLabel>
             <FormControl>
-              <Input placeholder="Your company name" {...field} className="bg-braden-light-gold font-body" />
+              <Input
+                placeholder="Your company name"
+                {...field}
+                className="bg-braden-light-gold font-body"
+              />
             </FormControl>
             <FormMessage className="font-body" />
           </FormItem>
@@ -74,7 +112,9 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="serviceType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-braden-navy font-heading">Service Interest</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">
+              Service Interest
+            </FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger className="bg-braden-light-gold font-body">
@@ -100,9 +140,11 @@ export const ContactFormFields = ({ form }: ContactFormFieldsProps) => {
         name="message"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-braden-navy font-heading">Message</FormLabel>
+            <FormLabel className="text-braden-navy font-heading">
+              Message
+            </FormLabel>
             <FormControl>
-              <Textarea 
+              <Textarea
                 placeholder="Tell us about your specific needs and requirements"
                 className="min-h-[120px] bg-braden-light-gold font-body"
                 {...field}

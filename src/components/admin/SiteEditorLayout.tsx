@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Palette, Layout, Layers, Image, File, FileText, Image as ImageIcon } from 'lucide-react';
@@ -16,7 +15,7 @@ import { HeroTab } from '@/components/admin/editor/tabs/HeroTab';
 interface SiteEditorLayoutProps {
   isLoading: boolean;
   isAdmin: boolean;
-  activeTab: string; 
+  activeTab: string;
   setActiveTab: (tab: string) => void;
   hasUnsavedChanges: boolean;
   handlePublish: () => void;
@@ -32,7 +31,7 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
   hasUnsavedChanges,
   handlePublish,
   handlePreview,
-  handleChange
+  handleChange,
 }) => {
   if (isLoading) {
     return <SiteEditorLoading />;
@@ -43,7 +42,9 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
       <div className="container mx-auto py-8 px-4">
         <div className="card">
           <div className="card-content pt-6 text-center">
-            <p className="text-lg text-gray-500">Access denied. You don't have permission to use the site editor.</p>
+            <p className="text-lg text-gray-500">
+              Access denied. You don't have permission to use the site editor.
+            </p>
           </div>
         </div>
       </div>
@@ -52,13 +53,17 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <SiteEditorHeader 
+      <SiteEditorHeader
         hasUnsavedChanges={hasUnsavedChanges}
         onPreview={handlePreview}
         onPublish={handlePublish}
       />
 
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        defaultValue={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="bg-gray-100 border">
           <TabsTrigger value="theme" className="flex items-center gap-1">
             <Palette className="h-4 w-4" />
@@ -93,7 +98,7 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
             Hero
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="theme">
           <ThemeTab onChange={handleChange} />
         </TabsContent>

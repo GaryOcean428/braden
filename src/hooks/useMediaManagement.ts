@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface MediaFile {
   id: string;
@@ -33,87 +33,91 @@ export const useMediaManagement = (bucketName: string = 'media') => {
     } catch (err: any) {
       console.error('Error loading files:', err);
       setError('Failed to load files. Please try again.');
-      toast.error("Error loading files", {
-        description: err.message
+      toast.error('Error loading files', {
+        description: err.message,
       });
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const uploadFile = useCallback(async (file: File) => {
-    try {
-      setUploading(true);
-      setError(null);
+  const uploadFile = useCallback(
+    async (file: File) => {
+      try {
+        setUploading(true);
+        setError(null);
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
 
-      // Upload file to storage
-      const { error: uploadError } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file);
+        // Upload file to storage
+        const { error: uploadError } = await supabase.storage
+          .from(bucketName)
+          .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+        if (uploadError) throw uploadError;
 
-      // Create database record
-      const { error: dbError } = await supabase
-        .from('media')
-        .insert({
+        // Create database record
+        const { error: dbError } = await supabase.from('media').insert({
           title: file.name,
           file_path: filePath,
-          file_type: file.type
+          file_type: file.type,
         });
 
-      if (dbError) throw dbError;
+        if (dbError) throw dbError;
 
-      toast.success('File uploaded successfully');
-      await loadFiles();
-      return true;
-    } catch (err: any) {
-      console.error('Error uploading file:', err);
-      setError('Failed to upload file. Please try again.');
-      toast.error("Upload failed", {
-        description: err.message
-      });
-      return false;
-    } finally {
-      setUploading(false);
-    }
-  }, [bucketName, loadFiles]);
+        toast.success('File uploaded successfully');
+        await loadFiles();
+        return true;
+      } catch (err: any) {
+        console.error('Error uploading file:', err);
+        setError('Failed to upload file. Please try again.');
+        toast.error('Upload failed', {
+          description: err.message,
+        });
+        return false;
+      } finally {
+        setUploading(false);
+      }
+    },
+    [bucketName, loadFiles]
+  );
 
-  const deleteFile = useCallback(async (id: string, filePath: string) => {
-    try {
-      setError(null);
+  const deleteFile = useCallback(
+    async (id: string, filePath: string) => {
+      try {
+        setError(null);
 
-      // Delete from storage
-      const { error: storageError } = await supabase.storage
-        .from(bucketName)
-        .remove([filePath]);
+        // Delete from storage
+        const { error: storageError } = await supabase.storage
+          .from(bucketName)
+          .remove([filePath]);
 
-      if (storageError) throw storageError;
+        if (storageError) throw storageError;
 
-      // Delete database record
-      const { error: dbError } = await supabase
-        .from('media')
-        .delete()
-        .eq('id', id);
+        // Delete database record
+        const { error: dbError } = await supabase
+          .from('media')
+          .delete()
+          .eq('id', id);
 
-      if (dbError) throw dbError;
+        if (dbError) throw dbError;
 
-      toast.success('File deleted successfully');
-      await loadFiles();
-      return true;
-    } catch (err: any) {
-      console.error('Error deleting file:', err);
-      setError('Failed to delete file. Please try again.');
-      toast.error("Delete failed", {
-        description: err.message
-      });
-      return false;
-    }
-  }, [bucketName, loadFiles]);
+        toast.success('File deleted successfully');
+        await loadFiles();
+        return true;
+      } catch (err: any) {
+        console.error('Error deleting file:', err);
+        setError('Failed to delete file. Please try again.');
+        toast.error('Delete failed', {
+          description: err.message,
+        });
+        return false;
+      }
+    },
+    [bucketName, loadFiles]
+  );
 
   return {
     files,
@@ -122,6 +126,6 @@ export const useMediaManagement = (bucketName: string = 'media') => {
     error,
     loadFiles,
     uploadFile,
-    deleteFile
+    deleteFile,
   };
 };

@@ -23,4 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+
+# QA Reports and Coverage
+reports/
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+
 .env

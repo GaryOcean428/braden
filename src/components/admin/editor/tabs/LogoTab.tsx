@@ -1,5 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Image } from 'lucide-react';
 import { LogoManager } from '../media/logo/LogoManager';
 
@@ -21,18 +27,21 @@ export const LogoTab: React.FC<LogoTabProps> = ({ onChange }) => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="mb-4 text-sm text-[#2c3e50]">
-          <p>Upload and manage your website branding elements. Logos should be high resolution images with a transparent background.</p>
+          <p>
+            Upload and manage your website branding elements. Logos should be
+            high resolution images with a transparent background.
+          </p>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <LogoManager 
+          <LogoManager
             onLogoUpdate={onChange}
             bucketName="logos"
             title="Logo Manager"
             description="Update your site logo which appears in the header"
           />
-          
-          <LogoManager 
+
+          <LogoManager
             onLogoUpdate={onChange}
             bucketName="favicons"
             title="Favicon Manager"

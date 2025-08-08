@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,16 +19,18 @@ export function useSiteEditor() {
     try {
       // Only initialize storage buckets when explicitly requested and user has admin permissions
       if (!isAdmin) {
-        console.log('Storage bucket initialization skipped - user is not admin');
+        console.log(
+          'Storage bucket initialization skipped - user is not admin'
+        );
         return;
       }
-      
+
       const result = await initializeStorageBuckets();
       console.log('Storage buckets initialized:', result);
-      
+
       if (!result.success) {
-        toast.warning("Storage setup issue", {
-          description: "Some storage buckets could not be initialized."
+        toast.warning('Storage setup issue', {
+          description: 'Some storage buckets could not be initialized.',
         });
       }
     } catch (error) {
@@ -41,42 +42,45 @@ export function useSiteEditor() {
   const checkAdminStatus = async () => {
     try {
       setIsLoading(true);
-      
-      const { data: { session }, error: authError } = await supabase.auth.getSession();
-      
+
+      const {
+        data: { session },
+        error: authError,
+      } = await supabase.auth.getSession();
+
       if (authError || !session) {
-        toast.error("Authentication Required", {
-          description: "Please log in to access the site editor"
+        toast.error('Authentication Required', {
+          description: 'Please log in to access the site editor',
         });
         navigate('/admin/auth');
         return;
       }
-      
+
       // Use the proper RPC function to check admin status
-      const { data: isAdminUser, error: adminError } = await supabase.rpc('is_developer_admin');
-      
+      const { data: isAdminUser, error: adminError } =
+        await supabase.rpc('is_developer_admin');
+
       if (adminError) {
-        console.error("Admin check error:", adminError);
-        toast.error("Permission Check Failed", {
-          description: "Could not verify your admin status"
+        console.error('Admin check error:', adminError);
+        toast.error('Permission Check Failed', {
+          description: 'Could not verify your admin status',
         });
         navigate('/admin/auth');
         return;
       }
 
       setIsAdmin(isAdminUser === true);
-      
+
       if (!isAdminUser) {
-        toast.error("Access Denied", {
-          description: "You don't have permission to access the site editor"
+        toast.error('Access Denied', {
+          description: "You don't have permission to access the site editor",
         });
         navigate('/admin/dashboard');
       }
-      
     } catch (error) {
-      console.error("Auth check error:", error);
-      toast.error("Authentication Error", {
-        description: "Failed to verify your permissions"
+      console.error('Auth check error:', error);
+      toast.error('Authentication Error', {
+        description: 'Failed to verify your permissions',
       });
       navigate('/admin/auth');
     } finally {
@@ -87,17 +91,18 @@ export function useSiteEditor() {
   const handlePublish = async () => {
     try {
       // Check admin status again before publishing
-      const { data: isAdminUser, error: adminError } = await supabase.rpc('is_developer_admin');
-      
+      const { data: isAdminUser, error: adminError } =
+        await supabase.rpc('is_developer_admin');
+
       if (adminError || !isAdminUser) {
-        throw new Error("Permission denied");
+        throw new Error('Permission denied');
       }
 
       // Your existing publish logic here
       setHasUnsavedChanges(false);
       return true;
     } catch (error) {
-      console.error("Publish error:", error);
+      console.error('Publish error:', error);
       throw error;
     }
   };
@@ -119,6 +124,7 @@ export function useSiteEditor() {
     handlePublish,
     handlePreview,
     handleChange,
+    initBuckets,
     // expose the storage initialization helper so the site editor can
     // explicitly trigger bucket creation when needed. previously this
     // hook returned an undefined "initBuckets" property which caused

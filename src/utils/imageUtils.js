@@ -10,14 +10,14 @@ export function ensureHeroImage() {
     // Log the current directory and files for debugging
     console.log('Current directory:', process.cwd());
     console.log('Public directory files:', fs.readdirSync('./public'));
-    
+
     // Make sure the hero image exists in the public directory
     const heroImagePath = path.join('./public', 'hero-image.jpg');
     if (!fs.existsSync(heroImagePath)) {
       console.error('Hero image not found at:', heroImagePath);
       return false;
     }
-    
+
     console.log('Hero image found at:', heroImagePath);
     return true;
   } catch (error) {
@@ -32,7 +32,7 @@ export function getHeroImageUrl() {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}/hero-image.jpg`;
   }
-  
+
   // For local development or other environments, use the relative path
   return '/hero-image.jpg';
 }

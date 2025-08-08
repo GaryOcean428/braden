@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -95,25 +94,26 @@ export const PagesTab: React.FC<PagesTabProps> = ({ onChange }) => {
   return (
     <div className="space-y-4">
       <div className="flex flex-col space-y-2">
-        <Input 
-          placeholder="Page Title" 
-          value={title} 
-          onChange={(e) => setTitle(e.target.value)} 
+        <Input
+          placeholder="Page Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
-        <Input 
-          placeholder="Page Slug" 
-          value={slug} 
-          onChange={(e) => setSlug(e.target.value)} 
+        <Input
+          placeholder="Page Slug"
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
         />
-        <Textarea 
-          placeholder="Page Content" 
-          value={content} 
-          onChange={(e) => setContent(e.target.value)} 
+        <Textarea
+          placeholder="Page Content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
         <Button onClick={handleSave}>
           {editingPageId ? 'Update Page' : 'Add Page'}
         </Button>
       </div>
+
       <ContentPagesTable 
         pages={pages} 
         onTogglePublish={handleTogglePublish} 

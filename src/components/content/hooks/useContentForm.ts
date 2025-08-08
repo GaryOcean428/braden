@@ -1,10 +1,12 @@
-
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { contentFormSchema, ContentFormValues } from "../schema/contentFormSchema";
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  contentFormSchema,
+  ContentFormValues,
+} from '../schema/contentFormSchema';
 
 interface UseContentFormProps {
   contentId?: string;
@@ -20,12 +22,12 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
   const form = useForm<ContentFormValues>({
     resolver: zodResolver(contentFormSchema),
     defaultValues: {
-      title: "",
-      slug: "",
-      meta_description: "",
-      content: "",
+      title: '',
+      slug: '',
+      meta_description: '',
+      content: '',
       is_published: false,
-      additional_field: "", 
+      additional_field: '',
     },
   });
 
@@ -41,11 +43,11 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
     try {
       setInitialLoading(true);
       setLoadError(null);
-      
+
       const { data, error } = await supabase
-        .from("content_pages")
-        .select("*")
-        .eq("id", id)
+        .from('content_pages')
+        .select('*')
+        .eq('id', id)
         .single();
 
       if (error) throw error;
@@ -54,19 +56,22 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
         form.reset({
           title: data.title,
           slug: data.slug,
-          meta_description: data.meta_description || "",
-          content: typeof data.content === 'string' ? data.content : JSON.stringify(data.content),
+          meta_description: data.meta_description || '',
+          content:
+            typeof data.content === 'string'
+              ? data.content
+              : JSON.stringify(data.content),
           is_published: data.is_published,
-          additional_field: data.additional_field || "", // Now properly using the additional_field from DB
+          additional_field: data.additional_field || '', // Now properly using the additional_field from DB
         });
       }
     } catch (error) {
-      console.error("Error loading content page:", error);
-      setLoadError("Failed to load content page");
+      console.error('Error loading content page:', error);
+      setLoadError('Failed to load content page');
       toast({
-        title: "Error",
-        description: "Failed to load content page",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load content page',
+        variant: 'destructive',
       });
     } finally {
       setInitialLoading(false);
@@ -99,30 +104,30 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
       if (contentId) {
         // Update existing page
         result = await supabase
-          .from("content_pages")
+          .from('content_pages')
           .update(pageData)
-          .eq("id", contentId);
+          .eq('id', contentId);
       } else {
         // Create new page
-        result = await supabase
-          .from("content_pages")
-          .insert([pageData]);
+        result = await supabase.from('content_pages').insert([pageData]);
       }
 
       if (result.error) throw result.error;
 
       toast({
-        title: "Success",
-        description: contentId ? "Page updated successfully" : "Page created successfully",
+        title: 'Success',
+        description: contentId
+          ? 'Page updated successfully'
+          : 'Page created successfully',
       });
 
       if (onSuccess) onSuccess();
     } catch (error) {
-      console.error("Error saving content page:", error);
+      console.error('Error saving content page:', error);
       toast({
-        title: "Error",
-        description: "Failed to save content page",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to save content page',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -135,6 +140,6 @@ export function useContentForm({ contentId, onSuccess }: UseContentFormProps) {
     initialLoading,
     loadError,
     onSubmit,
-    loadContentPage
+    loadContentPage,
   };
 }

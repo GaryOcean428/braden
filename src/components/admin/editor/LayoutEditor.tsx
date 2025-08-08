@@ -1,7 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { TemplateSelector, LayoutTemplate } from './components/TemplateSelector';
+import {
+  TemplateSelector,
+  LayoutTemplate,
+} from './components/TemplateSelector';
 import { TemplatePreview } from './components/TemplatePreview';
 import { LayoutInstructions } from './components/LayoutInstructions';
 import { useLayoutData } from './hooks/useLayoutData';
@@ -16,25 +19,27 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
     {
       id: 'standard',
       name: 'Standard',
-      description: 'Default page layout with header, content sections, and footer',
+      description:
+        'Default page layout with header, content sections, and footer',
       sections: [
         { id: 'header', name: 'Header', components: [] },
         { id: 'main', name: 'Main Content', components: [] },
-        { id: 'footer', name: 'Footer', components: [] }
-      ]
+        { id: 'footer', name: 'Footer', components: [] },
+      ],
     },
     {
       id: 'landing',
       name: 'Landing Page',
-      description: 'Optimized for landing pages with hero, features, and CTA sections',
+      description:
+        'Optimized for landing pages with hero, features, and CTA sections',
       isNew: true,
       sections: [
         { id: 'hero', name: 'Hero Section', components: [] },
         { id: 'features', name: 'Features', components: [] },
         { id: 'testimonials', name: 'Testimonials', components: [] },
         { id: 'cta', name: 'Call to Action', components: [] },
-        { id: 'footer', name: 'Footer', components: [] }
-      ]
+        { id: 'footer', name: 'Footer', components: [] },
+      ],
     },
     {
       id: 'blog',
@@ -44,8 +49,8 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
         { id: 'header', name: 'Header', components: [] },
         { id: 'main', name: 'Content', components: [] },
         { id: 'sidebar', name: 'Sidebar', components: [] },
-        { id: 'footer', name: 'Footer', components: [] }
-      ]
+        { id: 'footer', name: 'Footer', components: [] },
+      ],
     },
     {
       id: 'service',
@@ -57,9 +62,9 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
         { id: 'service-details', name: 'Service Details', components: [] },
         { id: 'related-services', name: 'Related Services', components: [] },
         { id: 'contact', name: 'Contact Section', components: [] },
-        { id: 'footer', name: 'Footer', components: [] }
-      ]
-    }
+        { id: 'footer', name: 'Footer', components: [] },
+      ],
+    },
   ];
 
   const {
@@ -67,7 +72,7 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
     layoutData,
     isLoading,
     handleTemplateChange,
-    handleSaveLayout
+    handleSaveLayout,
   } = useLayoutData(onChange);
 
   // Handle the save layout action
@@ -81,7 +86,8 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
   };
 
   // Get sections for the current template
-  const currentTemplateSections = templates.find(t => t.id === selectedTemplate)?.sections || [];
+  const currentTemplateSections =
+    templates.find((t) => t.id === selectedTemplate)?.sections || [];
 
   // Handle the preview layout action
   const onPreviewLayout = () => {
@@ -91,10 +97,10 @@ export const LayoutEditor: React.FC<LayoutEditorProps> = ({ onChange }) => {
 
   return (
     <div className="space-y-6">
-      <TemplateSelector 
-        selectedTemplate={selectedTemplate} 
-        templates={templates} 
-        onTemplateChange={(value) => handleTemplateChange(value, templates)} 
+      <TemplateSelector
+        selectedTemplate={selectedTemplate}
+        templates={templates}
+        onTemplateChange={(value) => handleTemplateChange(value, templates)}
       />
 
       {/* Template preview */}

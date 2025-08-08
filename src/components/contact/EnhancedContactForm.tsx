@@ -1,11 +1,17 @@
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,7 +22,9 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   phone: z.string().optional(),
   company: z.string().optional(),
-  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
+  message: z
+    .string()
+    .min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
 export default function EnhancedContactForm() {
@@ -45,7 +53,7 @@ export default function EnhancedContactForm() {
       if (attachment) {
         fileUrl = await uploadImage(attachment);
         if (!fileUrl) {
-          throw new Error("Failed to upload attachment");
+          throw new Error('Failed to upload attachment');
         }
         setAttachmentUrl(fileUrl);
       }
@@ -58,14 +66,14 @@ export default function EnhancedContactForm() {
           phone: values.phone || null,
           company: values.company || null,
           service_type: 'Contact Form',
-          attachment_url: fileUrl
-        }
+          attachment_url: fileUrl,
+        },
       ]);
 
       if (error) throw error;
 
       // Send success message
-      toast.success("Thank you for your message", {
+      toast.success('Thank you for your message', {
         description: "We'll get back to you as soon as possible.",
       });
 
@@ -75,8 +83,8 @@ export default function EnhancedContactForm() {
       setAttachmentUrl(null);
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error("Form submission failed", {
-        description: "Please try again or contact us directly.",
+      toast.error('Form submission failed', {
+        description: 'Please try again or contact us directly.',
       });
     } finally {
       setIsSubmitting(false);
@@ -99,9 +107,15 @@ export default function EnhancedContactForm() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-braden-navy font-montserrat">Name</FormLabel>
+                <FormLabel className="text-braden-navy font-montserrat">
+                  Name
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Your name" {...field} className="font-opensans" />
+                  <Input
+                    placeholder="Your name"
+                    {...field}
+                    className="font-opensans"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -113,9 +127,16 @@ export default function EnhancedContactForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-braden-navy font-montserrat">Email</FormLabel>
+                <FormLabel className="text-braden-navy font-montserrat">
+                  Email
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Your email" {...field} type="email" className="font-opensans" />
+                  <Input
+                    placeholder="Your email"
+                    {...field}
+                    type="email"
+                    className="font-opensans"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,9 +150,15 @@ export default function EnhancedContactForm() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-braden-navy font-montserrat">Phone (Optional)</FormLabel>
+                <FormLabel className="text-braden-navy font-montserrat">
+                  Phone (Optional)
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Your phone number" {...field} className="font-opensans" />
+                  <Input
+                    placeholder="Your phone number"
+                    {...field}
+                    className="font-opensans"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,9 +170,15 @@ export default function EnhancedContactForm() {
             name="company"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-braden-navy font-montserrat">Company (Optional)</FormLabel>
+                <FormLabel className="text-braden-navy font-montserrat">
+                  Company (Optional)
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Your company" {...field} className="font-opensans" />
+                  <Input
+                    placeholder="Your company"
+                    {...field}
+                    className="font-opensans"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -158,7 +191,9 @@ export default function EnhancedContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-braden-navy font-montserrat">Message</FormLabel>
+              <FormLabel className="text-braden-navy font-montserrat">
+                Message
+              </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="How can we help you?"
@@ -173,7 +208,9 @@ export default function EnhancedContactForm() {
         />
 
         <div className="space-y-2">
-          <FormLabel className="text-braden-navy font-montserrat">Attachment (Optional)</FormLabel>
+          <FormLabel className="text-braden-navy font-montserrat">
+            Attachment (Optional)
+          </FormLabel>
           <Input
             type="file"
             onChange={handleFileChange}
@@ -187,8 +224,8 @@ export default function EnhancedContactForm() {
           )}
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isSubmitting || uploading}
           className="w-full bg-braden-red hover:bg-braden-dark-red text-white font-montserrat transition-colors"
         >

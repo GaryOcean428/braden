@@ -1,9 +1,8 @@
-
-import { Link } from "react-router-dom";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ContentPage } from "@/integrations/supabase/database.types";
-import { Edit, Plus, FileText, ExternalLink } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ContentPage } from '@/integrations/supabase/database.types';
+import { Edit, Plus, FileText, ExternalLink } from 'lucide-react';
 
 interface PageListProps {
   pages: ContentPage[];
@@ -20,9 +19,12 @@ export const PageList = ({ pages }: PageListProps) => {
           </Link>
         </Button>
       </div>
-      
+
       {pages.map((page) => (
-        <Card key={page.id} className="border-gray-200 hover:border-gray-300 transition-colors">
+        <Card
+          key={page.id}
+          className="border-gray-200 hover:border-gray-300 transition-colors"
+        >
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <FileText className="h-4 w-4 text-gray-500" />
@@ -32,18 +34,33 @@ export const PageList = ({ pages }: PageListProps) => {
           <CardContent>
             <p className="text-sm text-gray-500 mb-1">Slug: /{page.slug}</p>
             <p className="text-sm text-gray-500 mb-3">
-              Status: <span className={page.is_published ? "text-green-600" : "text-amber-600"}>
+              Status:{' '}
+              <span
+                className={
+                  page.is_published ? 'text-green-600' : 'text-amber-600'
+                }
+              >
                 {page.is_published ? 'Published' : 'Draft'}
               </span>
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1" asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+                asChild
+              >
                 <Link to={`/admin/content/edit/${page.id}`}>
                   <Edit className="h-4 w-4" /> Edit
                 </Link>
               </Button>
               {page.is_published && (
-                <Button variant="ghost" size="sm" className="flex items-center gap-1" asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-1"
+                  asChild
+                >
                   <Link to={`/${page.slug}`} target="_blank">
                     <ExternalLink className="h-4 w-4" /> View
                   </Link>
@@ -53,7 +70,7 @@ export const PageList = ({ pages }: PageListProps) => {
           </CardContent>
         </Card>
       ))}
-      
+
       {pages.length === 0 && (
         <Card>
           <CardContent className="pt-6 pb-6 text-center">
@@ -66,7 +83,7 @@ export const PageList = ({ pages }: PageListProps) => {
           </CardContent>
         </Card>
       )}
-      
+
       {pages.length > 0 && (
         <div className="text-center mt-4">
           <Button variant="outline" size="sm" asChild>

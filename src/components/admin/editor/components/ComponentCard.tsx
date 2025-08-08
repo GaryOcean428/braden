@@ -1,6 +1,12 @@
-
 import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -23,24 +29,25 @@ interface ComponentCardProps {
   onChange: () => void;
 }
 
-export const ComponentCard: React.FC<ComponentCardProps> = ({ 
-  component, 
-  isDragging, 
-  onDragStart, 
-  onChange 
+export const ComponentCard: React.FC<ComponentCardProps> = ({
+  component,
+  isDragging,
+  onDragStart,
+  onChange,
 }) => {
   const handleAddComponent = (componentId: string) => {
     onChange();
     toast.success(`Component "${componentId}" added to layout`, {
-      description: "Drag components to specific layout sections in the Layout Editor"
+      description:
+        'Drag components to specific layout sections in the Layout Editor',
     });
   };
 
   return (
-    <Card 
-      key={component.id} 
+    <Card
+      key={component.id}
       className={`cursor-grab ${isDragging ? 'opacity-50' : ''}`}
-      draggable 
+      draggable
       onDragStart={() => onDragStart(component.id)}
     >
       <CardHeader className="pb-2">
@@ -57,10 +64,13 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
           {component.description}
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         {component.imageUrl ? (
-          <AspectRatio ratio={16/9} className="bg-gray-100 rounded-md overflow-hidden">
+          <AspectRatio
+            ratio={16 / 9}
+            className="bg-gray-100 rounded-md overflow-hidden"
+          >
             <img
               src={component.imageUrl}
               alt={component.name}
@@ -72,7 +82,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
             <p className="text-xs text-gray-500">Component preview</p>
           </div>
         )}
-        
+
         {component.usageCount && (
           <div className="mt-2">
             <Badge variant="outline" className="text-xs">
@@ -81,10 +91,10 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
           </div>
         )}
       </CardContent>
-      
+
       <CardFooter className="pt-0">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           className="w-full"
           onClick={() => handleAddComponent(component.id)}

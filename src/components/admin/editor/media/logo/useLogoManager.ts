@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -13,19 +12,19 @@ export const useLogoManager = (
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | undefined>(currentLogo);
-  
+
   useEffect(() => {
     const loadCurrentLogo = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const { data: sessionData } = await supabase.auth.getSession();
         if (!sessionData.session) {
           setError('Authentication required to manage branding');
           return;
         }
-        
+
         setLogoUrl(currentLogo);
       } catch (err: any) {
         console.error('Error loading current logo:', err);
@@ -34,22 +33,22 @@ export const useLogoManager = (
         setLoading(false);
       }
     };
-    
+
     loadCurrentLogo();
   }, [currentLogo]);
 
   const handleUpdateLogo = async () => {
     if (!selectedLogo) return;
-    
+
     try {
       setIsUpdating(true);
       setError(null);
-      
+
       if (onLogoUpdate) {
         onLogoUpdate(selectedLogo.publicUrl);
         setLogoUrl(selectedLogo.publicUrl);
       }
-      
+
       toast.success('Logo updated successfully!');
     } catch (err: any) {
       console.error('Error updating logo:', err);
@@ -68,6 +67,6 @@ export const useLogoManager = (
     setError, // Added setError to the return object
     loading,
     logoUrl,
-    handleUpdateLogo
+    handleUpdateLogo,
   };
 };

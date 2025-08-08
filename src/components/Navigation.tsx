@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { Menu, X, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useLocation, useNavigate } from "react-router-dom";
-import MobileMenu from "./navigation/MobileMenu";
-import DesktopMenu from "./navigation/DesktopMenu";
-import { ErrorBoundary } from "./ErrorBoundary";
+import { useState, useEffect } from 'react';
+import { Menu, X, Home } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useLocation, useNavigate } from 'react-router-dom';
+import MobileMenu from './navigation/MobileMenu';
+import DesktopMenu from './navigation/DesktopMenu';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,21 +15,19 @@ const Navigation = () => {
   const navigate = useNavigate();
 
   // Use the gold logo for good contrast against the red background
-  const logoPath = "/docs/noBgGold.png";
+  const logoPath = '/docs/noBgGold.png';
 
   useEffect(() => {
     const checkAdminStatus = async () => {
       try {
         const {
-          data: {
-            user
-          }
+          data: { user },
         } = await supabase.auth.getUser();
-        if (user?.email === "braden.lang77@gmail.com") {
+        if (user?.email === 'braden.lang77@gmail.com') {
           setIsAdmin(true);
         }
       } catch (error) {
-        console.error("Error checking admin status:", error);
+        console.error('Error checking admin status:', error);
       }
     };
     checkAdminStatus();
@@ -38,7 +36,7 @@ const Navigation = () => {
       setIsScrolled(scrollPosition > 20);
     };
     window.addEventListener('scroll', handleScroll, {
-      passive: true
+      passive: true,
     });
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -50,19 +48,19 @@ const Navigation = () => {
       const section = document.getElementById(sectionId);
       if (section) {
         section.scrollIntoView({
-          behavior: "smooth"
+          behavior: 'smooth',
         });
         setIsOpen(false);
       }
     } else {
       navigate('/', {
-        replace: true
+        replace: true,
       });
       setTimeout(() => {
         const section = document.getElementById(sectionId);
         if (section) {
           section.scrollIntoView({
-            behavior: "smooth"
+            behavior: 'smooth',
           });
         }
       }, 100);
@@ -74,11 +72,11 @@ const Navigation = () => {
     if (location.pathname === '/') {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     } else {
       navigate('/', {
-        replace: true
+        replace: true,
       });
     }
     setIsOpen(false);
@@ -89,40 +87,54 @@ const Navigation = () => {
     console.warn('Logo failed to load:', logoPath);
   };
 
-  return <ErrorBoundary>
+  return (
+    <ErrorBoundary>
       <nav className={`bg-[#811a2c] ${isScrolled ? 'shadow-md' : ''}`}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <a 
-              href="/" 
-              className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center gap-3" 
+            <a
+              href="/"
+              className="text-white font-montserrat text-xl font-bold relative z-10 hover:opacity-80 transition-opacity flex items-center gap-3"
               onClick={handleHomeClick}
             >
               {!logoError && (
-                <img 
-                  src={logoPath} 
-                  alt="Braden Group Logo" 
+                <img
+                  src={logoPath}
+                  alt="Braden Group Logo"
                   className="h-8 w-auto object-contain"
                   onError={handleLogoError}
                   loading="eager"
                 />
               )}
             </a>
-            
+
             <div className="flex items-center gap-4">
-              <button className="md:hidden text-white relative z-20 hover:opacity-80 transition-opacity" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+              <button
+                className="md:hidden text-white relative z-20 hover:opacity-80 transition-opacity"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle menu"
+              >
                 {isOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
               <div className="relative z-10">
-                <DesktopMenu isAdmin={isAdmin} scrollToSection={scrollToSection} />
+                <DesktopMenu
+                  isAdmin={isAdmin}
+                  scrollToSection={scrollToSection}
+                />
               </div>
             </div>
           </div>
         </div>
-        
-        <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} isAdmin={isAdmin} scrollToSection={scrollToSection} />
+
+        <MobileMenu
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          isAdmin={isAdmin}
+          scrollToSection={scrollToSection}
+        />
       </nav>
-    </ErrorBoundary>;
+    </ErrorBoundary>
+  );
 };
 
 export default Navigation;
