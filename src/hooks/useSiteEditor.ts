@@ -119,6 +119,11 @@ export function useSiteEditor() {
     handlePublish,
     handlePreview,
     handleChange,
-    initBuckets
+    // expose the storage initialization helper so the site editor can
+    // explicitly trigger bucket creation when needed. previously this
+    // hook returned an undefined "initBuckets" property which caused
+    // runtime errors. see the implementation above for the full
+    // initialization behaviour.
+    initStorage
   };
 }
