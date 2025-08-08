@@ -1,55 +1,59 @@
 # SQL Migration for Site Editor
 
-Execute the following SQL commands to set up the necessary tables for the site editor:
+Execute the following SQL commands to set up the necessary tables for the site editor.
+
+**Note:** Run the `fix_policy_conflicts.sql` migration first to handle existing policy conflicts:
+
+## Step 1: Run the Policy Conflict Fix
+
+```bash
+# Apply the fix migration in Supabase SQL Editor or via CLI
+psql -h your-db-host -d your-db-name -f supabase/migrations/fix_policy_conflicts.sql
+```
+
+## Step 2: Verify Tables and Policies
+
+After running the migration, verify that all tables exist and policies are properly configured:
 
 ```sql
--- Create site_settings table for storing theme, layout, and other customization options
-CREATE TABLE IF NOT EXISTS site_settings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  type TEXT NOT NULL, -- e.g., 'theme', 'layout', 'general'
-  settings JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
+-- Check if tables exist
+SELECT tablename FROM pg_tables WHERE schemaname = 'public' 
+AND tablename IN ('site_settings', 'page_layouts', 'custom_components', 'content_pages', 'content_blocks', 'admin_users', 'media');
 
--- Create page_layouts table for storing layout data
-CREATE TABLE IF NOT EXISTS page_layouts (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  page_id TEXT NOT NULL, -- Can be a route or identifier
-  layout_data JSONB NOT NULL DEFAULT '{}'::jsonb,
-  is_published BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
+-- Check RLS status
+SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public';
 
--- Create custom_components table
-CREATE TABLE IF NOT EXISTS custom_components (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  description TEXT,
-  component_data JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- Enable RLS
-ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE page_layouts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE custom_components ENABLE ROW LEVEL SECURITY;
-
--- Add RLS policies
-CREATE POLICY "Enable read for all users" ON site_settings FOR SELECT USING (true);
-CREATE POLICY "Enable write for admin users only" ON site_settings FOR INSERT WITH CHECK (public.is_admin(auth.uid()));
-CREATE POLICY "Enable update for admin users only" ON site_settings FOR UPDATE USING (public.is_admin(auth.uid()));
-CREATE POLICY "Enable delete for admin users only" ON site_settings FOR DELETE USING (public.is_admin(auth.uid()));
-
-CREATE POLICY "Enable read for all users" ON page_layouts FOR SELECT USING (is_published = true OR public.is_admin(auth.uid()));
-CREATE POLICY "Enable write for admin users only" ON page_layouts FOR INSERT WITH CHECK (public.is_admin(auth.uid()));
-CREATE POLICY "Enable update for admin users only" ON page_layouts FOR UPDATE USING (public.is_admin(auth.uid()));
-CREATE POLICY "Enable delete for admin users only" ON page_layouts FOR DELETE USING (public.is_admin(auth.uid()));
-
-CREATE POLICY "Enable read for all users" ON custom_components FOR SELECT USING (true);
-CREATE POLICY "Enable write for admin users only" ON custom_components FOR INSERT WITH CHECK (public.is_admin(auth.uid()));
-CREATE POLICY "Enable update for admin users only" ON custom_components FOR UPDATE USING (public.is_admin(auth.uid()));
-CREATE POLICY "Enable delete for admin users only" ON custom_components FOR DELETE USING (public.is_admin(auth.uid()));
+-- List all policies
+SELECT schemaname, tablename, policyname, cmd, roles 
+FROM pg_policies WHERE schemaname = 'public'
+ORDER BY tablename, policyname;
 ```
+
+## Troubleshooting
+
+If you continue to see policy conflicts:
+
+1. **Manual Policy Cleanup**: Drop all policies for a specific table:
+   ```sql
+   -- Example for admin_users table
+   SELECT 'DROP POLICY IF EXISTS "' || policyname || '" ON ' || tablename || ';'
+   FROM pg_policies 
+   WHERE tablename = 'admin_users' AND schemaname = 'public';
+   ```
+
+2. **Check for Duplicate Policy Names**: Ensure policy names are unique across your database:
+   ```sql
+   SELECT policyname, COUNT(*) 
+   FROM pg_policies 
+   WHERE schemaname = 'public'
+   GROUP BY policyname 
+   HAVING COUNT(*) > 1;
+   ```
+
+3. **Reset All Policies**: If needed, disable and re-enable RLS:
+   ```sql
+   ALTER TABLE admin_users DISABLE ROW LEVEL SECURITY;
+   -- Drop all policies manually
+   ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+   -- Recreate policies
+   ```

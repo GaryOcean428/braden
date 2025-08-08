@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Palette, Layout, Layers, Image, File } from 'lucide-react';
+import { Palette, Layout, Layers, Image, File, FileText, Image as ImageIcon } from 'lucide-react';
 import { SiteEditorHeader } from '@/components/admin/editor/SiteEditorHeader';
 import { SiteEditorLoading } from '@/components/admin/editor/SiteEditorLoading';
 import { ThemeTab } from '@/components/admin/editor/tabs/ThemeTab';
@@ -9,6 +9,8 @@ import { ComponentsTab } from '@/components/admin/editor/tabs/ComponentsTab';
 import { MediaTab } from '@/components/admin/editor/tabs/MediaTab';
 import { LogosTab } from '@/components/admin/editor/tabs/LogosTab';
 import { FaviconsTab } from '@/components/admin/editor/tabs/FaviconsTab';
+import { PagesTab } from '@/components/admin/editor/tabs/PagesTab';
+import { HeroTab } from '@/components/admin/editor/tabs/HeroTab';
 
 interface SiteEditorLayoutProps {
   isLoading: boolean;
@@ -87,6 +89,14 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
             <File className="h-4 w-4" />
             Favicons
           </TabsTrigger>
+          <TabsTrigger value="pages" className="flex items-center gap-1">
+            <FileText className="h-4 w-4" />
+            Pages
+          </TabsTrigger>
+          <TabsTrigger value="hero" className="flex items-center gap-1">
+            <ImageIcon className="h-4 w-4" />
+            Hero
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="theme">
@@ -103,6 +113,12 @@ export const SiteEditorLayout: React.FC<SiteEditorLayoutProps> = ({
 
         <TabsContent value="media">
           <MediaTab onChange={handleChange} />
+        </TabsContent>
+        <TabsContent value="pages">
+          <PagesTab onChange={handleChange} />
+        </TabsContent>
+        <TabsContent value="hero">
+          <HeroTab onChange={handleChange} />
         </TabsContent>
 
         <TabsContent value="logos">

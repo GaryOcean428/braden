@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 .vercel
 
+
 # QA Reports and Coverage
 reports/
 coverage/
@@ -32,3 +33,5 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+.env
